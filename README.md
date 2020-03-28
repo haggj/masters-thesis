@@ -3,9 +3,9 @@
 This is a template for writing your Bachelor, Master or PhD thesis.
 It is loaded with a lot of tricks and magic to make sure your writing is enjoyable and your final document looks amazing.
 
-<!---[A preview of the compiled pdf is available here!](https://gitlab.com/thesis-toolbox/template/-/jobs/artifacts/master/raw/main.pdf?job=make) --->
+[A preview of the compiled pdf is available here!](https://gitlab.lrz.de/thesis-toolbox/template-tuini/-/jobs/artifacts/master/raw/main.pdf?job=make)
 
-[A preview of the compiled pdf is available here! (Please visit the url given on this page)](https://circleci.com/api/v1.1/project/github/thesis-toolbox/template/latest/artifacts)
+<!--- [A preview of the compiled pdf is available here! (Please visit the url given on this page)](https://circleci.com/api/v1.1/project/github/thesis-toolbox/template/latest/artifacts) --->
 
 
 ## Main Feature Overview
@@ -51,7 +51,7 @@ If you are a more advanced git user, you can try the following:
 git init
 
 # Add a remote link to this template git repo
-git remote add template https://github.com/thesis-toolbox/template
+git remote add template git@gitlab.lrz.de:thesis-toolbox/template-tuini.git
 ```
 
 ```sh
@@ -78,6 +78,4 @@ txs:///compile | txs:///bibliography | txs:///compile | txs:///view
 
 ## Customized Templates for Universities – Official and Unofficial
 
-* We are working on that …
-
-No matter if your university is listed here, please double check the official guidelines of your university/department before submitting and adjust your thesis if needed.
+This template is a modified version of this [template from the thesis toolbox](https://github.com/thesis-toolbox/template)

@@ -43,6 +43,17 @@
 % Load additional packages and commands.
 \RequirePackage[headsepline,footsepline,plainfootsepline]{scrlayer-scrpage}
 
+%%% Set some variables as constants for the university
+% Name of your univerty
+\newcommand*{\myUniversity}{\ifthenelse{\equal{\mylanguage}{de}}{Technische Universität München}{Technical University of Munich}}
+
+% Name of your department
+\newcommand*{\myDepartment}{\ifthenelse{\equal{\mylanguage}{de}}{Fakultät für Informatik}{Department of Informatics}}
+
+% City of your univeristy
+\newcommand*{\myCity}{Garching}
+%%% End if constants for university
+
 % Load all user config variables
 \usepackage{./myconfig}
 
