@@ -1,0 +1,125 @@
+
+\documentclass[../main.tex]{subfiles}
+
+\begin{document}
+
+\chapter{Requirements}
+
+This chapter identifies the requirements of the software which is implemented in the context of this thesis.
+Overall, there are three overall goals which need to be achieved. 
+
+\begin{enumerate}[label=\Roman*.]
+    \item Data owners need to be able to share (and revoke) their log data with other users in the system.
+	\item Log data needs to be confidential by means of end-to-end encryption.
+    \item Data owners should not be allowed to forge log data at any time.
+\end{enumerate}
+
+
+Traditional requirements engineering methods usually differentiate between functional and non-functional requirements based on the views of different stakeholders.
+Since this thesis operates within the security domain, the traditional requirements engineering process needs to be adapted: 
+Precise assumptions about what to protect and against whom to protect are mandatory for a successful implementation and evaluation.
+Thus, this chapter closely follows the terms and methodology proposed by \citeauthor{Fabian2010} \cite{Fabian2010}.
+
+\citeauthor{Fabian2010} fundamentally differentiate between functional, non-functional and security requirements, which are extracted from functional, non-functional and security goals.
+Goals are rather abstract and vague formulations of what the system should achieve. 
+They are refined into more detailed requirements for two reasons.
+First, verifiable requirements allow us to compare different approaches and to finally choose one solution from the solution space. 
+Second, they also help to verify and evaluate if the implemented solution satisfies the overall expectations. \cite{Fabian2010}
+
+While the overall goal I will be treated as a functional goal (subsection \ref{functional-requriements}), the goals II and III are understood as security goals (subsection \ref{security-requriements}).
+Further non-functional goals will be identified in subsection \ref{non-functional-requriements}.
+Within each subsection the identified goals will be refined into requirements.
+This finally results in a list of verifiable and consistent system requirements for this thesis (subsection \ref{system-requriements}).
+
+Please note, that the identification of these requirements was not a linear process as presented in this chapter.
+Instead, multiple iterations of reasoning about possible solutions and considering their implications for the inverse transparency toolchain were necessary.
+This process finally lead to the detailed decomposition of the requirements depicted in the following.
+
+
+\newpage
+\section{Functional requirements}\label{functional-requriements}
+Functional requirements describe \enquote{what the system does} \cite[11]{Mylopoulos1992}.
+In the context of this thesis the following functional goals are identified:
+\begin{itemize}
+    \item Data owners need to to share their log data with other users in the system.
+    \item Data owners need to revoke the access of other users to their log data
+\end{itemize}
+
+They can be refined into more concrete requirements. 
+Let $L_{ID}$ denote an access log. 
+This log reflects the fact, that a data consumer has accessed some data of the user with identity $ID$.
+Let $Access(L_{ID})$ denote the set of all users, which can access the log $L_{ID}$.
+E.g. $Access(L_{ID}) =\{1,2,3\}$ reflects the situation, where user $1$, $2$ and $3$ have access to $L_{ID}$.
+\begin{enumerate}
+    \item [F1.] Once a log was created, only the data owner can access the content the log:
+    \\$Access(L_{ID}) =\{ID\}$
+    \item [F2.] The data owner can share a log with other users in the system. 
+    After the sharing operation the defined set of users can access the log.
+    Assume the log is shared to the set of users $S$. 
+    The sharing can be described as: 
+    \\$Access(L_{ID}) = Access(L_{ID}) \cup S$
+    \item [F3.] The data owner of a log can revoke the access to the log.
+    After revocation operation the defined set of users can not access the log anymore.
+    Assume the log is revoked from the set of users $R$. 
+    The revocation can be described as: 
+    \\$Access(L_{ID}) = Access(L_{ID}) \setminus R$
+
+\end{enumerate}
+
+\section{Security requirements}\label{security-requriements}
+As proposed by \citeauthor{Fabian2010}, this section determines the security goals of this thesis and refines them into security requirements.
+Each security goals is initially classified into confidentiality, integrity or availability (CIA-triad \todo{quelle}). 
+From the overall goals II and III we obtain:
+\begin{itemize}
+    \item Access logs are end-to-end encrypted (confidentiality and availability)
+    \item Access logs are integrity protected (integrity)
+\end{itemize}
+
+In order to identify security requirements, each goal is annotated with additional information, a counter-stakeholder and specific circumstances.
+The counter-stakeholder is an adversary attacking the system.
+Satisfying a security goal can be seen as defending against this adversary.
+The circumstances elaborate additional conditions which affect the security goal.
+
+\begin{enumerate}
+    \item [S1.] Access logs are end-to-end encrypted.
+    \begin{itemize}
+        \item Information: 
+        \todo{define E2E encryption}
+        The content of the logs can only be accessed by communicating entities (encryption endpoints).
+        The receiver of a access log needs to be able to verify that the access log was really shared by the intended sender. 
+        The initial encryption endpoints are the monitor-component, which creates the access log, and the data owner.
+        Once the access log is shared, each user who is allowed to access the access log becomes an encryption endpoint.
+        Once access to a log is revoked for a user, this user is no longer an encryption endpoint.
+        \item Counter-stakeholder:
+        \todo{Dolev-Yao attacker}
+        This security goal is intended to defend against a Dolev-Yao attacker.
+        It is assumed that the attacker is the whole system, e.g. the attacker carries all communication.
+        This is an active attacker not following the intended protocol.
+        The attacker can modify, delete, add or duplicate messages.
+        However, it is assumed that the attacker can not break correctly implemented cryptographic primitives. 
+        \item Circumstances: 
+        The dynamic behavior in the system implicates a dynamically changing set of encryption endpoints.
+    \end{itemize}
+    \item [S2.] Access logs are integrity protected.
+    \begin{itemize}
+        \item Information: 
+        Once a access log was created, nobody can modify the access logs and insert it into the system.
+        \item Counter-stakeholder: 
+        This security goal is intended to defend against a \textbf{malicious data owner}, who tries to manipulate access logs. 
+        The adversary tries to share manipulated logs with other users.
+        Thus, it is assumed to be an active attacker not following the intended protocol.
+        Further it is assumed that the attacker can not break correctly implemented cryptographic primitives.
+        \item Circumstances: 
+        The monitor component needs to initially create the access log. 
+        After this creation no user can modify the log. 
+    \end{itemize}
+\end{enumerate}
+
+\section{Non-functional requirements}\label{non-functional-requriements}
+
+
+\section{System requirements}\label{system-requriements}
+
+
+
+\end{document}
