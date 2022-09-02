@@ -3,6 +3,92 @@
 
 \begin{document}
 
+\section{AEAD}
+
+\section{Key escrow}
+
+\section{End-to-end encryption}
+
+The National Institute of Standards and Technology (NIST) defines end-to-end encryption (E2EE) as follows:
+\begin{quote}
+"Communications encryption in which data is encrypted when being passed through a network, but routing information remains visible."~\cite[88]{Nieles2017}
+\end{quote}
+Consider the scenario, where Alice wants to send end-to-end encrypted message to Bob.
+Once they established cryptographic keys, Alice encrypts the message and sends it to Bob.
+During transit the encrypted message passes an untrusted network.
+In a classical understanding of E2EE, no third party or adversary within the untrusted network is able to access the message because it is encrypted \cite{Ermoshina2016}.
+If this holds, Alice and Bob are said to be the endpoints of the encryption and their communication is end-to-end encrypted.
+
+In recent years, this classical understanding of E2EE has changed. 
+With the rise of modern instant messaging services, E2EE should not only guarantee the confidentiality of the communication (e.g. that the communication can not be decrypted by the untrusted network).
+Rather, an adversary should not have any possibilities to influence the communication.
+Thus, a modern E2EE based system should also guarantee authenticity and integrity of the exchanged data. \cite{Hale2022}
+
+
+
+
+
+
+In contrast to this rather abstract definition, \citeauthor{Hale2022}~\cite{Hale2022} propose a very precise notion of E2EE.
+Based on a common normative understanding of end-to-end security the authors provide a formalism supporting practical system design.
+In the following it is reasoned, why the NIST definition is too vague to meet intuitive expectations of end-to-end security.
+
+First of all, it is not explicitly clear what kind of encryption is required.
+Intuitively the encryption should consider not only confidentiality but also integrity and authenticity~\cite{Hale2022}.
+Consider the scenario where Alice wants to send a message to Bob over an insecure network.
+Alice decides to encrypt her message with a secure encryption algorithm to ensure the confidential of her message.
+Since the message neither protects integrity nor authenticity a potential attacker in the network could easily modify, replace or add data to the communication.
+This does not meet the intuitive understanding of E2EE, since an attacker can successfully manipulate the communication~\cite{Hale2022}.
+A second limitation of the NIST definition is the lack of precise boundaries. 
+The encryption is restricted to the insecure network.
+Once the communication leaves the network the security guarantees are no longer enforced.
+A intuitive understanding of E2EE, however, implicates very precise encryption endpoints~\cite{Hale2022}.
+Usually these encryption endpoints are applications running on an end-user device.
+
+
+
+
+
+While the definition of NIST is rather abstract and not very detailed, there exist different proposals about the security guarantees of E2EE~\cite{Hale2022}.
+A strict understanding of E2EE would mean that nobody - besides the endpoints - has access to the plaintext data.
+However, in an enterprise context this might not always be practical.
+In order to encrypt and decrypt data, the communication endpoints need to access the required cryptographic keys.
+If an attacker could compromise theses keys, the communication is not E2EE anymore, because the attacker could simply decrypt observed traffic with these keys.
+Thus, if the obvious and strict understanding of E2EE is required, only the employee is allowed to know its cryptographic keys.
+Keys can not be shared or stored within the enterprise environment.
+However, if the user looses his keys and the company does not have any backups all its communication is lost.
+This can be mitigated by introducing a trusted server, which stores cryptographic keys of all employees.
+One the one hand, this seems to be practical and might increase availability of data. 
+On the other hand, such a trusted server introduces key escrow and the communication is not E2EE in a strict sense anymore, since the administrator of the trusted server has access to all keys.
+A less strict interpretation of E2EE would imply, that the communication is still considered to be E2EE, even if the enterprise administrator can decrypt the messages.
+This assumption implicitly defines the administrator as an additional encryption endpoint. 
+
+
+\citeauthor{Hale2022}~\cite{Hale2022} motivate a definition, where a system implementing E2EE needs to fullfil two essential requirements.
+First, the system must rely on an AEAD encryption scheme. 
+This provides confidentiality and authenticity of the encrypted data and allows to detect if the encrypted data was modified by an adversary.
+Second, the system must be very explicit about the endpoints of the communication. 
+Upon sending a message the sender needs to commit a set of valid endpoints.
+If there is any endpoint accessing the decrypted data, which the sender did not explicitly commit to, the communication is not considered to be E2EE.
+
+
+What goals, assumptions and capabilites does the attacker have in the context of E2EE?
+
+
+What to defend against: Active or Passive attacker?
+\cite{Mallory2022} understands it as active attacker (sec 2.4)
+
+
+\cite{Hale2022} also proposes authenticate encryption which implicitly assumes an active attacker
+
+
+\cite{Nabeel2017} states, that access to metadata can always be critical when defending against active attackers, because metadata might allow to break privacy goals
+Thus, he also proposes passive attackers against E2EE can also be understand as passive attacker (not authentication required)
+
+
+
+
+
 \chapter{Requirements}
 
 This chapter identifies the requirements of the software which is implemented in the context of this thesis.
@@ -93,9 +179,9 @@ The circumstances elaborate additional conditions which affect the security goal
         \item Counter-stakeholder:
         \todo{Dolev-Yao attacker}
         This security goal is intended to defend against a Dolev-Yao attacker.
-        It is assumed that the attacker is the whole system, e.g. the attacker carries all communication.
-        This is an active attacker not following the intended protocol.
-        The attacker can modify, delete, add or duplicate messages.
+        It is assumed that the attacker is the whole system except the trusted entities.
+        The attacker carries all communication and does not follow the intended protocol.
+        He can modify, delete, add or duplicate messages.
         However, it is assumed that the attacker can not break correctly implemented cryptographic primitives. 
         \item Circumstances: 
         The dynamic behavior in the system implicates a dynamically changing set of encryption endpoints.
@@ -116,6 +202,28 @@ The circumstances elaborate additional conditions which affect the security goal
 \end{enumerate}
 
 \section{Non-functional requirements}\label{non-functional-requriements}
+Non-functional requirements can be characterized as \enquote{global requirements on its development or operational costs, performance, reliability, maintainability, portability, robustness and the like} \cite[11]{Mylopoulos1992}.
+In contrast to the functional and security requirements defined earlier, the non-functional requirements are not a direct result of the requested outcome of this thesis.
+Thus, they are not strictly mandatory to resolve the overall requirements.
+At the same time, however, they add additional value to a potential solution.
+Consider two potential solutions $A$ and $B$, which both satisfy all functional and security requirements.
+The solution $A$ should be preferred over a solution $B$, if $A$ resolves more non-functional requirements than $B$.
+
+During multiple iterations of defining potential solutions the list of non-functional goals has grown the following stable collection:
+
+\begin{itemize}
+    \item Avoid trusted servers (trust). 
+    A compromised trusted entity undermines the security of the whole toolchain. 
+    To reduce the risk and attack surface, the toolchain should rely on a minimal amount of trusted entities.
+    \item Simplicity of design (maintainability)
+    To increase maintainability of the toolchain, a simple design with a minimal amount of infrastructure and communication should be implemented.
+    \item Documentation (maintainability)
+    A proper documentation of the implemented toolchain increases the maintainability.
+    \item Use standardized cryptographic algorithms (portability)
+    \todo{explain why standard crypto}
+    \item Reduce resource utilization (performance)
+    \item Access logs are integrity protected (integrity)
+\end{itemize}
 
 
 \section{System requirements}\label{system-requriements}
