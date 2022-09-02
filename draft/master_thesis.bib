@@ -21,13 +21,18 @@
   groups    = {Requirements},
 }
 
-@Misc{cryptoeprint:2022/449,
+@Misc{Hale2022,
   author       = {Britta Hale and Chelsea Komlo},
   howpublished = {Cryptology ePrint Archive, Paper 2022/449},
   note         = {\url{https://eprint.iacr.org/2022/449}},
   title        = {On End-to-End Encryption},
   year         = {2022},
-  groups       = {Requirements},
+  comment      = {Good starting ponit for End-2-End encryption.
+
+Curial:
+1. Define endpoints
+2. Use authenticated encryption},
+  groups       = {Requirements, Adversary Models},
   url          = {https://eprint.iacr.org/2022/449},
 }
 
@@ -39,7 +44,7 @@
   number    = {2},
   pages     = {198--208},
   volume    = {29},
-  groups    = {Requirements},
+  groups    = {Requirements, Adversary Models},
   publisher = {IEEE},
 }
 
@@ -55,9 +60,81 @@
   groups  = {Requirements},
 }
 
+@InProceedings{Nabeel2017,
+  author  = {Nabeel, Mohamed},
+  title   = {The Many Faces of End-to-End Encryption and Their Security Analysis},
+  year    = {2017},
+  month   = {06},
+  pages   = {252-259},
+  comment = {Proposes different Adversary Models for E2E ecnryption.
+Key finding: Revealing Metadata to attackers might compromise privacy (e.g. sharing relation)},
+  doi     = {10.1109/IEEE.EDGE.2017.47},
+  groups  = {Requirements, Adversary Models},
+}
+
+@Article{DO2019156,
+  author   = {Quang Do and Ben Martini and Kim-Kwang Raymond Choo},
+  journal  = {Computers & Security},
+  title    = {The role of the adversary model in applied security research},
+  year     = {2019},
+  issn     = {0167-4048},
+  pages    = {156-181},
+  volume   = {81},
+  abstract = {Adversary models have been integral to the design of provably-secure cryptographic schemes or protocols. However, their use in other computer science research disciplines is relatively limited, particularly in the case of applied security research (e.g., mobile app and vulnerability studies). In this study, we conduct a survey of prominent adversary models used in the seminal field of cryptography, and more recent mobile and Internet of Things (IoT) research. Motivated by the findings from the cryptography survey, we propose a classification scheme for common app-based adversaries used in mobile security research, and classify key papers using the proposed scheme. Finally, we discuss recent work involving adversary models in the contemporary research field of IoT. We contribute recommendations to aid researchers working in applied (IoT) security based upon our findings from the mobile and cryptography literature. The key recommendation is for authors to clearly define adversary goals, assumptions and capabilities.},
+  comment  = {- Infos about how to define an attacker model
+
+- Dolev-Yao as one of the mostly used attacker models
+- Might be to strong for many scenarios
+- Adversary Model: Assumptions, Goals and Constraints (+ examples)},
+  doi      = {https://doi.org/10.1016/j.cose.2018.12.002},
+  groups   = {Adversary Models},
+  keywords = {Adversary Model, Applied security, IoT Security, Forensic Adversary Model, Mobile Security},
+  url      = {https://www.sciencedirect.com/science/article/pii/S0167404818306369},
+}
+
+@Article{Nieles2017,
+  author  = {Nieles, Michael and Dempsey, Kelley and Pillitteri, Victoria Yan and others},
+  journal = {NIST special publication},
+  title   = {An introduction to information security},
+  year    = {2017},
+  number  = {12},
+  pages   = {101},
+  volume  = {800},
+  comment = {NIST defintion of End-to-end encryption},
+  groups  = {Adversary Models},
+  url     = {https://doi.org/10.6028/NIST.SP.800-12r1},
+}
+
+@Misc{WinNT,
+  howpublished = {\url{http://web.archive.org/web/20080207010024/http://www.808multimedia.com/winnt/kernel.htm}},
+  note         = {Accessed: 2010-09-30},
+  title        = {{MS Windows NT} Kernel Description},
+  groups       = {Adversary Models},
+}
+
+@Misc{Mallory2022,
+  author       = {Mallory, Knodel and Fred Baker and Olaf, Kolkman and Sofia, Celi and Gurshabad, Grover.},
+  howpublished = {\url{https://datatracker.ietf.org/doc/draft-knodel-e2ee-definition/}},
+  month        = jul,
+  note         = {Accessed: 2022-08-31},
+  title        = {Definition of End-to-end Encryption},
+  year         = {2022},
+  groups       = {Adversary Models},
+}
+
+@InProceedings{Ermoshina2016,
+  author       = {Ermoshina, Ksenia and Musiani, Francesca and Halpin, Harry},
+  booktitle    = {International Conference on Internet Science},
+  title        = {End-to-end encrypted messaging protocols: An overview},
+  year         = {2016},
+  organization = {Springer},
+  pages        = {244--254},
+}
+
 @Comment{jabref-meta: databaseType:bibtex;}
 
 @Comment{jabref-meta: grouping:
 0 AllEntriesGroup:;
 1 StaticGroup:Requirements\;0\;1\;0x0000ffff\;\;\;;
+2 StaticGroup:Adversary Models\;0\;0\;0x8a8a8aff\;\;\;;
 }
