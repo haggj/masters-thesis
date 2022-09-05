@@ -7,7 +7,7 @@
 
 \section{Key escrow}
 
-\section{End-to-end encryption}
+\section{End-to-end encryption} \label{end-to-end}
 
 The National Institute of Standards and Technology (NIST) defines end-to-end encryption (E2EE) as follows:
 \begin{quote}
@@ -19,71 +19,111 @@ During transit the encrypted message passes an untrusted network.
 In a classical understanding of E2EE, no third party or adversary within the untrusted network is able to access the message because it is encrypted \cite{Ermoshina2016}.
 If this holds, Alice and Bob are said to be the endpoints of the encryption and their communication is end-to-end encrypted.
 
-In recent years, this classical understanding of E2EE has changed. 
+\citeauthor{Hale2022} pointed out, however, that this classical understanding of E2EE has changed in recent years~\cite{Hale2022}. 
 With the rise of modern instant messaging services, E2EE should not only guarantee the confidentiality of the communication (e.g. that the communication can not be decrypted by the untrusted network).
-Rather, an adversary should not have any possibilities to influence the communication.
-Thus, a modern E2EE based system should also guarantee authenticity and integrity of the exchanged data. \cite{Hale2022}
+Rather, an adversary should not have any possibilities to influence the communication in any way.
+This implies that a modern E2EE based system should also guarantee authenticity and integrity of the exchanged data~\cite{Hale2022}. 
+The difference between the classical and current understanding of E2EE can be described more precise with different adversary models they defend against.
+
+\subsection{Adversary model}
+This section details the security guarantees E2EE can provide by considering different adversaries.
+The above NIST definition states, that E2EE protects data passing an untrusted network.
+Within the network, the communicating entities do not have any control over their data.
+This motivates the idea, that the attacker is interpreted as the whole untrusted network:
+\begin{quote}
+    "The attacker carries the message" \todo{find source}
+\end{quote}
+It is assumed, that the adversary has limited computational capacity. 
+Specifically, it can no break correctly implemented cryptographic schemes without knowing the key.
+In the following, active and passive attackers are further distinguished. 
+
+\subsubsection{Passive adversaries}
+In general, passives attacks aim to break confidentiality and include eavesdropping and unauthorized reading of data~\cite{Eckert2018}. 
+In literature this is often defined as a honest-but-curious attacker. \todo{source + definition}
+The classical understanding of E2EE protects against passive adversaries. 
+The attacker is part of the untrusted network and observes the passed data.
+Its goal is it to get access the content of the exchanged messages.
+To defend against this passive attacker, cryptography can be applied to make passive attacks ineffective and to protect confidentiality~\cite{Eckert2018}.
+
+\todo{Add references}
+\cite{Nabeel2017} states, that access to metadata can always be critical when defending against active attackers, because metadata might allow to break privacy goals
+Thus, he also proposes passive attackers against E2EE can also be understand as passive attacker (not authentication required)
 
 
+\subsubsection{Active adversaries}
+Todays interpretation of E2EE system is motivated by a stronger attacker model.
+An active attacker not only listens to the passed traffic.
+Rather, this attacker tries to insert, replace, drop, modify or replay messages to disrupt the communication.
+More sophisticated active attacks also include spoofing or denial of service attacks.
+The motivation can be diverse: 
+The attacker might want to access confidential content, introduce faked data or delete valid data passing the network.
+Another goal might be the impersonation of a user participating in the system.~\cite{Eckert2018}
 
+Possible defense strategies against this adversary are getting more complex.
+The detection of inserted, replaced or modified data require some sort of validation, that the received data was actually created by the assumed communication partner (authenticity) and that it was not modified during transit (integrity).
+This can be realized with authenticated encryption techniques~\cite{Mallory2022}.
+To defense against dropped or replayed messages, advanced mitigation strategies must be applied:
+Replayed messages can be detected with freshness, e.g. timestamps ~\cite[419]{Eckert2018}.
+Dropped messages, however, require some sort of sequence counter, e.g. implemented in the TCP protocol ~\cite[115]{Eckert2018}
 
-
-
-In contrast to this rather abstract definition, \citeauthor{Hale2022}~\cite{Hale2022} propose a very precise notion of E2EE.
-Based on a common normative understanding of end-to-end security the authors provide a formalism supporting practical system design.
-In the following it is reasoned, why the NIST definition is too vague to meet intuitive expectations of end-to-end security.
-
-First of all, it is not explicitly clear what kind of encryption is required.
-Intuitively the encryption should consider not only confidentiality but also integrity and authenticity~\cite{Hale2022}.
-Consider the scenario where Alice wants to send a message to Bob over an insecure network.
-Alice decides to encrypt her message with a secure encryption algorithm to ensure the confidential of her message.
-Since the message neither protects integrity nor authenticity a potential attacker in the network could easily modify, replace or add data to the communication.
-This does not meet the intuitive understanding of E2EE, since an attacker can successfully manipulate the communication~\cite{Hale2022}.
-A second limitation of the NIST definition is the lack of precise boundaries. 
-The encryption is restricted to the insecure network.
-Once the communication leaves the network the security guarantees are no longer enforced.
-A intuitive understanding of E2EE, however, implicates very precise encryption endpoints~\cite{Hale2022}.
-Usually these encryption endpoints are applications running on an end-user device.
-
-
-
-
-
-While the definition of NIST is rather abstract and not very detailed, there exist different proposals about the security guarantees of E2EE~\cite{Hale2022}.
-A strict understanding of E2EE would mean that nobody - besides the endpoints - has access to the plaintext data.
-However, in an enterprise context this might not always be practical.
-In order to encrypt and decrypt data, the communication endpoints need to access the required cryptographic keys.
-If an attacker could compromise theses keys, the communication is not E2EE anymore, because the attacker could simply decrypt observed traffic with these keys.
-Thus, if the obvious and strict understanding of E2EE is required, only the employee is allowed to know its cryptographic keys.
-Keys can not be shared or stored within the enterprise environment.
-However, if the user looses his keys and the company does not have any backups all its communication is lost.
-This can be mitigated by introducing a trusted server, which stores cryptographic keys of all employees.
-One the one hand, this seems to be practical and might increase availability of data. 
-On the other hand, such a trusted server introduces key escrow and the communication is not E2EE in a strict sense anymore, since the administrator of the trusted server has access to all keys.
-A less strict interpretation of E2EE would imply, that the communication is still considered to be E2EE, even if the enterprise administrator can decrypt the messages.
-This assumption implicitly defines the administrator as an additional encryption endpoint. 
-
-
-\citeauthor{Hale2022}~\cite{Hale2022} motivate a definition, where a system implementing E2EE needs to fullfil two essential requirements.
-First, the system must rely on an AEAD encryption scheme. 
-This provides confidentiality and authenticity of the encrypted data and allows to detect if the encrypted data was modified by an adversary.
-Second, the system must be very explicit about the endpoints of the communication. 
-Upon sending a message the sender needs to commit a set of valid endpoints.
-If there is any endpoint accessing the decrypted data, which the sender did not explicitly commit to, the communication is not considered to be E2EE.
-
-
-What goals, assumptions and capabilites does the attacker have in the context of E2EE?
-
-
-What to defend against: Active or Passive attacker?
+\todo{Add references}
 \cite{Mallory2022} understands it as active attacker (sec 2.4)
-
-
 \cite{Hale2022} also proposes authenticate encryption which implicitly assumes an active attacker
 
 
-\cite{Nabeel2017} states, that access to metadata can always be critical when defending against active attackers, because metadata might allow to break privacy goals
-Thus, he also proposes passive attackers against E2EE can also be understand as passive attacker (not authentication required)
+\subsection{Endness}
+
+An intuitive understanding of E2EE implies that nobody - except the encryption endpoints - has access to the plaintext data.
+However, in an enterprise context this might not always be practical.
+In order to encrypt and decrypt data, the communication endpoints need to access the required cryptographic keys.
+If an attacker could compromise theses keys, the communication is not E2EE anymore, because the attacker could simply decrypt observed traffic with these keys.
+Thus, only the employee is allowed to know its cryptographic keys.
+Especially, they can not be shared or stored within the enterprise environment.
+However, if the user looses his keys and the company does not have any backups all communication of the employee is lost.
+This can be mitigated by introducing a trusted server, which stores cryptographic keys of all employees.
+One the one hand, this seems to be practical and might increase availability of data. 
+On the other hand, such a trusted server introduces key escrow and the communication is not E2EE in a strict sense anymore.
+The administrator of the trusted server has access to all keys.
+Since this administrator is most likely also the administrator of the whole enterprise network, he has access to the network traffic.
+This allows him to decrypt the communication between employees.
+Thus, the introduction of the trusted server most likely breaks E2EE.
+
+However, there is also the possibility to explicitly define the administrator of the trusted server as an additional encryption endpoint.
+In this case, there is no violation against E2EE, because the administrator is assumed to be a valid communication partner.
+\todo{cite HaHale2022 about endness}
+\todo{more sources?}
+
+
+
+
+
+% In contrast to this rather abstract definition, \citeauthor{Hale2022}~\cite{Hale2022} propose a very precise notion of E2EE.
+% Based on a common normative understanding of end-to-end security the authors provide a formalism supporting practical system design.
+% In the following it is reasoned, why the NIST definition is too vague to meet intuitive expectations of end-to-end security.
+
+% First of all, it is not explicitly clear what kind of encryption is required.
+% Intuitively the encryption should consider not only confidentiality but also integrity and authenticity~\cite{Hale2022}.
+% Consider the scenario where Alice wants to send a message to Bob over an insecure network.
+% Alice decides to encrypt her message with a secure encryption algorithm to ensure the confidential of her message.
+% Since the message neither protects integrity nor authenticity a potential attacker in the network could easily modify, replace or add data to the communication.
+% This does not meet the intuitive understanding of E2EE, since an attacker can successfully manipulate the communication~\cite{Hale2022}.
+% A second limitation of the NIST definition is the lack of precise boundaries. 
+% The encryption is restricted to the insecure network.
+% Once the communication leaves the network the security guarantees are no longer enforced.
+% A intuitive understanding of E2EE, however, implicates very precise encryption endpoints~\cite{Hale2022}.
+% Usually these encryption endpoints are applications running on an end-user device.
+
+
+% \citeauthor{Hale2022}~\cite{Hale2022} motivate a definition, where a system implementing E2EE needs to fullfil two essential requirements.
+% First, the system must rely on an AEAD encryption scheme. 
+% This provides confidentiality and authenticity of the encrypted data and allows to detect if the encrypted data was modified by an adversary.
+% Second, the system must be very explicit about the endpoints of the communication. 
+% Upon sending a message the sender needs to commit a set of valid endpoints.
+% If there is any endpoint accessing the decrypted data, which the sender did not explicitly commit to, the communication is not considered to be E2EE.
+
+
+
+
 
 
 
@@ -101,7 +141,7 @@ Overall, there are three overall goals which need to be achieved.
 \end{enumerate}
 
 
-Traditional requirements engineering methods usually differentiate between functional and non-functional requirements based on the views of different stakeholders.
+Traditional requirements engineering methods usually differentiate between functional and non-functional requirements based on the views of different stakeholders\todo{sources}.
 Since this thesis operates within the security domain, the traditional requirements engineering process needs to be adapted: 
 Precise assumptions about what to protect and against whom to protect are mandatory for a successful implementation and evaluation.
 Thus, this chapter closely follows the terms and methodology proposed by \citeauthor{Fabian2010} \cite{Fabian2010}.
@@ -133,20 +173,25 @@ In the context of this thesis the following functional goals are identified:
 
 They can be refined into more concrete requirements. 
 Let $L_{ID}$ denote an access log. 
-This log reflects the fact, that a data consumer has accessed some data of the user with identity $ID$.
+This log reflects the fact, that a data consumer has accessed data of the user with identity $ID$.
 Let $Access(L_{ID})$ denote the set of all users, which can access the log $L_{ID}$.
 E.g. $Access(L_{ID}) =\{1,2,3\}$ reflects the situation, where user $1$, $2$ and $3$ have access to $L_{ID}$.
+It is mandatory, that during the whole lifetime of a access log the data owner can read the log.
+Thus, the following is required at all times: $ ID \in Access(L_{ID})$.
+
+This notation allows a exact definition of the functional requirements:
+
 \begin{enumerate}
     \item [F1.] Once a log was created, only the data owner can access the content the log:
     \\$Access(L_{ID}) =\{ID\}$
     \item [F2.] The data owner can share a log with other users in the system. 
-    After the sharing operation the defined set of users can access the log.
-    Assume the log is shared to the set of users $S$. 
+    Assume the log is shared to the set of users $S$.
+    After the sharing operation has finished, each user in $S$ can access the log.
     The sharing can be described as: 
     \\$Access(L_{ID}) = Access(L_{ID}) \cup S$
     \item [F3.] The data owner of a log can revoke the access to the log.
-    After revocation operation the defined set of users can not access the log anymore.
-    Assume the log is revoked from the set of users $R$. 
+    Assume the log is revoked from the set of users $R$.
+    After revocation operation has finished, no user in $S$ can access the log anymore.
     The revocation can be described as: 
     \\$Access(L_{ID}) = Access(L_{ID}) \setminus R$
 
@@ -157,49 +202,67 @@ As proposed by \citeauthor{Fabian2010}, this section determines the security goa
 Each security goals is initially classified into confidentiality, integrity or availability (CIA-triad \todo{quelle}). 
 From the overall goals II and III we obtain:
 \begin{itemize}
-    \item Access logs are end-to-end encrypted (confidentiality and availability)
+    \item Access logs are end-to-end encrypted (confidentiality, integrity and availability)
     \item Access logs are integrity protected (integrity)
 \end{itemize}
 
-In order to identify security requirements, each goal is annotated with additional information, a counter-stakeholder and specific circumstances.
+These security goals can be refined into security requirements by annotating them with with additional information, a counter-stakeholder and specific circumstances.
 The counter-stakeholder is an adversary attacking the system.
-Satisfying a security goal can be seen as defending against this adversary.
-The circumstances elaborate additional conditions which affect the security goal.
+Satisfying a security requirement should effectively defend against this adversary.
+The specified circumstances elaborate additional conditions which affect the security goal.
 
-\begin{enumerate}
-    \item [S1.] Access logs are end-to-end encrypted.
-    \begin{itemize}
-        \item Information: 
-        \todo{define E2E encryption}
-        The content of the logs can only be accessed by communicating entities (encryption endpoints).
-        The receiver of a access log needs to be able to verify that the access log was really shared by the intended sender. 
-        The initial encryption endpoints are the monitor-component, which creates the access log, and the data owner.
-        Once the access log is shared, each user who is allowed to access the access log becomes an encryption endpoint.
-        Once access to a log is revoked for a user, this user is no longer an encryption endpoint.
-        \item Counter-stakeholder:
-        \todo{Dolev-Yao attacker}
-        This security goal is intended to defend against a Dolev-Yao attacker.
-        It is assumed that the attacker is the whole system except the trusted entities.
-        The attacker carries all communication and does not follow the intended protocol.
-        He can modify, delete, add or duplicate messages.
-        However, it is assumed that the attacker can not break correctly implemented cryptographic primitives. 
-        \item Circumstances: 
-        The dynamic behavior in the system implicates a dynamically changing set of encryption endpoints.
-    \end{itemize}
-    \item [S2.] Access logs are integrity protected.
-    \begin{itemize}
-        \item Information: 
-        Once a access log was created, nobody can modify the access logs and insert it into the system.
-        \item Counter-stakeholder: 
-        This security goal is intended to defend against a \textbf{malicious data owner}, who tries to manipulate access logs. 
-        The adversary tries to share manipulated logs with other users.
-        Thus, it is assumed to be an active attacker not following the intended protocol.
-        Further it is assumed that the attacker can not break correctly implemented cryptographic primitives.
-        \item Circumstances: 
-        The monitor component needs to initially create the access log. 
-        After this creation no user can modify the log. 
-    \end{itemize}
-\end{enumerate}
+\subsubsection{S1. Access logs are end to end encrypted}
+
+\paragraph{Information}
+In the context of the inverse transparency toolchain, the intended end-to-end encryption should ensure that only authorized users can read access logs.
+Specifically, no server within the system can access the content of these logs and a malicious server can not insert faked logs or modify existing data.
+
+\paragraph{Counter-stakeholder}
+This security goal is intended to implement E2EE in order to defend against an active adversary (details in section ~\ref{end-to-end}).
+In the context of the inverse transparency toolchain, the attacker is adapted by the following means. 
+The untrusted network is the whole infrastructure of the toolchain, except trusted entities and the application the user interacts with.
+This implies, that all frontend applications are trusted (e.g. the Clotilde UI and all integrated Monitor components).
+This thesis implements metrics to defend against the following scenarios:
+\begin{itemize}
+    \item A malicious entity within the untrusted network observes the data and tries to read the content of access logs.
+    \item A malicious entity within the untrusted network modifies or replaces traffic to insert malicious, faked or misformed access logs.
+\end{itemize}
+
+\paragraph{Circumstances}
+The content of the logs can only be accessed by authorized entities (encryption endpoints).
+The receiver of a access log needs to be able to verify that the access log was actually shared by the intended sender. 
+The initial encryption endpoints are the monitor-component, which creates the access log, and the data owner.
+Once the access log is shared by the data owner with the set of users $S$, each user in $S$ becomes an encryption endpoint.
+Once the access to a log is revoked for a user, this user is no longer an encryption endpoint.
+Thus, the dynamic behavior in the system implicates a dynamically changing set of encryption endpoints.
+
+Note, that malicious data can only be detected outside the untrusted network (e.g. within trusted entities).
+This implies, that the validation of data is done within these trusted entities. 
+Any defense against the defined attacker can not prevent the attack itself.
+Rather, mitigation mechanisms need to ensure, that malicious data is detected and handled by trusted entities.
+
+\subsubsection{S2. Access logs are integrity protected}
+
+\paragraph{Information}
+This thesis implements a new feature, allowing a data owner to share logs with other users within the system.
+However, this also introduces the risk of a data owner creating faked logs or modifying existing logs.
+       
+\paragraph{Counter-stakeholder}
+This security goal is intended to defend against a malicious data owner, who tries to manipulate access logs. 
+Specifically, the adversary performs the following steps:
+\begin{itemize}
+    \item The malicious data owner decrypts the access log as intended.
+    \item The malicious data owner modifies the decrypted data.
+    \item The malicious data owner finally shares the modified data with other users.
+\end{itemize}
+Thus, it is assumed to be an active attacker not following the intended protocol.
+Further it is assumed that the attacker does not have the capabilities to to break cryptographic primitives without knowing keys.
+
+\paragraph{Circumstances}
+An authorized monitor component initially create access logs. 
+Upon creation, these access logs can only be accessed by the data owner (see goal F1).
+The data owner might want to share these access logs.
+Each time a user receives a shared access logs, the user needs to verify if the access log was created by a authorized monitor.
 
 \section{Non-functional requirements}\label{non-functional-requriements}
 Non-functional requirements can be characterized as \enquote{global requirements on its development or operational costs, performance, reliability, maintainability, portability, robustness and the like} \cite[11]{Mylopoulos1992}.
