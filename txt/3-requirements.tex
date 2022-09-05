@@ -181,21 +181,29 @@ Thus, the following is required at all times: $ ID \in Access(L_{ID})$.
 
 This notation allows a exact definition of the functional requirements:
 
-\begin{enumerate}
-    \item [F1.] Once a log was created, only the data owner can access the content the log:
-    \\$Access(L_{ID}) =\{ID\}$
-    \item [F2.] The data owner can share a log with other users in the system. 
-    Assume the log is shared to the set of users $S$.
-    After the sharing operation has finished, each user in $S$ can access the log.
-    The sharing can be described as: 
-    \\$Access(L_{ID}) = Access(L_{ID}) \cup S$
-    \item [F3.] The data owner of a log can revoke the access to the log.
-    Assume the log is revoked from the set of users $R$.
-    After revocation operation has finished, no user in $S$ can access the log anymore.
-    The revocation can be described as: 
-    \\$Access(L_{ID}) = Access(L_{ID}) \setminus R$
+\subsubsection{F1. Creating access logs}
+Once a log was created, only the data owner can access the content the log:
+\begin{displaymath}
+    Access(L_{ID}) =\{ID\}
+\end{displaymath}
 
-\end{enumerate}
+\subsubsection{F2. Sharing access logs}
+The data owner can share a log with other users in the system. 
+Assume the log is shared to the set of users $S$.
+After the sharing operation has finished, each user in $S$ can access the log.
+The sharing can be described as: 
+\begin{displaymath}
+    Access(L_{ID}) = Access(L_{ID}) \cup S
+\end{displaymath}
+
+\subsubsection{F3. Revoking access logs}
+The data owner of a log can revoke the access to the log.
+Assume the log is revoked from the set of users $R$.
+After revocation operation has finished, no user in $S$ can access the log anymore.
+The revocation can be described as:
+\begin{displaymath}
+    Access(L_{ID}) = Access(L_{ID}) \setminus R
+\end{displaymath}
 
 \section{Security requirements}\label{security-requriements}
 As proposed by \citeauthor{Fabian2010}, this section determines the security goals of this thesis and refines them into security requirements.
@@ -246,6 +254,11 @@ Rather, mitigation mechanisms need to ensure, that malicious data is detected an
 \paragraph{Information}
 This thesis implements a new feature, allowing a data owner to share logs with other users within the system.
 However, this also introduces the risk of a data owner creating faked logs or modifying existing logs.
+Note, that this integrity protection is different from the protection provided by E2EE.
+The later aims to protect the encrypted access log.
+The protection required by this security goals protects the decrypted access log.
+Once a shared log is received, the receiver must first verify if the encrypted data was modified during transit (integrity protection of E2EE).
+Later, once the log was decrypted, the receiver additionally needs to verify if the provided access log was modified by an unauthorized entity.
        
 \paragraph{Counter-stakeholder}
 This security goal is intended to defend against a malicious data owner, who tries to manipulate access logs. 
@@ -266,31 +279,67 @@ Each time a user receives a shared access logs, the user needs to verify if the 
 
 \section{Non-functional requirements}\label{non-functional-requriements}
 Non-functional requirements can be characterized as \enquote{global requirements on its development or operational costs, performance, reliability, maintainability, portability, robustness and the like} \cite[11]{Mylopoulos1992}.
-In contrast to the functional and security requirements defined earlier, the non-functional requirements are not a direct result of the requested outcome of this thesis.
-Thus, they are not strictly mandatory to resolve the overall requirements.
-At the same time, however, they add additional value to a potential solution.
-Consider two potential solutions $A$ and $B$, which both satisfy all functional and security requirements.
+In contrast to the functional and security requirements, the non-functional requirements are not a direct result of the overall requirements of the thesis.
+Thus, they are not strictly mandatory.
+At the same time, however, they add additional value to potential solutions.
+Consider two solutions $A$ and $B$, which both satisfy all functional and security requirements.
 The solution $A$ should be preferred over a solution $B$, if $A$ resolves more non-functional requirements than $B$.
 
-During multiple iterations of defining potential solutions the list of non-functional goals has grown the following stable collection:
+During multiple iterations of elaborating potential solutions, the list of non-functional goals has grown to the following stable collection:
 
-\begin{itemize}
-    \item Avoid trusted servers (trust). 
-    A compromised trusted entity undermines the security of the whole toolchain. 
-    To reduce the risk and attack surface, the toolchain should rely on a minimal amount of trusted entities.
-    \item Simplicity of design (maintainability)
-    To increase maintainability of the toolchain, a simple design with a minimal amount of infrastructure and communication should be implemented.
-    \item Documentation (maintainability)
-    A proper documentation of the implemented toolchain increases the maintainability.
-    \item Use standardized cryptographic algorithms (portability)
-    \todo{explain why standard crypto}
-    \item Reduce resource utilization (performance)
-    \item Access logs are integrity protected (integrity)
-\end{itemize}
+
+\subsubsection{N1. Trusted Entities}
+By definition, trusted entities are not part of untrusted network. 
+Thus, the proposed E2EE (detail in section \ref{security-requriements}) does not defend against them.
+This implies, that a compromised trusted server undermines the security of the whole toolchain.
+To reduce the risk and attack surface, the toolchain should rely on a minimal amount of trusted entities.
+
+\subsubsection{N2. Standardized cryptographic algorithms}
+The current implemented frontend of the inverse transparency toolchain runs within the browser. 
+The Web Cryptographic API \cite{WebCryptoApi2017} defines an interface to perform cryptographic operations within browsers:
+\enquote{[It] simply exposes already existing and often heavily verified cryptographic functionality to Web application developers through a standardized interface.} ~\cite[959]{Halpin2014}
+
+This allows to run cryptographic operations outside of JavaScript and enables secure and performant cryptography within the browser~\cite{Halpin2014}.
+This API, however, is limited to specific primitives. 
+Advanced encryption schemes developed within recent years are not yet defined and available in the API.
+To ensure portability of the inverse transparency toolchain, the implementation of this thesis should thus only rely on primitives defined by the Web Cryptographic API.
+
+\subsubsection{N3. Simplicity of design}
+To increase maintainability of the toolchain, a simple design with a minimal amount of infrastructure and communication should be implemented.
+This also requires a proper documentation of the implemented features.
+
+\subsubsection{N4. Resoure utilization}
+This is a performance criterion.
+The implemented solution should avoid resource overhead in terms of storage and computation.
+While this is directly related to the non-functional requirement N2, more aspects need to be considered here.
+Duplicated storage of data should be avoided .
+Specifically, an optimal solution does not store the same data encrypted with different keys in the database.
 
 
 \section{System requirements}\label{system-requriements}
+This section summarizes all identified requirements elaborated in this chapter.
+They were derived from the overall goals of this thesis.
+For details see the corresponding subsections above.
 
+\subsubsection{Functional requirements}
+\begin{itemize}
+    \item [F1.] Creating access logs
+    \item [F2.] Sharing access logs
+    \item [F3.] Revoking access logs
+\end{itemize}
 
+\subsubsection{Security requirements}
+\begin{itemize}
+    \item [S1.] Access logs are end-to-end encrypted
+    \item [S2.] Access logs are integrity protected
+\end{itemize}
+
+\subsubsection{Non-functional requirements}
+\begin{itemize}
+    \item [N1.] Trusted Entities
+    \item [N2.] Standardized cryptographic algorithms
+    \item [N3.] Simplicity of design
+    \item [N4.] Resource utilization
+\end{itemize}
 
 \end{document}
