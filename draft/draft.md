@@ -315,6 +315,10 @@ Problems:
 - malicious data owner can delete logs
 - overseer knows, which entity has access to which log
 
+
+# Approach
+    Outlines the main thing your thesis does. Your thesis describes a novel algorithm for X? Your main contribution is a case study that replicates Y? Describe it here.
+
 Consider the following algorithms:
 - sig = Sign(d_x, data) - signing data with private key of x
 - data = Verifiy(e_x, sig) - verify sig with public key of x
@@ -326,8 +330,48 @@ Consider the following algorithms:
 
 <img src="images/hybride_approach.png" width="500"/>
 
-# Approach
-    Outlines the main thing your thesis does. Your thesis describes a novel algorithm for X? Your main contribution is a case study that replicates Y? Describe it here.
+
+**Endpoint description:**
+
+Encrypted log:
+```JSON
+{
+  'data': b'' # AEAD-encrypted log. Needs to be decrypted with k. The decrypted data needs to be signed by the monitor.
+  'key': b'' # KEM-encrypted key k. This is signed by owner, if this is a shared log. This is signed by monitor, if this is not a shared log. Needs to be decrypted with private key of user.
+  'owner': b'' # owner of the log
+  'monitor' : b'' # monitor who created the log
+
+}
+```
+
+Create Access log: 
+  - Access: Monitor user
+  - Input: AEAD-encrypted log, monitor, owner, KEM-encrypted key
+  - Operation: Stores the log for the given owner
+
+Get Access log:
+  - Access: Authenticated user
+  - Input: Authenticated user
+  - Operation: Looks up access logs for the authenticated user and returns it
+  - Output: List of encrypted logs
+
+Update Access log:
+ - Access: Authenticated user is owner of log
+ - Input: updated AEAD-encrypted log, KEM-encrypted key
+ - Operation: updates the AEAD-encrypted log and the KEM-encrypted key (monitor and owner can not be changed)
+
+Share access log:
+- Access: Authenticated user is owner of log
+- Input: share target, KEM-encrypted key for share target
+- Operation: Stores the sharing information: Share target can has access to the access log and has an KEM-encrypted key for the log (sharedLogs table)
+
+Get Shared Access log:
+- Access: Authenticated user
+- Input: Authenticated user
+- Operation: Look up shared logs table and returns all shared logs
+- Output: List of shared encrypted logs
+
+**Database setup:**
 
 # Evaluation
     Describes why your approach really solves the problem it claims to solve. You implemented a novel algorithm for X? This chapter describes how you ran it on a dataset and reports the results you measured. You replicated a study? This chapter gives the results and your interpretations.
