@@ -268,8 +268,8 @@ Specifically, the adversary performs the following steps:
     \item The malicious data owner modifies the decrypted data.
     \item The malicious data owner finally shares the modified data with other users.
 \end{itemize}
-Thus, it is assumed to be an active attacker not following the intended protocol.
-Further it is assumed that the attacker does not have the capabilities to to break cryptographic primitives without knowing keys.
+Thus, it is assumed to defend against an active attacker not following the intended protocol.
+Further it is assumed, that the attacker does not have the computational power to to break cryptographic primitives without knowing the keys.
 
 \paragraph{Circumstances}
 An authorized monitor component initially create access logs. 
@@ -304,16 +304,25 @@ This API, however, is limited to specific primitives.
 Advanced encryption schemes developed within recent years are not yet defined and available in the API.
 To ensure portability of the inverse transparency toolchain, the implementation of this thesis should thus only rely on primitives defined by the Web Cryptographic API.
 
-\subsubsection{N3. Simplicity of design}
+\susubsection{N3. Usability}
+Usually a trade-off between Security and Usability needs to be resolved during system design\todo{quelle}.
+In the context of this thesis, the complexity of security is a key-driver to improve usability. 
+By integrating the error-prone cryptography tasks (e.g. encryption or integrity checks) into the application, we can increase the usability and thus the acceptance of the toolchain.
+At the same time, the security is improved because these tasks are performed within the toolchain and can be heavily tested.
+However, this comes with the cost of increased design and implementation effort.
+
+Furthermore, this approach is motivated by the principle of least effort, which states that humans will spent the least amount of work to get a task done~\cite{Levenson2018}.
+
+\subsubsection{N4. Simplicity of design}
 To increase maintainability of the toolchain, a simple design with a minimal amount of infrastructure and communication should be implemented.
 This also requires a proper documentation of the implemented features.
 
-\subsubsection{N4. Resoure utilization}
+\subsubsection{N5. Resoure utilization}
 This is a performance criterion.
 The implemented solution should avoid resource overhead in terms of storage and computation.
 While this is directly related to the non-functional requirement N2, more aspects need to be considered here.
-Duplicated storage of data should be avoided .
-Specifically, an optimal solution does not store the same data encrypted with different keys in the database.
+Duplicated storage of data should be avoided.
+Specifically, an optimal solution does not store the same data encrypted with different keys in the database to prevent redundancy.
 
 
 \section{System requirements}\label{system-requriements}
@@ -338,8 +347,9 @@ For details see the corresponding subsections above.
 \begin{itemize}
     \item [N1.] Trusted Entities
     \item [N2.] Standardized cryptographic algorithms
-    \item [N3.] Simplicity of design
-    \item [N4.] Resource utilization
+    \item [N3.] Usability
+    \item [N4.] Simplicity of design
+    \item [N5.] Resource utilization
 \end{itemize}
 
 \end{document}

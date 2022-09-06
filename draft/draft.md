@@ -167,6 +167,13 @@ endpoints are within any particular application, and how users can verify that t
 
     Collects descriptions of existing work that is related to your work. Related, in this sense, means aims to solve the same problem or uses the same approach to solve a different problem. This chapter typically reads like a structured list. Each list item summarizes a piece of work (typically a research paper) briefly and explains the relation to your work. This last part is absolutely crucial: the reader should not have to figure out the relation himself. Is your piece better from some perspective? More generalizable? More performant? Simpler? It is ok if it is not, but I want you to tell me.
 
+**Assumption:**
+We have an established public key environment by the following means:
+1. Each user is equipped with a public key pair and its identity. Thus, the user has access to its public key and its private key (e.g. via smartcard).
+2. The trusted Revolori server can map the user identity to its public key. This ensures, that the Revolori can issue certificates (signed data structures attesting that this identity has access to the private key belonging to this public key).
+
+Goal S2. can be satisfied by signing the created access log. Upon decryption, each user should verify if the log was encrypted by the monitor
+
 **Easy solution:**  
 Each entity has a public-key pair.  Each data log is encrypted with the public key, s.t. only data owner can decrypt (resolves goal 1). Goal 2 can be solved by encrypting signed data. After each decryption this signed data need to be verified.
 
@@ -177,54 +184,73 @@ Each entity has a public-key pair.  Each data log is encrypted with the public k
 ## 4.1 External Encryption
 Encrypt data log with public key of target and send externally (e.g. via email)
 
-  - #️⃣ Security
-    - ❌ encryption is responsibility of user -> error prone 
-    - ✅ can be realized using standard crypto 
-    - ✅ simplicity
-  - ❌ Usability: 
-    - ❌ not user-friendly, because decryption, signature checks and visualization needs to be handled externally
-    - ❌ encryption is responsibility of user -> error prone
-  - ❌ Data quality: 
-    - ❌ data changes not reflected in already shared data
-    - ❌ redundant data in the system if logs are shared with multiple entities
+- Functional Goals
+  - ✅ F1. Create Access Logs
+  - ✅ F2. Share Access Logs
+  - ❌ F3. Revoke Access Logs
+- Security Goals
+  - ❌ S1. Access logs are E2EE
+  - ✅ S2. Access logs are integrity protected
+- Non-functional Goals
+  - ✅ N1. Trusted Entities
+  - ✅ N2. Standard Crypto
+  - ❌ N3. Usability
+  - ✅ N3. Simplicity of Design
+  - ❌ N4. Resource utilization
 
 ## 4.2 Mutual Encryption
 Data owner re-encrypts the log for the target. The re-encrypted data is sent back to overseer, which saves them in a "sharedLog" table
-
-  - ✅ Security
-    - ✅ can be realized using standard crypto 
-    - ✅ simplicity
-  - ✅ Usability: 
-    - ✅ data is handled within the system 
-  - ❌ Data quality: 
-    - ❌ data changes not reflected in already shared data
-    - ❌ redundant data in the system if logs are shared with multiple entities
+ 
+- Functional Goals
+  - ✅ F1. Create Access Logs
+  - ✅ F2. Share Access Logs
+  - ✅ F3. Revoke Access Logs
+- Security Goals
+  - ✅ S1. Access logs are E2EE
+  - ✅ S2. Access logs are integrity protected
+- Non-functional Goals
+  - ✅ N1. Trusted Entities
+  - ✅ N2. Standard Crypto
+  - ✅ N3. Usability
+  - ✅ N3. Simplicity of Design
+  - ❌ N4. Resource utilization
 
 ## 4.3 Key-Server
 Encrypt logs with unique symmetric key and store them in database. The symmetric key is stored on a trusted key server, which hands out the key to authorized users: After creation only the owner is allowed to access the key. The owner can add/revoke permissions of others to access the key.
 
 <img src="images/key-server.png" width="500"/>
 
-  - #️⃣ Security
-    - ✅  can be realized using standard crypto
-    - #️⃣ requires a key server
-    - #️⃣ getting more complex because during each decryption key server needs to be requested
-  - ✅ Usability: 
-    - ✅ data is handled within the system 
-  - ✅ Data quality: 
-    - ✅ each log is only stored once
+- Functional Goals
+  - ✅ F1. Create Access Logs
+  - ✅ F2. Share Access Logs
+  - ✅ F3. Revoke Access Logs
+- Security Goals
+  - ✅ S1. Access logs are E2EE
+  - ✅ S2. Access logs are integrity protected
+- Non-functional Goals
+  - ❌ N1. Trusted Entities (key server needs to be trusted)
+  - ✅ N2. Standard Crypto
+  - ✅ N3. Usability
+  - #️⃣ N3. Simplicity of Design (adds complexity)
+  - #️⃣ N4. Resource utilization (a lot of communication between clients and key server)
 
 ## 4.4 Broadcast-Encryption
 Re-encrypt data by means of a broadcast encryption scheme. Only a defined set of users can decrypt the data.
 <img src="images/broadcast-encryption.png" width="500"/>
 
-  - #️⃣ Security
-    - #️⃣ requires a key distribution center (e.g. a trusted entity, could be included into revolori)
-    - #️⃣ not standard crypto: requires porting of crypto libraries (at least to JS)
-  - ✅ Usability: 
-    - ✅ data is handled within the system 
-  - ✅ Data quality: 
-    - ✅ each log is only stored once
+- Functional Goals
+  - ✅ F1. Create Access Logs
+  - ✅ F2. Share Access Logs
+  - ✅ F3. Revoke Access Logs
+- Security Goals
+  - ✅ S1. Access logs are E2EE
+  - ✅ S2. Access logs are integrity protected
+- Non-functional Goals
+  - ❌ N1. Trusted Entities (KDC needs to be trusted)
+  - ❌ N2. Standard Crypto
+  - ✅ N3. Usability
+  - #️⃣ N3. Simplicity of Design (adds complexity)
+  - ✅ N4. Resource utilization
 
   
   **Challenges**:  
@@ -251,9 +277,57 @@ Re-encrypt data by means of a broadcast encryption scheme. Only a defined set of
   - improvement: provide pseudonyms for user ids, which are managed by revolori
 
 ## 4.5 Hybrid Encryption
+Initially the access log is encrypted with public key of data owner.
+
+Upon sharing, the data owner:
+1. creates a new symmetric key k
+2. decrypts the access log with its private key
+3. encrypts the data low with this symmetric key k
+4. encrypts k with the public keys of each entity the log should be shared with
+5. updates the encrypted access log on the server
+6. creates entries in the sharedLog table
+
+Shared entities:
+1. check if there are entries within the sharedLog table for them
+2. decrypt the symmetric keys
+3. access the encrypted access logs
+4. decrypt the access logs
+
+Upon revocation:
+- can be understood as sharing with new set of users 
+
+
+- Functional Goals
+  - ✅ F1. Create Access Logs
+  - ✅ F2. Share Access Logs
+  - ✅ F3. Revoke Access Logs
+- Security Goals
+  - ✅ S1. Access logs are E2EE
+  - ✅ S2. Access logs are integrity protected
+- Non-functional Goals
+  - ✅ N1. Trusted Entities
+  - ✅ N2. Standard Crypto
+  - ✅ N3. Usability
+  - ✅ N3. Simplicity of Design
+  - ✅ N4. Resource utilization
+
+Problems:
+- malicious data owner can delete logs
+- overseer knows, which entity has access to which log
+
+Consider the following algorithms:
+- sig = Sign(d_x, data) - signing data with private key of x
+- data = Verifiy(e_x, sig) - verify sig with public key of x
+- k = KeyGen() - generate symmetric key for use with AEAD
+- c = Enc_AEAD(k, m) - encrypt m with k (AEAD)
+- m = Dec_AEAD(k, c) - decrypt c with k (AEAD)
+- key_ x = Enc_KEM(e_x, k) - encrypt k for with public key of x (KEM)
+- k = Dec_KEM(d_x, key_x) - decrypt key_x with private key of x (KEM)
+
+<img src="images/hybride_approach.png" width="500"/>
 
 # Approach
-    Outlines the main thing your thesis does. Your thesis describes a novel algorith for X? Your main contribution is a case study that replicates Y? Describe it here.
+    Outlines the main thing your thesis does. Your thesis describes a novel algorithm for X? Your main contribution is a case study that replicates Y? Describe it here.
 
 # Evaluation
     Describes why your approach really solves the problem it claims to solve. You implemented a novel algorithm for X? This chapter describes how you ran it on a dataset and reports the results you measured. You replicated a study? This chapter gives the results and your interpretations.
