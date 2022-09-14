@@ -3,131 +3,6 @@
 
 \begin{document}
 
-\section{AEAD}
-
-\section{Key escrow}
-
-\section{End-to-end encryption} \label{end-to-end}
-
-The National Institute of Standards and Technology (NIST) defines end-to-end encryption (E2EE) as follows:
-\begin{quote}
-"Communications encryption in which data is encrypted when being passed through a network, but routing information remains visible."~\cite[88]{Nieles2017}
-\end{quote}
-Consider the scenario, where Alice wants to send end-to-end encrypted message to Bob.
-Once they established cryptographic keys, Alice encrypts the message and sends it to Bob.
-During transit the encrypted message passes an untrusted network.
-In a classical understanding of E2EE, no third party or adversary within the untrusted network is able to access the message because it is encrypted \cite{Ermoshina2016}.
-If this holds, Alice and Bob are said to be the endpoints of the encryption and their communication is end-to-end encrypted.
-
-\citeauthor{Hale2022} pointed out, however, that this classical understanding of E2EE has changed in recent years~\cite{Hale2022}. 
-With the rise of modern instant messaging services, E2EE should not only guarantee the confidentiality of the communication (e.g. that the communication can not be decrypted by the untrusted network).
-Rather, an adversary should not have any possibilities to influence the communication in any way.
-This implies that a modern E2EE based system should also guarantee authenticity and integrity of the exchanged data~\cite{Hale2022}. 
-The difference between the classical and current understanding of E2EE can be described more precise with different adversary models they defend against.
-
-\subsection{Adversary model}
-This section details the security guarantees E2EE can provide by considering different adversaries.
-The above NIST definition states, that E2EE protects data passing an untrusted network.
-Within the network, the communicating entities do not have any control over their data.
-This motivates the idea, that the attacker is interpreted as the whole untrusted network:
-\begin{quote}
-    "The attacker carries the message" \todo{find source}
-\end{quote}
-It is assumed, that the adversary has limited computational capacity. 
-Specifically, it can no break correctly implemented cryptographic schemes without knowing the key.
-In the following, active and passive attackers are further distinguished. 
-
-\subsubsection{Passive adversaries}
-In general, passives attacks aim to break confidentiality and include eavesdropping and unauthorized reading of data~\cite{Eckert2018}. 
-In literature this is often defined as a honest-but-curious attacker. \todo{source + definition}
-The classical understanding of E2EE protects against passive adversaries. 
-The attacker is part of the untrusted network and observes the passed data.
-Its goal is it to get access the content of the exchanged messages.
-To defend against this passive attacker, cryptography can be applied to make passive attacks ineffective and to protect confidentiality~\cite{Eckert2018}.
-
-\todo{Add references}
-\cite{Nabeel2017} states, that access to metadata can always be critical when defending against active attackers, because metadata might allow to break privacy goals
-Thus, he also proposes passive attackers against E2EE can also be understand as passive attacker (not authentication required)
-
-
-\subsubsection{Active adversaries}
-Todays interpretation of E2EE system is motivated by a stronger attacker model.
-An active attacker not only listens to the passed traffic.
-Rather, this attacker tries to insert, replace, drop, modify or replay messages to disrupt the communication.
-More sophisticated active attacks also include spoofing or denial of service attacks.
-The motivation can be diverse: 
-The attacker might want to access confidential content, introduce faked data or delete valid data passing the network.
-Another goal might be the impersonation of a user participating in the system.~\cite{Eckert2018}
-
-Possible defense strategies against this adversary are getting more complex.
-The detection of inserted, replaced or modified data require some sort of validation, that the received data was actually created by the assumed communication partner (authenticity) and that it was not modified during transit (integrity).
-This can be realized with authenticated encryption techniques~\cite{Mallory2022}.
-To defense against dropped or replayed messages, advanced mitigation strategies must be applied:
-Replayed messages can be detected with freshness, e.g. timestamps ~\cite[419]{Eckert2018}.
-Dropped messages, however, require some sort of sequence counter, e.g. implemented in the TCP protocol ~\cite[115]{Eckert2018}
-
-\todo{Add references}
-\cite{Mallory2022} understands it as active attacker (sec 2.4)
-\cite{Hale2022} also proposes authenticate encryption which implicitly assumes an active attacker
-
-
-\subsection{Endness}
-
-An intuitive understanding of E2EE implies that nobody - except the encryption endpoints - has access to the plaintext data.
-However, in an enterprise context this might not always be practical.
-In order to encrypt and decrypt data, the communication endpoints need to access the required cryptographic keys.
-If an attacker could compromise theses keys, the communication is not E2EE anymore, because the attacker could simply decrypt observed traffic with these keys.
-Thus, only the employee is allowed to know its cryptographic keys.
-Especially, they can not be shared or stored within the enterprise environment.
-However, if the user looses his keys and the company does not have any backups all communication of the employee is lost.
-This can be mitigated by introducing a trusted server, which stores cryptographic keys of all employees.
-One the one hand, this seems to be practical and might increase availability of data. 
-On the other hand, such a trusted server introduces key escrow and the communication is not E2EE in a strict sense anymore.
-The administrator of the trusted server has access to all keys.
-Since this administrator is most likely also the administrator of the whole enterprise network, he has access to the network traffic.
-This allows him to decrypt the communication between employees.
-Thus, the introduction of the trusted server most likely breaks E2EE.
-
-However, there is also the possibility to explicitly define the administrator of the trusted server as an additional encryption endpoint.
-In this case, there is no violation against E2EE, because the administrator is assumed to be a valid communication partner.
-\todo{cite HaHale2022 about endness}
-\todo{more sources?}
-
-
-
-
-
-% In contrast to this rather abstract definition, \citeauthor{Hale2022}~\cite{Hale2022} propose a very precise notion of E2EE.
-% Based on a common normative understanding of end-to-end security the authors provide a formalism supporting practical system design.
-% In the following it is reasoned, why the NIST definition is too vague to meet intuitive expectations of end-to-end security.
-
-% First of all, it is not explicitly clear what kind of encryption is required.
-% Intuitively the encryption should consider not only confidentiality but also integrity and authenticity~\cite{Hale2022}.
-% Consider the scenario where Alice wants to send a message to Bob over an insecure network.
-% Alice decides to encrypt her message with a secure encryption algorithm to ensure the confidential of her message.
-% Since the message neither protects integrity nor authenticity a potential attacker in the network could easily modify, replace or add data to the communication.
-% This does not meet the intuitive understanding of E2EE, since an attacker can successfully manipulate the communication~\cite{Hale2022}.
-% A second limitation of the NIST definition is the lack of precise boundaries. 
-% The encryption is restricted to the insecure network.
-% Once the communication leaves the network the security guarantees are no longer enforced.
-% A intuitive understanding of E2EE, however, implicates very precise encryption endpoints~\cite{Hale2022}.
-% Usually these encryption endpoints are applications running on an end-user device.
-
-
-% \citeauthor{Hale2022}~\cite{Hale2022} motivate a definition, where a system implementing E2EE needs to fullfil two essential requirements.
-% First, the system must rely on an AEAD encryption scheme. 
-% This provides confidentiality and authenticity of the encrypted data and allows to detect if the encrypted data was modified by an adversary.
-% Second, the system must be very explicit about the endpoints of the communication. 
-% Upon sending a message the sender needs to commit a set of valid endpoints.
-% If there is any endpoint accessing the decrypted data, which the sender did not explicitly commit to, the communication is not considered to be E2EE.
-
-
-
-
-
-
-
-
 
 \chapter{Requirements}
 
@@ -141,7 +16,7 @@ Overall, there are three overall goals which need to be achieved.
 \end{enumerate}
 
 
-Traditional requirements engineering methods usually differentiate between functional and non-functional requirements based on the views of different stakeholders\todo{sources}.
+Traditional requirements engineering methods usually differentiate between functional and non-functional requirements based on the views of different stakeholders~\todo{sources}.
 Since this thesis operates within the security domain, the traditional requirements engineering process needs to be adapted: 
 Precise assumptions about what to protect and against whom to protect are mandatory for a successful implementation and evaluation.
 Thus, this chapter closely follows the terms and methodology proposed by \citeauthor{Fabian2010} \cite{Fabian2010}.
@@ -235,7 +110,7 @@ This thesis implements metrics to defend against the following scenarios:
     \item A malicious entity within the untrusted network observes the data and tries to read the content of access logs.
     \item A malicious entity within the untrusted network modifies or replaces traffic to insert malicious, faked or misformed access logs.
 \end{itemize}
-
+\todo{Examples}
 \paragraph{Circumstances}
 The content of the logs can only be accessed by authorized entities (encryption endpoints).
 The receiver of a access log needs to be able to verify that the access log was actually shared by the intended sender. 
@@ -244,10 +119,9 @@ Once the access log is shared by the data owner with the set of users $S$, each 
 Once the access to a log is revoked for a user, this user is no longer an encryption endpoint.
 Thus, the dynamic behavior in the system implicates a dynamically changing set of encryption endpoints.
 
-Note, that malicious data can only be detected outside the untrusted network (e.g. within trusted entities).
-This implies, that the validation of data is done within these trusted entities. 
-Any defense against the defined attacker can not prevent the attack itself.
-Rather, mitigation mechanisms need to ensure, that malicious data is detected and handled by trusted entities.
+Note, that modified or inserted data can only be detected within trusted entities.
+The malicious action itself can not be prevented.
+Rather, mitigation mechanisms need to ensure, that malicious actions are detected and handled by trusted entities.
 
 \subsubsection{S2. Access logs are integrity protected}
 
@@ -304,9 +178,9 @@ This API, however, is limited to specific primitives.
 Advanced encryption schemes developed within recent years are not yet defined and available in the API.
 To ensure portability of the inverse transparency toolchain, the implementation of this thesis should thus only rely on primitives defined by the Web Cryptographic API.
 
-\susubsection{N3. Usability}
-Usually a trade-off between Security and Usability needs to be resolved during system design\todo{quelle}.
-In the context of this thesis, the complexity of security is a key-driver to improve usability. 
+\subsubsection{N3. Usability}
+Usually a trade-off between Security and Usability needs to be resolved during system design~\todo{quelle}.
+In the context of this thesis, however, the complexity of security is a key-driver to improve usability. 
 By integrating the error-prone cryptography tasks (e.g. encryption or integrity checks) into the application, we can increase the usability and thus the acceptance of the toolchain.
 At the same time, the security is improved because these tasks are performed within the toolchain and can be heavily tested.
 However, this comes with the cost of increased design and implementation effort.

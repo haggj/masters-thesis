@@ -53,7 +53,7 @@ There are three major goals in the context of this thesis:
       - similar to section 3.1 https://mediatum.ub.tum.de/doc/1615228/7emnvw4k3nyma9pbthb37cnc4.ease2021-29.pdf
 
 
-## Functional Requirements
+## 3.1 Functional Requirements
 
     what the system does (p.11)
 
@@ -77,7 +77,7 @@ This thesis:
 
 
 
-## Non-Functional Requirements
+## 3.2 Non-Functional Requirements
 
     global requirements on its development or operational costs, performance, reliability, maintainability, portability, robustness and the like (p.11)
 
@@ -114,7 +114,7 @@ This thesis:
 
 
   
-## Security Requirements
+## 3.3 Security Requirements
 
     We consider security requirements to be a part of the non-functional-requirements (p.11)
 
@@ -156,7 +156,7 @@ endpoints are within any particular application, and how users can verify that t
     - counter-stakeholder: malicious data owner
     - circumstances: monitor is allowed to initially create logs (-> needs to be trusted because the monitor could potentially create malicious logs)
 
-## Consistent System Requirements
+## 3.4 Consistent System Requirements
 
 1. collect all functional and non-functional requirements
 2. resolve conflicts between them to obtain consistent system requirements 
@@ -170,7 +170,16 @@ endpoints are within any particular application, and how users can verify that t
 **Assumption:**
 We have an established public key environment by the following means:
 1. Each user is equipped with a public key pair and its identity. Thus, the user has access to its public key and its private key (e.g. via smartcard).
-2. The trusted Revolori server can map the user identity to its public key. This ensures, that the Revolori can issue certificates (signed data structures attesting that this identity has access to the private key belonging to this public key).
+2. The trusted Revolori server can map the user identity to its public key. This ensures, that the Revolori can issue certificates (signed data structures attesting that this identity has access to the private key belonging to this public key). There is no difference in terms of security, if the Revolori server computes the public key pair and distributes it to the user or if the Revolori verifies, that a user owns the private key to its claimed pulbic key (Challenge-Response)
+  - Revolori computes and distributes keys: If compromised, attacker can impersonate any user -> authenticity broken
+  - Revolori verifies claimed keys: In this case the Revolori server issues certificates (signed data structures) which verifies that a given identity owns the private key to the stated public key. If compromised, attacker can issue any certificate and can thus impersonate any user -> authenticity broken
+  - Without Revolori server: 
+    - CR needs to be performed each time a public key is presented. This especially means, that the sender and the receiver of the message need to be online -> impractical
+    - Users need to verify fingerprints of public key
+    - Trust on first use -> does not make a lot of sense in enterprise context
+
+
+
 
 Goal S2. can be satisfied by signing the created access log. Upon decryption, each user should verify if the log was encrypted by the monitor
 
@@ -213,7 +222,7 @@ Data owner re-encrypts the log for the target. The re-encrypted data is sent bac
   - ✅ N2. Standard Crypto
   - ✅ N3. Usability
   - ✅ N3. Simplicity of Design
-  - ❌ N4. Resource utilization
+  - ❌ N4. Resource utilization (duplicated data + encryption of application data with RSA is not efficient)
 
 ## 4.3 Key-Server
 Encrypt logs with unique symmetric key and store them in database. The symmetric key is stored on a trusted key server, which hands out the key to authorized users: After creation only the owner is allowed to access the key. The owner can add/revoke permissions of others to access the key.
@@ -231,7 +240,7 @@ Encrypt logs with unique symmetric key and store them in database. The symmetric
   - ❌ N1. Trusted Entities (key server needs to be trusted)
   - ✅ N2. Standard Crypto
   - ✅ N3. Usability
-  - #️⃣ N3. Simplicity of Design (adds complexity)
+  - #️⃣ N3. Simplicity of Design (adds complexity to the protocol)
   - #️⃣ N4. Resource utilization (a lot of communication between clients and key server)
 
 ## 4.4 Broadcast-Encryption
@@ -246,44 +255,49 @@ Re-encrypt data by means of a broadcast encryption scheme. Only a defined set of
   - ✅ S1. Access logs are E2EE
   - ✅ S2. Access logs are integrity protected
 - Non-functional Goals
-  - ❌ N1. Trusted Entities (KDC needs to be trusted)
+  - ❌ N1. Trusted Entities (KDC needs to be trusted, key escrow)
   - ❌ N2. Standard Crypto
   - ✅ N3. Usability
   - #️⃣ N3. Simplicity of Design (adds complexity)
   - ✅ N4. Resource utilization
 
   
+**Challenges**:  
   **Challenges**:  
-  - How to access private keys of users?
-  - How to implement ABE in frontend?
-    - critical part: implement bilinear pairing
-      - C: https://crypto.stanford.edu/pbc/
-      - Python: https://pypi.org/project/charm-crypto/ (using C lib under the hood -> not possible to use this via brython)
-      Curve definitions: https://github.com/JHUISI/charm/blob/acb55513b244bfdebbfe715cec7b564c8e850779/charm/toolbox/pairingcurves.py
-      - Rust: https://github.com/zcash-hackworks/bn
+**Challenges**:  
+- How to implement ABE in frontend? Critical part: implement bilinear pairing
+  - C: https://crypto.stanford.edu/pbc/
+  - Python: https://pypi.org/project/charm-crypto/ (using C lib under the hood -> not possible to use this via brython)
+  Curve definitions: https://github.com/JHUISI/charm/blob/acb55513b244bfdebbfe715cec7b564c8e850779/charm/toolbox/pairingcurves.py
+  - Rust: https://github.com/zcash-hackworks/bn
+  - Rust (Fraunhofer): https://github.com/georgbramm/rabe-bn 
       - Rust (Fraunhofer): https://github.com/georgbramm/rabe-bn 
-    - use web assembly to implement bilinear pairing efficiently in browser:
-      1. Follow the reference implementation (e.g. AC17 in python, which relies on pbc)
-      2. Outsource heavy computation to wasm (pairing) or use existing library (need to be converted to WASM)
+  - Rust (Fraunhofer): https://github.com/georgbramm/rabe-bn 
+- use web assembly to implement bilinear pairing efficiently in browser:
+  1. Follow the reference implementation (e.g. AC17 in python, which relies on pbc)
+  2. Outsource heavy computation to wasm (pairing) or use existing library (need to be converted to WASM)
+- Compile existing libraries (e.g. Rust ABE by Fraunhofer) into WASM, which allows their execution in JS
+- Trust problem:
+  - Proxy-based Re-Encryption: Server can re-encrypt all logs of a user once a re-encryption key was created
+  - IBBE, ABBE: Trusted entity has access to a secret master key, which is used to compute secret keys of users. This enables key-escrow and is a problem for E2EE, because it introduces an additional encryption endpoint -> no E2EE in a very strict sense anymore (see https://jbasney.net/IWAP06IBE.ppt). Possible solution strategies: (https://link.springer.com/chapter/10.1007/978-1-4419-9383-0_11)
+    - Distributed KDC
+    - Certificate-based encryption (double encrypting)
+    - Anonym IBE -> not practical in our setting, because the trusted entity maintains user information
+  - CBBE: Resolves this problem, but where is this implemented?
+- User revocation problem: How to handle users which leave the system?
+  - ABE: 1) New set of keys of everyone 2) Maintain a list of left users which need to be requested to avoid encrypting data for them
     
 
-**Ideas regarding problem 2**
-- if solving problem 1 with a dedicated crypto scheme, chances are high that this crypto scheme does not support queries over ciphertexts
-- schemes that allow queries over encrypted data are currently researched (e.g. homomorphic encryption)
-- Alternative: Keep a relational database
-  - encrypt only logs (e.g. as a json)
-  - save id of owner along with encrypted logs
-  - save ids of shared owners with encrypted logs (1:n realtion)
-  - improvement: provide pseudonyms for user ids, which are managed by revolori
-
 ## 4.5 Hybrid Encryption
-Initially the access log is encrypted with public key of data owner.
+Use public key pairs to encapsulate symmetric keys.
+Initially only the data owner can access the log.
 
 Upon sharing, the data owner:
 1. creates a new symmetric key k
-2. decrypts the access log with its private key
-3. encrypts the data low with this symmetric key k
-4. encrypts k with the public keys of each entity the log should be shared with
+2. decrypts encapsulated key its private key
+3. decrypts the access log with the resulting symmetric key
+3. encrypts the data low with the symmetric key k
+4. encrypts k with the public keys of each entity the log should be shared with (including certification checks)
 5. updates the encrypted access log on the server
 6. creates entries in the sharedLog table
 
@@ -309,12 +323,31 @@ Upon revocation:
   - ✅ N2. Standard Crypto
   - ✅ N3. Usability
   - ✅ N3. Simplicity of Design
-  - ✅ N4. Resource utilization
+  - #️⃣ N4. Resource utilization
 
 Problems:
-- malicious data owner can delete logs
+- malicious data owner can "destroy" logs, but is it interested in doing so?
+- check whitepaper "broadcast" encryption to analyze efficiency of sharing/revocation
+  - seems to be legitimate because both, signal and nextcloud, implement shared E2EE by pairwise channels (e.g. encrypting data for each user)
+  - Signal Group Messaging (E2EE) https://signal.org/blog/private-groups/:
+    - establishing pairwise sessions between all users within the group
+    - broadcasting messages to each user on its own
+- check revocation problem of users
+  - Upon encrypting data with public key: check if this is valid (certificate revocation problem)
 - overseer knows, which entity has access to which log
+  - Revolori could maintain a list of pseudonyms
 
+Advantages:
+- free choice of symmetric scheme -> extension to improved encryption schemes which allow queries over ciphertexts
+
+**Ideas regarding problem 2**
+- if solving problem 1 with a dedicated crypto scheme, chances are high that this crypto scheme does not support queries over ciphertexts
+- schemes that allow queries over encrypted data are currently researched (e.g. homomorphic encryption)
+- Alternative: Keep a relational database
+  - encrypt only logs (e.g. as a json)
+  - save id of owner along with encrypted logs
+  - save ids of shared owners with encrypted logs (1:n realtion)
+  - improvement: provide pseudonyms for user ids, which are managed by revolori
 
 # Approach
     Outlines the main thing your thesis does. Your thesis describes a novel algorithm for X? Your main contribution is a case study that replicates Y? Describe it here.
@@ -323,10 +356,19 @@ Consider the following algorithms:
 - sig = Sign(d_x, data) - signing data with private key of x
 - data = Verifiy(e_x, sig) - verify sig with public key of x
 - k = KeyGen() - generate symmetric key for use with AEAD
+
 - c = Enc_AEAD(k, m) - encrypt m with k (AEAD)
 - m = Dec_AEAD(k, c) - decrypt c with k (AEAD)
+- Use AES-GCM: https://nvlpubs.nist.gov/nistpubs/legacy/sp/nistspecialpublication800-38d.pdf
+
 - key_ x = Enc_KEM(e_x, k) - encrypt k for with public key of x (KEM)
 - k = Dec_KEM(d_x, key_x) - decrypt key_x with private key of x (KEM)
+- Use RSA-OAEP: https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-56Br2.pdf
+
+We require a secure channel (authenticated, confidential and integrity protected to exchange symmetric keys): https://crypto.stackexchange.com/questions/5458/should-we-sign-then-encrypt-or-encrypt-then-sign
+This can be realized with correctly applied sign then encrypt: https://theworld.com/~dtd/sign_encrypt/sign_encrypt7.html#abadi
+
+Note, that we do not need to establish a secure session between two users (this is what signal is doing, but also nextcloud establishes sessions), because user do not have a native application. We require secure a one-way messaging based on a PKI (this is essentially the same than E2EE email is doing: https://www.secardeo.com/solutions/end-to-end-encryption/)
 
 <img src="images/hybride_approach.png" width="500"/>
 
@@ -339,37 +381,61 @@ Encrypted log:
   'data': b'' # AEAD-encrypted log. Needs to be decrypted with k. The decrypted data needs to be signed by the monitor.
   'key': b'' # KEM-encrypted key k. This is signed by owner, if this is a shared log. This is signed by monitor, if this is not a shared log. Needs to be decrypted with private key of user.
   'owner': b'' # owner of the log
-  'monitor' : b'' # monitor who created the log
-
 }
 ```
 
 Create Access log: 
+  - POST: access-log
   - Access: Monitor user
-  - Input: AEAD-encrypted log, monitor, owner, KEM-encrypted key
+  - Input: AEAD-encrypted log, owner, KEM-encrypted key (monitor -> owner)
   - Operation: Stores the log for the given owner
 
 Get Access log:
+  - RETRIEVE: access-log
   - Access: Authenticated user
   - Input: Authenticated user
   - Operation: Looks up access logs for the authenticated user and returns it
-  - Output: List of encrypted logs
+  - Output: List of encrypted logs (including encrypted key)
 
 Update Access log:
+ - PATCH: access-log/{uuid}
  - Access: Authenticated user is owner of log
- - Input: updated AEAD-encrypted log, KEM-encrypted key
- - Operation: updates the AEAD-encrypted log and the KEM-encrypted key (monitor and owner can not be changed)
+ - Input: updated AEAD-encrypted log, KEM-encrypted key (owner -> owner)
+ - Operation: updates the AEAD-encrypted log and the KEM-encrypted key (owner can not be changed)
 
 Share access log:
+- POST: access-log/{uuid}/share
 - Access: Authenticated user is owner of log
-- Input: share target, KEM-encrypted key for share target
-- Operation: Stores the sharing information: Share target can has access to the access log and has an KEM-encrypted key for the log (sharedLogs table)
+- Input: uuid of log, share target, KEM-encrypted key (owner -> target)
+- Operation: Stores the sharing information: Share target can have access to the access log and has an KEM-encrypted key for the log (sharedLogs table)
 
 Get Shared Access log:
+- GET: shared-log
 - Access: Authenticated user
 - Input: Authenticated user
-- Operation: Look up shared logs table and returns all shared logs
+- Operation: Look up shared logs table. Associates the related AEAD-encrypted log.
 - Output: List of shared encrypted logs
+
+Security implications: 
+- Malicious server might:
+  - **delete any logs (still better than before, because he does not know what exactly is deleted)**
+  - **delete any shared keys (e.g. prevent a user from accessing shared logs)**
+  - insert/modify faked shared keys, which are singed and encrypted correctly. However this can be detected by honest users, which needs to check if the sender of the shared key is specified as target in the log itself (sender shared key == target within the log). Only if the server has access to either the private signing key of the sender or the private decryption key of the receiver it can compromise authenticity or confidentiality.
+  - insert/modify logs in the logs table. However, this is encrypted data. This will also be noticed by honest users because the AEAD-encrypted data is integrity protected. Only way for the server to do this successfully is by having access to the sharedKey. This compromises all: Authenticity, confidentiality and integrity of the AEAD-encryption. However, the integrity of the log itself can not be broken, since it is still signed by the monitor. Only if the server has access to the sharedKey and a valid signing key of a monitor it can forge arbitrary logs.
+   - **create a lot of invalid data for users, which leads to a big computational overhead if the user logs in**
+
+- Malicious user, who is owner of a log might
+   - insert a forged log and share it with other users. However this can be detected by honest users when they check the signature of the log. A user can only forge a log successfully, if it has access to the signing key of a monitor
+   - destroy his own logs, because he can update his logs. There is no rationale for doing so, because the whole system is about providing the user with this log information.
+   - **create a lot of invalid data for users, which leads to a big computational overhead if the user logs in**
+
+- Malicious user, who does not own a log:
+  - can not write any data into the system
+  - only retrieves sharedLogs, which belong to him
+  - retrieves arbitrary logs, but can not read the content unless he has access to the sharedKey
+
+- Malicious user, who does not own a log but who cooperates with the API-server:
+  - **create a lot of invalid data for users, which leads to a big computational overhead if the user logs in**
 
 **Database setup:**
 

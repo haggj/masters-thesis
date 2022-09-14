@@ -1,28 +1,241 @@
-% Encoding: UTF-8
+@Article{Fabian2010,
+  author    = {Fabian, Benjamin and G{\"u}rses, Seda and Heisel, Maritta and Santen, Thomas and Schmidt, Holger},
+  journal   = {Requirements engineering},
+  title     = {A comparison of security requirements engineering methods},
+  year      = {2010},
+  number    = {1},
+  pages     = {7--40},
+  volume    = {15},
+  groups    = {Requirements},
+  publisher = {Springer},
+  url       = {https://www.uni-due.de/imperia/md/content/swe/papers/2010a-comparison-of-security-requirements-engineering-methods.pdf},
+}
 
-@Misc{Bithappens16Template,
-  author   = {Bithappens},
-  title    = {Template for Beautiful Theses},
-  year     = {2016},
-  abstract = {This is a basic template for writing your thesis. Please check the official guidelines of your university/department before submitting and adjust your thesis if needed.},
-  url      = {https://github.com/thesis-toolbox/template},
-  urldate  = {2020-02-20},
+@InProceedings{4384163,
+  author    = {Glinz, Martin},
+  booktitle = {15th IEEE International Requirements Engineering Conference (RE 2007)},
+  title     = {On Non-Functional Requirements},
+  year      = {2007},
+  pages     = {21-26},
+  doi       = {10.1109/RE.2007.45},
+  groups    = {Requirements},
+}
+
+@Misc{Hale2022,
+  author       = {Britta Hale and Chelsea Komlo},
+  howpublished = {Cryptology ePrint Archive, Paper 2022/449},
+  note         = {\url{https://eprint.iacr.org/2022/449}},
+  title        = {On End-to-End Encryption},
+  year         = {2022},
+  comment      = {Good starting ponit for End-2-End encryption.
+
+Curial:
+1. Define endpoints
+2. Use authenticated encryption},
+  groups       = {Requirements, Adversary Models},
+  url          = {https://eprint.iacr.org/2022/449},
+}
+
+@Article{dolev1983security,
+  author    = {Dolev, Danny and Yao, Andrew},
+  journal   = {IEEE Transactions on information theory},
+  title     = {On the security of public key protocols},
+  year      = {1983},
+  number    = {2},
+  pages     = {198--208},
+  volume    = {29},
+  groups    = {Requirements, Adversary Models},
+  publisher = {IEEE},
+}
+
+@Article{Mylopoulos1992,
+  author  = {Mylopoulos, J. and Chung, L. and Nixon, B.},
+  journal = {IEEE Transactions on Software Engineering},
+  title   = {Representing and using nonfunctional requirements: a process-oriented approach},
+  year    = {1992},
+  number  = {6},
+  pages   = {483-497},
+  volume  = {18},
+  doi     = {10.1109/32.142871},
+  groups  = {Requirements},
+}
+
+@InProceedings{Nabeel2017,
+  author  = {Nabeel, Mohamed},
+  title   = {The Many Faces of End-to-End Encryption and Their Security Analysis},
+  year    = {2017},
+  month   = {06},
+  pages   = {252-259},
+  comment = {Proposes different Adversary Models for E2E ecnryption.
+Key finding: Revealing Metadata to attackers might compromise privacy (e.g. sharing relation)},
+  doi     = {10.1109/IEEE.EDGE.2017.47},
+  groups  = {Requirements, Adversary Models},
+}
+
+@Article{DO2019156,
+  author   = {Quang Do and Ben Martini and Kim-Kwang Raymond Choo},
+  journal  = {Computers & Security},
+  title    = {The role of the adversary model in applied security research},
+  year     = {2019},
+  issn     = {0167-4048},
+  pages    = {156-181},
+  volume   = {81},
+  abstract = {Adversary models have been integral to the design of provably-secure cryptographic schemes or protocols. However, their use in other computer science research disciplines is relatively limited, particularly in the case of applied security research (e.g., mobile app and vulnerability studies). In this study, we conduct a survey of prominent adversary models used in the seminal field of cryptography, and more recent mobile and Internet of Things (IoT) research. Motivated by the findings from the cryptography survey, we propose a classification scheme for common app-based adversaries used in mobile security research, and classify key papers using the proposed scheme. Finally, we discuss recent work involving adversary models in the contemporary research field of IoT. We contribute recommendations to aid researchers working in applied (IoT) security based upon our findings from the mobile and cryptography literature. The key recommendation is for authors to clearly define adversary goals, assumptions and capabilities.},
+  comment  = {- Infos about how to define an attacker model
+
+- Dolev-Yao as one of the mostly used attacker models
+- Might be to strong for many scenarios
+- Adversary Model: Assumptions, Goals and Constraints (+ examples)},
+  doi      = {https://doi.org/10.1016/j.cose.2018.12.002},
+  groups   = {Adversary Models},
+  keywords = {Adversary Model, Applied security, IoT Security, Forensic Adversary Model, Mobile Security},
+  url      = {https://www.sciencedirect.com/science/article/pii/S0167404818306369},
+}
+
+@Article{Nieles2017,
+  author  = {Nieles, Michael and Dempsey, Kelley and Pillitteri, Victoria Yan and others},
+  journal = {NIST special publication},
+  title   = {An introduction to information security},
+  year    = {2017},
+  number  = {12},
+  pages   = {101},
+  volume  = {800},
+  comment = {NIST defintion of End-to-end encryption},
+  groups  = {Adversary Models},
+  url     = {https://doi.org/10.6028/NIST.SP.800-12r1},
+}
+
+@Misc{Mallory2022,
+  author       = {Mallory, Knodel and Fred Baker and Olaf, Kolkman and Sofia, Celi and Gurshabad, Grover.},
+  howpublished = {\url{https://datatracker.ietf.org/doc/draft-knodel-e2ee-definition/}},
+  month        = jul,
+  note         = {Accessed: 2022-08-31},
+  title        = {Definition of End-to-end Encryption},
+  year         = {2022},
+  groups       = {Adversary Models},
+}
+
+@InProceedings{Ermoshina2016,
+  author       = {Ermoshina, Ksenia and Musiani, Francesca and Halpin, Harry},
+  booktitle    = {International Conference on Internet Science},
+  title        = {End-to-end encrypted messaging protocols: An overview},
+  year         = {2016},
+  organization = {Springer},
+  pages        = {244--254},
+}
+
+@Book{Eckert2018,
+  author      = {Claudia Eckert},
+  publisher   = {De Gruyter Oldenbourg},
+  title       = {IT-Sicherheit},
+  year        = {2018},
+  address     = {Berlin, Boston},
+  isbn        = {9783110563900},
+  doi         = {doi:10.1515/9783110563900},
+  groups      = {Adversary Models},
+  lastchecked = {2022-09-05},
+  url         = {https://doi.org/10.1515/9783110563900},
+}
+
+@Misc{WebCryptoApi2017,
+  author       = {Watson, Mark},
+  howpublished = {\url{https://www.w3.org/TR/WebCryptoAPI/}},
+  month        = jan,
+  note         = {Accessed: 2022-09-05},
+  title        = {Web Cryptography API},
+  year         = {2017},
+  groups       = {Requirements},
+}
+
+@InProceedings{Halpin2014,
+  author    = {Halpin, Harry},
+  booktitle = {Proceedings of the 23rd International Conference on World Wide Web},
+  title     = {The W3C Web Cryptography API: Motivation and Overview},
+  year      = {2014},
+  address   = {New York, NY, USA},
+  pages     = {959–964},
+  publisher = {Association for Computing Machinery},
+  series    = {WWW '14 Companion},
+  abstract  = {The W3C Web Cryptography API is the standard API for accessing cryptographic primitives in Javascript-based environments. We describe the motivations behind the creation of the W3C Web Cryptography API and give a high-level overview with motivating use-cases while addressing objections.},
+  doi       = {10.1145/2567948.2579224},
+  groups    = {Requirements},
+  isbn      = {9781450327459},
+  keywords  = {javascript, cryptography, web, W3C, API, standards},
+  location  = {Seoul, Korea},
+  numpages  = {6},
+  url       = {https://doi.org/10.1145/2567948.2579224},
+}
+
+@Misc{Levenson2018,
+  author       = {Levenson, Hannah},
+  howpublished = {\url{https://dzone.com/articles/the-principle-of-least-effort-an-integral-part-of}},
+  month        = sep,
+  note         = {Accessed: 2022-09-06},
+  title        = {The Principle of Least Effort: An Integral Part of UX},
+  year         = {2018},
+  groups       = {Requirements},
+}
+
+@Article{Akinbi2021,
+  author   = {Alex Akinbi and Ehizojie Ojie},
+  journal  = {Forensic Science International: Digital Investigation},
+  title    = {Forensic analysis of open-source XMPP multi-client social networking apps on iOS devices},
+  year     = {2021},
+  issn     = {2666-2817},
+  pages    = {301122},
+  volume   = {36},
+  abstract = {In this paper, we present forensic analysis of Monal and Siskin IM, two decentralized open-source XMPP multi-client social networking apps on iOS devices that provide anonymity and privacy using OMEMO end-to-end encryption. We identified databases maintained by each app and storage locations within the iOS file system that stores the local copies of user information and metadata. We analyzed the databases and storage locations for evidential data of forensic value. The results in this paper show a detailed analysis and correlation of data stored in each app's database to identify the local user's multiple IM accounts and contact list, contents of messages exchanged with contacts, and chronology of conversations. The focus and main contributions of this study include a detailed description of artifacts of forensic interest that can be used to aid mobile forensic investigations.},
+  doi      = {https://doi.org/10.1016/j.fsidi.2021.301122},
+  groups   = {Requirements},
+  keywords = {Mobile forensics, iOS forensics, Monal, Siskin IM, Instant messaging, XMPP, OMEMO, Social networking},
+  url      = {https://www.sciencedirect.com/science/article/pii/S2666281721000196},
+}
+
+@Article{Isobe2021,
+  author  = {Isobe, Takanori and Ito, Ryoma},
+  journal = {IEEE Access},
+  title   = {Security Analysis of End-to-End Encryption for Zoom Meetings},
+  year    = {2021},
+  pages   = {90677-90689},
+  volume  = {9},
+  doi     = {10.1109/ACCESS.2021.3091722},
+  groups  = {Requirements},
+}
+
+@InProceedings{Xiong2012,
+  author    = {Xiong, Huijun and Zhang, Xinwen and Yao, Danfeng and Wu, Xiaoxin and Wen, Yonggang},
+  booktitle = {Proceedings of the Second ACM Conference on Data and Application Security and Privacy},
+  title     = {Towards End-to-End Secure Content Storage and Delivery with Public Cloud},
+  year      = {2012},
+  address   = {New York, NY, USA},
+  pages     = {257–266},
+  publisher = {Association for Computing Machinery},
+  series    = {CODASPY '12},
+  abstract  = {Recent years have witnessed the trend of leveraging cloud-based services for large scale content storage, processing, and distribution. Security and privacy are among top concerns for the public cloud environments. Towards end-to-end content security, we propose and implement CloudSeal, a scheme for securely sharing and distributing content via the public cloud. CloudSeal ensures the confidentiality of content in the public cloud environments with flexible access control policies for subscribers and efficient content distribution via content delivery network.CloudSeal seamlessly integrates symmetric encryption, proxy-based re-encryption, k-out-of-n secret sharing, and broadcast revocation mechanisms. These algorithms allow CloudSeal to cache the major part of a stored cipher content object in the delivery network for content distribution, while keeping the minor part in the cloud storage for key management. The separation of subscription-based key management and confidentiality-oriented proxy-based re-encryption policies uniquely enables flexible and scalable deployment of the solution as well as strong security for cached content in the network. We have implemented CloudSeal on Amazon Web Services, including EC2, S3, and CloudFront. Through experimental evaluation, we demonstrate the end-to-end efficiency and scalability of CloudSeal.},
+  doi       = {10.1145/2133601.2133633},
+  isbn      = {9781450310918},
+  keywords  = {security, cloud computing, cloud storage, confidentiality, content distribution, proxy-based re-encryption},
+  location  = {San Antonio, Texas, USA},
+  numpages  = {10},
+  url       = {https://doi.org/10.1145/2133601.2133633},
+}
+
+@Article{Hoerandner2020,
+  author    = {H{\"o}randner, Felix and Ramacher, Sebastian and Roth, Simon},
+  journal   = {Journal of Banking and Financial Technology},
+  title     = {Selective end-to-end data-sharing in the cloud},
+  year      = {2020},
+  number    = {1},
+  pages     = {139--157},
+  volume    = {4},
+  publisher = {Springer},
 }
 
 @Comment{jabref-meta: databaseType:bibtex;}
 
 @Comment{jabref-meta: grouping:
 0 AllEntriesGroup:;
-1 SearchGroup:Consistency Checks\;2\;FooBarNonsense\;1\;0\;1\;\;\;\;;
-2 SearchGroup:No Author\;0\;author != .+\;0\;1\;1\;\;\;\;;
-2 SearchGroup:No Title\;0\;title != .+\;0\;1\;1\;\;\;\;;
-2 SearchGroup:No Abstract\;0\;abstract != .+\;0\;1\;1\;\;\;\;;
-2 SearchGroup:No Abstract but needed\;0\;abstract != .+ AND groups="Title Pass"\;0\;1\;1\;\;\;\;;
-2 SearchGroup:No DOI\;0\;DOI != .+\;0\;1\;1\;\;\;\;;
-2 SearchGroup:No Online Identifier\;0\;URL != .+ and DOI != .+\;0\;1\;1\;\;\;\;;
-2 SearchGroup:No PDF\;0\;file != .+\;0\;1\;1\;\;\;\;;
-2 SearchGroup:Bad bibtexkey\;0\;bibtexkey!=^[^0-9]+[0-9]{2}.+$\;0\;1\;1\;\;\;\;;
-2 SearchGroup:Broken Year\;0\;year!=^19 AND year !=^20\;0\;1\;1\;\;\;\;;
+1 StaticGroup:Requirements\;0\;0\;0x0000ffff\;\;\;;
+2 StaticGroup:Adversary Models\;0\;0\;0x8a8a8aff\;\;\;;
+1 StaticGroup:Solutions\;0\;1\;0xff0000ff\;\;\;;
 }
-
-@Comment{jabref-meta: keypatterndefault:[auth][shortyear][veryshorttitle];}
