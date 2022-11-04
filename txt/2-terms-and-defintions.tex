@@ -7,6 +7,9 @@
 
 \section{Key escrow}
 
+\section{Surreptitious Forwarding}
+Qulle here~\cite{Davis2001}
+
 \section{End-to-end encryption} \label{end-to-end}
 
 The National Institute of Standards and Technology (NIST) defines end-to-end encryption (E2EE) as follows:
@@ -38,16 +41,13 @@ Specifically, it can no break correctly implemented cryptographic schemes withou
 In the following, active and passive attackers are further distinguished. 
 
 \subsubsection{Passive adversaries}
-In general, passives attacks aim to break confidentiality and include eavesdropping and unauthorized reading of data~\cite{Eckert2018}. 
+In general, passives attacks aim to break confidentiality.
+This includes eavesdropping and unauthorized reading of data~\cite{Eckert2018}. 
 In literature this is often defined as a honest-but-curious attacker. \todo{source + definition}
 The classical understanding of E2EE protects against passive adversaries. 
 The attacker is part of the untrusted network and observes the passed data.
 Its goal is it to get access the content of the exchanged messages.
 To defend against this passive attacker, cryptography can be applied to make passive attacks ineffective and to protect confidentiality~\cite{Eckert2018}.
-
-\todo{Add references}
-\cite{Nabeel2017} states, that access to metadata can always be critical when defending against active attackers, because metadata might allow to break privacy goals
-Thus, he also proposes passive attackers against E2EE can also be understand as passive attacker (not authentication required)
 
 
 \subsubsection{Active adversaries}
@@ -62,13 +62,17 @@ Another goal might be the impersonation of a user participating in the system.~\
 Possible defense strategies against this adversary are getting more complex.
 The detection of inserted, replaced or modified data require some sort of validation, that the received data was actually created by the assumed communication partner (authenticity) and that it was not modified during transit (integrity).
 This can be realized with authenticated encryption techniques~\cite{Mallory2022}.
-To defense against dropped or replayed messages, advanced mitigation strategies must be applied:
+To defend against dropped or replayed messages advanced mitigation strategies must be applied:
 Replayed messages can be detected with freshness, e.g. timestamps ~\cite[419]{Eckert2018}.
 Dropped messages, however, require some sort of sequence counter, e.g. implemented in the TCP protocol ~\cite[115]{Eckert2018}
+
 
 \todo{Add references}
 \cite{Mallory2022} understands it as active attacker (sec 2.4)
 \cite{Hale2022} also proposes authenticate encryption which implicitly assumes an active attacker
+\todo{Add references}
+\cite{Nabeel2017} states, that if an attacker has access to metadata this is always critical when defending against active attackers, because metadata might allow to break privacy goals
+Thus, he also proposes passive attackers against E2EE can also be understand as passive attacker (not authentication required)
 
 
 \subsection{Endness}
@@ -90,9 +94,38 @@ Thus, the introduction of the trusted server most likely breaks E2EE.
 
 However, there is also the possibility to explicitly define the administrator of the trusted server as an additional encryption endpoint.
 In this case, there is no violation against E2EE, because the administrator is assumed to be a valid communication partner.
+This example shows the fragility of E2EE.
+By defining arbitrary encryption endpoints almost each system could claim to rely on E2EE.
+While this is technically true this does often not meet the intuitive understanding of end-to-end encrypted systems.
 \todo{cite HaHale2022 about endness}
 \todo{more sources?}
 
+\subsection{E2EE in this work}
+This section defines the understanding of E2EE in the context of this thesis based on the above considerations.
+Following the argumentation of~\citeauthor{Hale2022}~\cite{Hale2022}, E2EE is understood as defense against an active adversary.
+The attacker not only observes the data, but it also tries to modify existing data or to insert forged data.
+Any defense against this attacker requires both confidentiality and mutual authenticity.
+The following example justifies this statement.
+Assume a sender that wants to send an E2EE message to a single receiver.
+The following points need to be ensured.
+\begin{enumerate}
+    \item Confidentiality: 
+    The exchanged data needs to be encrypted. Otherwise each untrusted entity can access the exchanged data and E2EE is broken.
+    Moreover, the sender needs to be sure that only the intended receiver can decrypt the data. 
+    This is important in the context of symmetric cryptography, where a group of users might share a symmetric key.
+    Data which is encrypted under this shared symmetric key can be decrypted by all members of the group.
+    Thus, the encryption endpoints is equal to the group of users.
+    In symmetric cryptography, E2EE messages between a sender and a single receiver always require a pairwise exchanged symmetric key.
+    When operating with asymmetric cryptography, a key-pair per receiver is required.
+    If a receiver keeps the private key confidential, it can be ensured that only the receiver can decrypt data encrypted under his or her public key.
+    \item Authenticity: 
+    The receiver needs to be sure that the message was indeed sent by the assumed sender. 
+    This requirement is crucial to defend against man-in-the middle attackers.
+    If a receiver can not validate the origin of the message, an attacker could simply impersonate the sender and encrypt faked data under the public key of the receiver.
+    This requirement demands cryptographically signed messages to ensure that the message was actually sent by the claimed sender.
+    Depending on the implemented E2EE protocol the receiver might be required to verify that the sender intended to share the data with him or her.
+    Due to the risk of surreptitious forwarding this requires additional security mechanisms besides a plain cryptographic signature.
+\end{enumerate}
 
 
 

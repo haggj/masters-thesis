@@ -15,6 +15,16 @@
     - Broadcast encryption
     - Hybrid encryption
 4. Approach (10)
+    - Reasoning for approach
+    - Protocol
+      - JOSE
+      - Encryption
+      - Decryption
+    - Implemented Libraries
+      - Overview/Architecture
+      - Ts-It-Crypto
+      - Py-It-Crypto
+      - Go-It-Crypto
 5. Evaluation (7)
 6. Conclusion (3)
 
@@ -37,7 +47,7 @@ Following: https://www.uni-due.de/imperia/md/content/swe/papers/2010a-comparison
 There are three major goals in the context of this thesis:
 
 1. Encrypt log data, s.t. overseer can not access logs (E2E encryption, confidentiality -> security goal)  
-   Defending against `hontest-but-curions server`:
+   Defending against `honest-but-curions server`:
       - attacker follows protocol of overseer to store and load data
       - attacker attempts to analyze all legitimately received information (e.g. analyzes logs and policies stored in the database)
       - can collude with others (e.g. a malicious data owner)
@@ -261,10 +271,12 @@ Re-encrypt data by means of a broadcast encryption scheme. Only a defined set of
   - #️⃣ N3. Simplicity of Design (adds complexity)
   - ✅ N4. Resource utilization
 
+### Assumptions
+- Trusted CA for authenticated messages
+- Trusted KDC, which distributes keys to user (IBBE, ABBE)
+  - broken KDC: Attacker can decrypt everything, because he has arbitrary keys
   
-**Challenges**:  
-  **Challenges**:  
-**Challenges**:  
+### Challenges:  
 - How to implement ABE in frontend? Critical part: implement bilinear pairing
   - C: https://crypto.stanford.edu/pbc/
   - Python: https://pypi.org/project/charm-crypto/ (using C lib under the hood -> not possible to use this via brython)
@@ -325,7 +337,18 @@ Upon revocation:
   - ✅ N3. Simplicity of Design
   - #️⃣ N4. Resource utilization
 
-Problems:
+### Assumptions:
+- CA which verifies that a public keys belong to certain identities
+  - note, that this CA does not need to create key pairs on behalf of the users
+  - however, the CA needs somehow to verify, that a user knows the corresponding secret key to a given public key
+  - Malicious CA:
+     - attacker can issue arbitrary certificates
+     - public key might belong to the attacker instead to the expected user
+     - attacker can also sign data on behalf of others
+     - once the CA stats acting malicious, no data can be trusted anymore
+     - However, since the CA does not know private keys, an attacker can not decrypt already encrypted logs
+
+### Problems:
 - malicious data owner can "destroy" logs, but is it interested in doing so?
 - check whitepaper "broadcast" encryption to analyze efficiency of sharing/revocation
   - seems to be legitimate because both, signal and nextcloud, implement shared E2EE by pairwise channels (e.g. encrypting data for each user)
@@ -339,6 +362,16 @@ Problems:
 
 Advantages:
 - free choice of symmetric scheme -> extension to improved encryption schemes which allow queries over ciphertexts
+
+
+### JOSE
+
+Considerations about used crypto in JOSE:
+- "alg" Algorithm is responsible for encrypting symmetric CEK
+  - ECDH versions require new ephemeral key each time (see 4.6 https://www.rfc-editor.org/rfc/rfc7518). This is used to create a fresh DH-secret, which will be used in a KDF to create a new symmetric key, which is again used to encrypt CEK. JOSE spec defines the One-Pass Diffie-Hellman algorithm (using one ephemeral EC key pair and one static EC key pair). Details: https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-56Ar2.pdf (6.2.2.2)
+  - RSA version allow to encrypt key without ephemeral keys, because dedicated key-wrapping functionality
+  - Both ok, but using ECDH because better security with same key size
+
 
 **Ideas regarding problem 2**
 - if solving problem 1 with a dedicated crypto scheme, chances are high that this crypto scheme does not support queries over ciphertexts
@@ -370,7 +403,9 @@ This can be realized with correctly applied sign then encrypt: https://theworld.
 
 Note, that we do not need to establish a secure session between two users (this is what signal is doing, but also nextcloud establishes sessions), because user do not have a native application. We require secure a one-way messaging based on a PKI (this is essentially the same than E2EE email is doing: https://www.secardeo.com/solutions/end-to-end-encryption/)
 
-<img src="images/hybride_approach.png" width="500"/>
+Consider this: https://crypto.stackexchange.com/questions/62109/multiparty-key-exchange-for-end-to-end-encryption
+
+<img src="images/hybrid_approach.png" width="500"/>
 
 
 **Endpoint description:**
@@ -441,6 +476,8 @@ Security implications:
 
 # Evaluation
     Describes why your approach really solves the problem it claims to solve. You implemented a novel algorithm for X? This chapter describes how you ran it on a dataset and reports the results you measured. You replicated a study? This chapter gives the results and your interpretations.
+
+    https://signal.org/docs/specifications/x3dh/x3dh.pdf
 
 # Conclusion
 
