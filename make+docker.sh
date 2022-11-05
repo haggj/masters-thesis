@@ -5,7 +5,7 @@
 CMD=${*-clean all}
 
 docker run --rm --interactive \
-    --user="$(id --user):$(id --group)" \
+    --user="$(id -u):$(id -g)" \
     --net=none \
     --volume="$PWD":/home/workdir \
     --workdir="/home/workdir" \
