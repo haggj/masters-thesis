@@ -306,4 +306,4 @@ Backup of *.doc*
 *.~vsd*
 
 # MacOS temporary files
-.DS_Store
+*/.DS_Store

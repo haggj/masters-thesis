@@ -5,6 +5,7 @@
 
 
 \chapter{Requirements}
+\label{requirements}
 
 This chapter identifies the requirements of the software which needs to be implemented in the context of this thesis.
 Overall, there are three major goals which need to be achieved. 
@@ -174,7 +175,7 @@ If a data owner signs the shared log, the receiver can verify that the sender in
 However, a simple signature does not prevent the described attack due to the risk of surreptitious forwarding~\cite{Davis2001}.
 This makes sense because Eve could simply forward the signed message to Bob.
 Bob can verify that Alice wanted to share the log but Bob does not know if Alice wanted to share the log with him.
-This can be fixed if the data owner additionally includes and signs the set of valid receivers into the exchanged message.
+This can be fixed if the data owner additionally includes and signs the set of valid receivers into the exchanged message~\cite{Davis2001}.
 If the identity of the receiving user is singed by the data owner, the receiver can be sure that the data owner intentionally shared the log for him or her.
 
 
@@ -201,6 +202,7 @@ The implemented protocol should defend against this attack.
 This can be realized with cryptographic signatures.
 Upon creation of a log the data consumer signs the log.
 This way a receiving user can verify if the log was modified by the data owner.
+A malicious data owner can not create valid signatures for faked logs because it does not has access to the secret key of the monitor.
 Note that there is no risk of surreptitious forwarding here.
 A shared log is not determined for a single user. 
 Due to the dynamically changing set of users who might have access to the log, the data consumer can not specify the intended receivers during the creation of the log.

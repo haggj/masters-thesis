@@ -10,7 +10,8 @@
 \section{Surreptitious Forwarding}
 Qulle here~\cite{Davis2001}
 
-\section{End-to-end encryption} \label{end-to-end}
+\section{End-to-end encryption} 
+\label{sec:end-to-end}
 
 The National Institute of Standards and Technology (NIST) defines end-to-end encryption (E2EE) as follows:
 \begin{quote}
@@ -63,7 +64,7 @@ Possible defense strategies against this adversary are getting more complex.
 The detection of inserted, replaced or modified data require some sort of validation, that the received data was actually created by the assumed communication partner (authenticity) and that it was not modified during transit (integrity).
 This can be realized with authenticated encryption techniques~\cite{Mallory2022}.
 To defend against dropped or replayed messages advanced mitigation strategies must be applied:
-Replayed messages can be detected with freshness, e.g. timestamps ~\cite[419]{Eckert2018}.
+Replayed messages can be detected with freshness, e.g. timestamps~\cite[419]{Eckert2018}.
 Dropped messages, however, require some sort of sequence counter, e.g. implemented in the TCP protocol ~\cite[115]{Eckert2018}
 
 
@@ -96,7 +97,7 @@ However, there is also the possibility to explicitly define the administrator of
 In this case, there is no violation against E2EE, because the administrator is assumed to be a valid communication partner.
 This example shows the fragility of E2EE.
 By defining arbitrary encryption endpoints almost each system could claim to rely on E2EE.
-While this is technically true this does often not meet the intuitive understanding of end-to-end encrypted systems.
+While this is technically true, it does not meet the intuitive understanding of end-to-end encrypted systems.
 \todo{cite HaHale2022 about endness}
 \todo{more sources?}
 
