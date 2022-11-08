@@ -23,7 +23,7 @@ Sharing the log with $n$ users requires Alice to send $n$ encrypted emails.
 More importantly, this approach does not end-to-end encrypt logs because the server storing the logs still has access to the unencrypted data.
 Since the Overseer server is not trusted, confidentiality is broken (security requirement S1).
 Once an encrypted email is sent to the receiver, there is no way for Alice to revoke any access to the log.
-She loses control over the encrypted log because Bobs' email provider stores the cipher.
+She loses control over the encrypted log because Bob's email provider stores the cipher.
 This is not in the control of the toolchain.
 It implies, that Alice can not revoke the access to the log anymore (functional requirement F3).
 Those limitations motivate the implementation of a more sophisticated protocol.
@@ -87,9 +87,9 @@ Thus, the implemented protocol should avoid the encryption of log data with asym
 \section{Hybrid encryption}
 \label{sec:hybrid-encryption}
 
-The approach of hybrid encryption is the extension of the ideas introduced in the previous section \ref{sec:mutual-encryption}.
-The idea of hybrid encryption combines the advantages of asymmetric cryptography with the advantages of symmetric cryptography.
-In a hybrid scheme, a symmetric key is encrypted with the asymmetric algorithms.
+The approach extends the ideas introduced in the previous section \ref{sec:mutual-encryption}.
+The concept of hybrid encryption combines the advantages of asymmetric cryptography with the advantages of symmetric cryptography.
+In a hybrid scheme, a symmetric key is encrypted with asymmetric algorithms.
 The symmetric keys are short (e.g. 128 or 256 bit for AES).
 Thus, the expensive asymmetric algorithms only encrypt and decrypt little data.
 The larger payload is then encrypted with a fast symmetric scheme using the exchanged key.
@@ -98,18 +98,18 @@ The asymmetric scheme is used to transport the symmetric key.~\cite[340]{Eckert2
 Consider the scenario where Alice wants to share data with Bob.
 Alice initially generates a symmetric key $k$.
 She uses $k$ to encrypt the payload with a symmetric scheme (e.g. AES).
-She then encrypts $k$ under Bobs' public key.
+She then encrypts $k$ under the public key of Bob.
 Finally, she sends the encrypted key along with the encrypted payload.
 To decrypt the payload, Bob first decrypts the symmetric key $k$ using his secret key.
 In the final step, Bob can apply $k$ to decrypt the payload.
 
 This concept can be applied to the context of this thesis.
-A initially created log is encrypted for Alice using hybrid encryption.
-This results in a cipher which consist of a encrypted symmetric key and of the encrypted log.
+An initially created log is encrypted for Alice using hybrid encryption.
+This results in a ciphertext that consists of the encrypted symmetric key and the encrypted log.
 The encrypted key can be decrypted only by Alice.
 Alice can use the key to decrypt the log.
 If she wants to share the log with Bob, she applies hybrid encryption again:
-She generates a fresh symmetric key and encrypts it under Bobs' public key.
+She generates a fresh symmetric key and encrypts it under Bob's public key.
 The log is encrypted with the fresh key.
 The encrypted key and the encrypted log are sent to the server.
 This allows Bob to decrypt the log.
@@ -117,21 +117,21 @@ Additionally, Alice can specify multiple receivers by attaching multiple encrypt
 This is visualized in figure \ref{fig:hybrid_encryption}. 
 The key $k$ is used to encrypt the log in a symmetric scheme.
 To make the key available to Bob and Charlie the key is encrypted for both of them using asymmetric encryption.
-Alice can also revoke the access to the log by re-encrypting the log. 
+Alice can also revoke access to the log by re-encrypting the log. 
 This requires a fresh symmetric key $k$.
 
 \begin{figure}[ht]
     \includegraphics[scale=0.2]{../img/04/hybrid_encryption.jpg}
     \centering
-    \caption{Structure of a encrypted log using hybrid encryption.}
+    \caption{Structure of an encrypted log using hybrid encryption.}
     \label{fig:hybrid_encryption}
 \end{figure}
 
 The above description shows, that hybrid encryption techniques can be used to satisfy all functional requirements.
-Moreover, only users can decrypt the cipher which were explicitly specified during encryption.
+Moreover, only those can decrypt which were explicitly specified during encryption.
 This ensures that only authorized users can decrypt (security requirement S1).
 To adhere to security requirements S2 and S3 the techniques introduced in section \ref{sec:mutual-encryption} can be applied with a little modification.
-Instead of a single receiver the shared log needs to contain the list of authorized users.
+Instead of a single receiver, the shared log needs to contain the list of authorized users.
 The shared log is finally encrypted with the symmetric key.
 This allows receivers to validate if the log was intended for them and to verify if the actual log was modified during transit.
 
