@@ -1,32 +1,39 @@
 
 0. Abstract
-1. Introduction (4)
+1. Introduction (3)
     - Current architecture
     - Implications and problems
-2. Terms and Definitions (4)
-2. Requirements (5)
+2. Terms and Definitions (3)
+3. Requirements (5)
     - Functional requirements
     - Security requirements
     - Non-functional requirements
-3. Survey of potential solutions (12)
-    - External encryption
-    - Mutual encryption
-    - Key server
-    - Broadcast encryption
-    - Hybrid encryption
-4. Approach (10)
-    - Reasoning for approach
-    - Protocol
+4. Overview of potential solutions (10)
+    - External encryption (1)
+    - Mutual encryption (1)
+    - Key server (1)
+    - Broadcast encryption (3)
+    - Hybrid encryption (2)
+    - Further investigations (2)
+5. Approach (9)
+    - Reasoning for approach (1)
+    - Protocol (4)
       - JOSE
       - Encryption
       - Decryption
-    - Implemented Libraries
+    - Implemented Libraries (4)
       - Overview/Architecture
       - Ts-It-Crypto
       - Py-It-Crypto
       - Go-It-Crypto
-5. Evaluation (7)
-6. Conclusion (3)
+6. Evaluation (5)
+    - Functionality (1)
+    - Security (4)
+      - General considerations
+      - Curious server
+      - Surreptitious forwarding
+      - Malicious data owner
+7. Conclusion (3)
 
 
 # 0. Abstract
@@ -172,7 +179,7 @@ endpoints are within any particular application, and how users can verify that t
 2. resolve conflicts between them to obtain consistent system requirements 
 
 
-# 4. Survey of potential solutions
+# 4. Overview of potential solutions
     For me this is chapter is similar to Related Work
 
     Collects descriptions of existing work that is related to your work. Related, in this sense, means aims to solve the same problem or uses the same approach to solve a different problem. This chapter typically reads like a structured list. Each list item summarizes a piece of work (typically a research paper) briefly and explains the relation to your work. This last part is absolutely crucial: the reader should not have to figure out the relation himself. Is your piece better from some perspective? More generalizable? More performant? Simpler? It is ok if it is not, but I want you to tell me.
@@ -477,7 +484,9 @@ Security implications:
 # Evaluation
     Describes why your approach really solves the problem it claims to solve. You implemented a novel algorithm for X? This chapter describes how you ran it on a dataset and reports the results you measured. You replicated a study? This chapter gives the results and your interpretations.
 
-    https://signal.org/docs/specifications/x3dh/x3dh.pdf
+    X3DH: https://signal.org/docs/specifications/x3dh/x3dh.pdf
+    PACE: https://link.springer.com/content/pdf/10.1007/978-3-642-04474-8.pdf
+
 
 # Conclusion
 

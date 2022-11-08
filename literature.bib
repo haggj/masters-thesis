@@ -252,6 +252,134 @@ Key finding: Revealing Metadata to attackers might compromise privacy (e.g. shar
   url       = {https://ieeexplore.ieee.org/document/1410756},
 }
 
+@InProceedings{Bethencourt2007,
+  author    = {Bethencourt, John and Sahai, Amit and Waters, Brent},
+  booktitle = {IEEE Symposium on Security and Privacy},
+  title     = {Ciphertext-{P}olicy {A}ttribute-{B}ased {E}ncryption},
+  year      = {2007},
+  pages     = {321--334},
+  groups    = {ABE, Secondary Papers, Solutions},
+  url       = {https://doi.org/10.1109/SP.2007.11},
+}
+
+@InCollection{Sahai2009,
+  author                     = {Sahai, Amit and Waters, Brent and Lu, Steve},
+  booktitle                  = {{IDENTITY-BASED CRYPTOGRAPHY}},
+  publisher                  = {{IOS PRESS}},
+  title                      = {{Attribute-Based Encryption}},
+  year                       = {{2009}},
+  pages                      = {156--168},
+  series                     = {{Cryptology and Information Security Series}},
+  type                       = {{Article; Book Chapter}},
+  volume                     = {{2}},
+  abstract                   = {{As more sensitive data is shared and stored by third-party sites on the
+   Internet, there will be a need to encrypt data stored at these sites.
+   One drawback of encrypting data is that it can be selectively shared
+   only at a coarse-grained level (i.e., giving another party your private
+   key). We describe a new concept for fine-grained sharing of encrypted
+   data that we call Attribute-Based Encryption (ABE). In ABE, ciphertexts
+   are labeled with sets of attributes and private keys are associated with
+   access structures that control which ciphertexts a user is able to
+   decrypt. We demonstrate the applicability of ABE to sharing of audit-log
+   information and broadcast encryption. We describe a construction that
+   supports delegation of private keys, which subsumes Hierarchical
+   Identity-Based Encryption (HIBE).}},
+  groups                     = {ABE, Solutions},
+  number-of-cited-references = {{0}},
+  url                        = {https://doi.org/10.3233/978-1-58603-947-9-156},
+  web-of-science-categories  = {{Computer Science, Theory \& Methods}},
+}
+
+@Article{Vaanchig2018,
+  author  = {Vaanchig, Nyamsuren and Xiong, Hu and Chen, Wei and Qin, Zhiguang},
+  journal = {International Journal of Network Security},
+  title   = {Achieving {C}ollaborative {C}loud {D}ata {S}torage by {K}ey-{E}scrow-{F}ree {M}ulti-{A}uthority {C}{P}-{A}{B}{E} {S}cheme with {D}ual-{R}evocation},
+  year    = {2018},
+  pages   = {95--109},
+  volume  = {20},
+  groups  = {ABE, Solutions},
+  url     = {https://doi.org/10.6633/IJNS.201801.20(1).11},
+}
+
+@InProceedings{fiat1993broadcast,
+  author       = {Fiat, Amos and Naor, Moni},
+  booktitle    = {Annual International Cryptology Conference},
+  title        = {Broadcast {Encryption}},
+  year         = {1993},
+  organization = {Springer},
+  pages        = {480--491},
+  groups       = {BE, Solutions},
+  url          = {https://doi.org/10.1007/3-540-48329-2_40},
+}
+
+@Article{Sakai2007,
+  author  = {Sakai, Ryuichi and Furukawa, Jun},
+  journal = {Cryptology ePrint Archive},
+  title   = {Identity- {B}ased {B}roadcast {E}ncryption.},
+  year    = {2007},
+  pages   = {217},
+  volume  = {2007},
+  groups  = {Solutions},
+  url     = {https://ia.cr/2007/217},
+}
+
+@InProceedings{shamir1985,
+  author    = {Shamir, Adi},
+  booktitle = {Advances in Cryptology},
+  title     = {Identity-{B}ased {C}ryptosystems and {S}ignature {S}chemes},
+  year      = {1985},
+  pages     = {47--53},
+  publisher = {Springer Berlin Heidelberg},
+  abstract  = {In this paper we introduce a novel type of cryptographic scheme, which enables any pair of users to communicate securely and to verify each other's signatures without exchanging private or public keys, without keeping key directories, and without using the services of a third party. The scheme assumes the existence of trusted key generation centers, whose sole purpose is to give each user a personalized smart card when he first joins the network. The information embedded in this card enables the user to sign and encrypt the messages he sends and to decrypt and verify the messages he receives in a totally independent way, regardless of the identity of the other party. Previously issued cards do not have to be updated when new users join the network, and the various centers do not have to coordinate their activities or even to keep a user list. The centers can be closed after all the cards are issued, and the network can continue to function in a completely decentralized way for an indefinite period.},
+  groups    = {Secondary Papers, IBBE (Identity based broadcast encryption), Solutions},
+  url       = {https://doi.org/10.1007/3-540-39568-7_5},
+}
+
+@InProceedings{Gentry2003,
+  author    = {Gentry, Craig},
+  booktitle = {Advances in Cryptology --- EUROCRYPT 2003},
+  title     = {Certificate-{B}ased {E}ncryption and the {C}ertificate {R}evocation {P}roblem},
+  year      = {2003},
+  pages     = {272--293},
+  publisher = {Springer Berlin Heidelberg},
+  abstract  = {We introduce the notion of certificate-based encryption. In this model, a certificate --- or, more generally, a signature --- acts not only as a certificate but also as a decryption key. To decrypt a message, a keyholder needs both its secret key and an up-to-date certificate from its CA (or a signature from an authorizer). Certificate-based encryption combines the best aspects of identity-based encryption (implicit certification) and public key encryption (no escrow). We demonstrate how certificate-based encryption can be used to construct an efficient PKI requiring less infrastructure than previous proposals, including Micali's Novomodo, Naor-Nissim and Aiello-Lodha-Ostrovsky.},
+  groups    = {Secondary Papers, Solutions},
+  url       = {https://doi.org/10.1007/3-540-39200-9_17},
+}
+
+@Article{Li2018,
+  author   = {Jiguo Li and Liqing Chen and Yang Lu and Yichen Zhang},
+  journal  = {Information Sciences},
+  title    = {Anonymous certificate-based broadcast encryption with constant decryption cost},
+  year     = {2018},
+  pages    = {110--127},
+  abstract = {Most of the existing broadcast encryption schemes are constructed in either public key cryptosystem or identity-based cryptosystem. However, the overload of certificate management is heavy for public key cryptosystem while the key escrow problem is inherent in identity-based cryptosystem. Certificate-based cryptosystem provides a promising solution of designing more efficient and secure broadcast encryption schemes. Meanwhile, it is an important security property to protect the privacy of receivers, anonymity in many broadcast encryption application scenarios. Furthermore, in the broadcast encryption applications with a large number of computationally constrained users, it is critical to lower the computation cost, especially the decryption cost of the users. In this paper, we first introduce the notion of anonymous certificate-based broadcast encryption. Specifically, we formalize the definition and security model for anonymous certificate-based broadcast encryption. Then we construct an anonymous certificate-based broadcast encryption scheme with constant decryption cost. Compared with the existing anonymous multi-receiver certificate-based encryption scheme, the proposed scheme has advantage in the computation efficiency. Therefore, our scheme is more feasible for those broadcast encryption application scenarios where there are many receivers with limited computation ability. In the respect of security, the proposed scheme achieves anonymity and confidentiality against adaptive chosen-ciphertext attacks simultaneously under standard assumption.},
+  file     = {:JabRef/Li2018.pdf:PDF},
+  groups   = {CBBE (Certificate-based broadcast-encryption), Papers, Solutions},
+  keywords = {Broadcast encryption, Certificate-based broadcast encryption, Anonymity, Adaptive security, Chosen-ciphertext attack},
+  url      = {https://doi.org/10.1016/j.ins.2018.04.067},
+}
+
+@InProceedings{Fan2013,
+  author    = {Fan, Chun-I and Tsai, Pei-Jen and Huang, Jheng-Jia and Chen, Wen-Tsuen},
+  booktitle = {International Conference on Cyber-Enabled Distributed Computing and Knowledge Discovery},
+  title     = {Anonymous {M}ulti-receiver {C}ertificate-{B}ased {E}ncryption},
+  year      = {2013},
+  pages     = {19--26},
+  groups    = {CBBE (Certificate-based broadcast-encryption), Solutions},
+  url       = {https://doi.org/10.1109/CyberC.2013.13},
+}
+
+@InProceedings{Chen2018,
+  author    = {Chen, Wei-Hao and Fan, Chun-I and Tseng, Yi-Fan},
+  booktitle = {IEEE Conference on Dependable and Secure Computing (DSC)},
+  title     = {Efficient {K}ey-{A}ggregate {P}roxy {R}e-{E}ncryption for {S}ecure {D}ata {S}haring in {C}louds},
+  year      = {2018},
+  pages     = {1--4},
+  groups    = {Secondary Papers, PRE, Solutions},
+  url       = {https://doi.org/10.1109/DESEC.2018.8625149},
+}
+
 @Comment{jabref-meta: databaseType:bibtex;}
 
 @Comment{jabref-meta: grouping:
