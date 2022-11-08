@@ -133,9 +133,10 @@ In the context of the inverse transparency toolchain, the intended end-to-end en
 As specified in the functional requirements, the data owner can always decrypt the log.
 The data owner can also share the log with other users which are then able to decrypt.
 Authorized users are the data owner of the log plus all users the data owner has given access.
-No untrusted entity within the system can access the content of these logs.
-The untrusted network is the whole infrastructure of the toolchain, except trusted servers and the application a user interacts with.
-This implies, that all frontend applications are trusted (e.g. the Clotilde UI and all integrated Monitor components).
+From the perspective of E2EE all other entities are untrusted.
+Untrusted entities must not be able to decrypt logs.
+The untrusted network includes the whole infrastructure of the toolchain, except the application a user interacts with.
+This implies, that all frontend applications must trusted (e.g. the Clotilde UI and all integrated Monitor components).
 
 The following example attack motivates this requirement.
 Consider an attacker Eve who is the database admin of the Overseer server.

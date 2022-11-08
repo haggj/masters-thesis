@@ -84,6 +84,60 @@ Eckert justifies this with the fact that asymmetric encryption algorithms are mu
 Following her argumentation, asymmetric cryptography is therefore usually used to encrypt a symmetric key which finally encrypts the larger payload.
 Thus, the implemented protocol should avoid the encryption of log data with asymmetric algorithms.
 
+\section{Hybrid encryption}
+\label{sec:hybrid-encryption}
+
+The approach of hybrid encryption is the extension of the ideas introduced in the previous section \ref{sec:mutual-encryption}.
+The idea of hybrid encryption combines the advantages of asymmetric cryptography with the advantages of symmetric cryptography.
+In a hybrid scheme, a symmetric key is encrypted with the asymmetric algorithms.
+The symmetric keys are short (e.g. 128 or 256 bit for AES).
+Thus, the expensive asymmetric algorithms only encrypt and decrypt little data.
+The larger payload is then encrypted with a fast symmetric scheme using the exchanged key.
+The asymmetric scheme is used to transport the symmetric key.~\cite[340]{Eckert2018}
+
+Consider the scenario where Alice wants to share data with Bob.
+Alice initially generates a symmetric key $k$.
+She uses $k$ to encrypt the payload with a symmetric scheme (e.g. AES).
+She then encrypts $k$ under Bobs' public key.
+Finally, she sends the encrypted key along with the encrypted payload.
+To decrypt the payload, Bob first decrypts the symmetric key $k$ using his secret key.
+In the final step, Bob can apply $k$ to decrypt the payload.
+
+This concept can be applied to the context of this thesis.
+A initially created log is encrypted for Alice using hybrid encryption.
+This results in a cipher which consist of a encrypted symmetric key and of the encrypted log.
+The encrypted key can be decrypted only by Alice.
+Alice can use the key to decrypt the log.
+If she wants to share the log with Bob, she applies hybrid encryption again:
+She generates a fresh symmetric key and encrypts it under Bobs' public key.
+The log is encrypted with the fresh key.
+The encrypted key and the encrypted log are sent to the server.
+This allows Bob to decrypt the log.
+Additionally, Alice can specify multiple receivers by attaching multiple encrypted keys to the encrypted log -- one for each receiver.
+This is visualized in figure \ref{fig:hybrid_encryption}. 
+The key $k$ is used to encrypt the log in a symmetric scheme.
+To make the key available to Bob and Charlie the key is encrypted for both of them using asymmetric encryption.
+Alice can also revoke the access to the log by re-encrypting the log. 
+This requires a fresh symmetric key $k$.
+
+\begin{figure}[ht]
+    \includegraphics[scale=0.2]{../img/04/hybrid_encryption.jpg}
+    \centering
+    \caption{Structure of a encrypted log using hybrid encryption.}
+    \label{fig:hybrid_encryption}
+\end{figure}
+
+The above description shows, that hybrid encryption techniques can be used to satisfy all functional requirements.
+Moreover, only users can decrypt the cipher which were explicitly specified during encryption.
+This ensures that only authorized users can decrypt (security requirement S1).
+To adhere to security requirements S2 and S3 the techniques introduced in section \ref{sec:mutual-encryption} can be applied with a little modification.
+Instead of a single receiver the shared log needs to contain the list of authorized users.
+The shared log is finally encrypted with the symmetric key.
+This allows receivers to validate if the log was intended for them and to verify if the actual log was modified during transit.
+
+While this approach improves the performance compared to section \ref{sec:mutual-encryption}, there is still a drawback.
+If the log is encrypted for $n$ users, the symmetric key needs to be encrypted $n$ times.
+
 \section{Key server}
 \label{sec:key-server}
 The development of cloud computing and centralized software architectures motivated the idea of key servers~\cite{Seitz2003}.
@@ -107,11 +161,8 @@ This new key is then also uploaded to the key server.
 
 This example shows that all functional requirements can be satisfied when utilizing a key server.
 The techniques introduced in section \ref{sec:mutual-encryption} to satisfy security requirements S2 (the receiver can verify it is a valid encryption endpoint) and S3 (the data owner can not forge logs) can be applied again.
-Security requirement S1, however, can not be met because the administrator of the key server has access to all keys.
+Security requirement S1, however, can not be met because the system suffers from key escrow (the administrator of the key server has access to all keys).
 The confidentiality of all logs is broken because this allows him to potentially decrypt all logs.
-In section \ref{sec:end-to-end} it became clear that the encryption endpoints in E2EE systems can be defined arbitrarily.
-The sketched protocol in this section can be classified as E2EE if the key server is defined as a valid decryption endpoint.
-But this does not meet the intuitive understanding of E2EE.
 The utilization of a key server also implies that we require an additional trusted component.
 This increases the attack surface of the system and does not adhere to the non-functional requirement N1 (minimal number of trusted entities).
 
@@ -180,8 +231,8 @@ The techniques from section \ref{sec:mutual-encryption} can be applied again.
 This satisfies the security requirements S2 (the receiver can verify it is a valid encryption endpoint) and S3 (the data owner can not forge logs).
 
 \textit{IBBE} schemes suffer from key escrow because a trusted party computes and distributes secret keys.
-The additional trusted entity increases the attack surface.
-Moreover, key escrow harms the notation of E2EE because the key generation server could potentially decrypt all ciphers.
+This breaks the confidentiality of the encrypted logs (security requirement S2).
+The additional trusted entity also increases the attack surface breaking non-functional requirement N1 (minimal number of trusted entities).
 
 \subsection{Certificate-based broadcast encryption}
 Certificate-based encryption (\textit{CBE}) was introduced by \citeauthor{Gentry2003} in 2003~\cite{Gentry2003}. 
@@ -248,10 +299,10 @@ Bob can then download and only he can decrypt $E_B$.
 The proxy needs to be semi-trusted because with the knowledge of $rk_{Alice,Bob}$ it can re-encrypt all ciphers from Alice to Bob~\cite{Chen2018}.
 This has important consequences for the security of the protocol implemented in this thesis.
 Once Alice defined Bob as a valid receiver for a single log, the server could re-encrypt all ciphers of Alice for Bob.
-This, however, affects the notion of E2EE.
-Not only authorized users might have access to logs.
-Rather, arbitrary users might collude with the server to break confidentiality.
-\section{Hybrid encryption}
+This, however, affects the confidentiality of encrypted logs.
+Not only authorized users might have access.
+Users might collude with the server (which re-encrypts logs on behalf of the user) to obtain decrypted logs.
+Overall, a proxy re-encryption based scheme does not adhere security requirement S1 (confidentiality of logs).
 
 \section{Further investigations}
 
