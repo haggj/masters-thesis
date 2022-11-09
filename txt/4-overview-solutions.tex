@@ -9,12 +9,35 @@ The sketched protocols illustrate different encryption techniques.
 Each section details the consequences of the technique to the requirements of this thesis.
 The outcome of this chapter is a set of possible solution strategies.
 
+The following table summarizes the results of this chapter.
+It provides an overview for the reader.
+A checkmark (\checkmark) means that a approach satisfies the corresponding requirement.
+A missing checkmark indicates that the approach conflicts with the requirement.
+Details and justifications can be found in the corresponding sections below.
+
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|l|l|c|c|c|c|c|c|c|c|c|c|}
+    \hline
+    Section                         & Approach                  & F1          & F2          & F3            & S1            & S2            & S3            & N1            & N2            & N3            & N4            \\ \hline
+    \ref{sec:external-encryption}   & External encryption       & \checkmark  & \checkmark  &               &               & \checkmark    & \checkmark    & \checkmark    & \checkmark    &               & \checkmark    \\ \hline
+    \ref{sec:mutual-encryption}     & Mutual encryption         & \checkmark  & \checkmark  & \checkmark    & \checkmark    & \checkmark    & \checkmark    & \checkmark    & \checkmark    & \checkmark    &               \\ \hline
+    \ref{sec:hybrid-encryption}     & Hybrid encryption         & \checkmark  & \checkmark  & \checkmark    & \checkmark    & \checkmark    & \checkmark    & \checkmark    & \checkmark    & \checkmark    & $\sim$        \\ \hline
+    \ref{sec:key-server}            & Key server                & \checkmark  & \checkmark  & \checkmark    &               & \checkmark    & \checkmark    &               & \checkmark    & \checkmark    & \checkmark    \\ \hline
+    \ref{sec:attribute-encryption}  & ABE                       & \checkmark  & \checkmark  & \checkmark    &               & \checkmark    & \checkmark    &               &               & \checkmark    & \checkmark    \\ \hline
+    \ref{sec:broadcast-identity}    & IBBE                      & \checkmark  & \checkmark  & \checkmark    &               & \checkmark    & \checkmark    &               &               & \checkmark    & \checkmark    \\ \hline
+    \ref{sec:broadcast-identity}    & Certificate-based         & \checkmark  & \checkmark  & \checkmark    & \checkmark    & \checkmark    & \checkmark    & \checkmark    &               & \checkmark    & \checkmark    \\ \hline
+    \ref{sec:broadcast-proxy}       & Proxy re-encryption       & \checkmark  & \checkmark  & \checkmark    &               & \checkmark    & \checkmark    &               &               & \checkmark    & \checkmark    \\ \hline
+\end{tabular}
+\end{table}
+
 \section{External encryption}
 \label{sec:external-encryption}
 An intuitive way of implementing a protocol that allows the exchange of logs among users is to rely on external encryption tools.
 Suppose that Alice wants to share a log with Bob.
 Alice could send the log to Bob with an encrypted email.
-Emails can be encrypted with dedicated protocols, e.g. PGP\footnote{Defined by IETF in \href{https://www.rfc-editor.org/rfc/rfc4880}{RFC4800}.} or S/MIME\footnote{Defined by IETF in \href{https://www.rfc-editor.org/rfc/rfc8551.html}{RFC8551}.}.
+Emails can be encrypted with standardized protocols, e.g. PGP\footnote{Defined by IETF in \href{https://www.rfc-editor.org/rfc/rfc4880}{RFC4800}.} or S/MIME\footnote{Defined by IETF in \href{https://www.rfc-editor.org/rfc/rfc8551.html}{RFC8551}.}.
 Such encryption technologies allow Alice to confidentially share logs with others.
 This approach, however, is limited and does not satisfy the identified requirements.
 It is the responsibility of the user to correctly apply the protocol.
@@ -76,6 +99,7 @@ The receiver can also verify if the nested access log was signed by the claimed 
     \label{fig:mutual_encryption}
 \end{figure}
 
+This approach relies on standardized asymmetric cryptography (e.g. RSA).
 While this approach fulfills all functional and security requirements it suffers from performance problems.
 Similar to external encryption, the whole log needs to be encrypted $n$ times if it is shared with $n$ users.
 Much more problematic, however, is the application of asymmetric cryptography to application data.
@@ -134,12 +158,15 @@ To adhere to security requirements S2 and S3 the techniques introduced in sectio
 Instead of a single receiver, the shared log needs to contain the list of authorized users.
 The shared log is finally encrypted with the symmetric key.
 This allows receivers to validate if the log was intended for them and to verify if the actual log was modified during transit.
+Additionally, standardized algorithms exist for symmetric and asymmetric cryptography.
+This allows the construction of a secure and portable crypto library.
 
 While this approach improves the performance compared to section \ref{sec:mutual-encryption}, there is still a drawback.
 If the log is encrypted for $n$ users, the symmetric key needs to be encrypted $n$ times.
 
 \section{Key server}
 \label{sec:key-server}
+
 The development of cloud computing and centralized software architectures motivated the idea of key servers~\cite{Seitz2003}.
 A key server stores cryptographic keys on behalf of the user.
 If a user authenticates against the server and has the required permissions it can access a particular key.
@@ -160,6 +187,7 @@ The encrypted log in the Overseer should therefore be re-encrypted with a freshl
 This new key is then also uploaded to the key server.
 
 This example shows that all functional requirements can be satisfied when utilizing a key server.
+It can be implemented using standardized symmetric encryption schemes (e.g. AES).
 The techniques introduced in section \ref{sec:mutual-encryption} to satisfy security requirements S2 (the receiver can verify it is a valid encryption endpoint) and S3 (the data owner can not forge logs) can be applied again.
 Security requirement S1, however, can not be met because the system suffers from key escrow (the administrator of the key server has access to all keys).
 The confidentiality of all logs is broken because this allows him to potentially decrypt all logs.
@@ -167,7 +195,7 @@ The utilization of a key server also implies that we require an additional trust
 This increases the attack surface of the system and does not adhere to the non-functional requirement N1 (minimal number of trusted entities).
 
 \section{Attribute-based encryption}
-
+\label{sec:attribute-encryption}
 Attribute-based encryption is an approach to provide access control within the domain of cryptography~\cite{Bethencourt2007}. 
 Without attribute-based encryption, access control techniques need to be implemented by a server. 
 Access will be granted if the requesting user is allowed to read/write the data (e.g. if the user works for a certain company). 
@@ -200,8 +228,13 @@ This implies key escrow and harms security requirement S1 because the trusted se
 Additionally, each trusted entity increases the attack surface of the toolchain and conflicts with the non-functional requirement N1 (minimal number of trusted entities).
 There are also schemes that avoid a centralized trust center by employing a decentralized architecture~\cite{Vaanchig2018}.
 These systems, however, can not be integrated into the centralized architecture of the existing toolchain.
+A lot of papers are published in the field of attribute-based encryption.
+However, no cryptographic standard exists conflicting with the non-functional requirement N2.
+It is not included in the Web Cryptographic API~\cite{WebCryptoApi2017}.
 
 \section{Broadcast encryption}
+\label{sec:broadcast-encryption}
+
 The notation of broadcast encryption (\textit{BE}) was first introduced by~\citeauthor{fiat1993broadcast}~\cite{fiat1993broadcast}. 
 Since then many different approaches to broadcast encryption schemes were proposed. 
 All of them solve the following challenge: 
@@ -210,6 +243,8 @@ This section introduces different approaches to realize broadcast encryption.
 
 
 \subsection{Identity-based broadcast encryption} 
+\label{sec:broadcast-identity}
+
 Identity-based broadcast encryption schemes (\textit{IBBE}) are the result of merging identity-based encryption (\textit{IBE}) with broadcast encryption techniques (\textit{BE})~\cite{Sakai2007}.
 \textit{IBE} was initially taken into consideration by Shamir in 1985~\cite{shamir1985}.
 It is public-key cryptography where the public key of a user is a unique string, e.g. its email address. 
@@ -233,8 +268,14 @@ This satisfies the security requirements S2 (the receiver can verify it is a val
 \textit{IBBE} schemes suffer from key escrow because a trusted party computes and distributes secret keys.
 This breaks the confidentiality of the encrypted logs (security requirement S2).
 The additional trusted entity also increases the attack surface breaking non-functional requirement N1 (minimal number of trusted entities).
+A lot of papers are published in the field of \textit{IBE}.
+However, no cryptographic standard exists for \textit{IBE} or \textit{IBBE}.
+It is not included in the Web Cryptographic API~\cite{WebCryptoApi2017}.
+This conflicts with the non-functional requirement N3.
 
 \subsection{Certificate-based broadcast encryption}
+\label{sec:broadcast-certificate}
+
 Certificate-based encryption (\textit{CBE}) was introduced by \citeauthor{Gentry2003} in 2003~\cite{Gentry2003}. 
 Later, this idea was adopted with broadcast encryption by allowing multiple receivers~\cite{Li2018, Fan2013}.
 The construction of \textit{CBE} schemes is motivated by the following observations~\cite{Gentry2003}:
@@ -283,6 +324,7 @@ As a result, the non-functional requirement N2 (standardized cryptographic algor
 Using those schemes in a practical implementation is avoided in this thesis because the missing standards introduce an unpredictable risk.
 
 \subsection{Proxy re-encryption based broadcast encryption}
+\label{sec:broadcast-proxy}
 Broadcast encryption schemes can be implemented with a technique named proxy re-encryption (\textit{PRE}).
 Proxy re-encryption systems are cryptographic schemes, in which a third party (a.k.a. a \textit{proxy}) converts a ciphertext, which was originally intended for Alice, to a new ciphertext, which is intended for Bob. 
 For this conversion, the proxy requires a re-encryption key. 
@@ -295,6 +337,7 @@ To delegate this data to Bob, Alice creates a re-encryption key $rk_{Alice,Bob}$
 This key is transferred to the proxy.
 It allows the proxy to re-encrypt $E_A$ to $E_B$.
 Bob can then download and only he can decrypt $E_B$.
+Alice can revoke access to a log by instructing the server to delete the cipher for a dedicated user.
 
 The proxy needs to be semi-trusted because with the knowledge of $rk_{Alice,Bob}$ it can re-encrypt all ciphers from Alice to Bob~\cite{Chen2018}.
 This has important consequences for the security of the protocol implemented in this thesis.
@@ -303,26 +346,71 @@ This, however, affects the confidentiality of encrypted logs.
 Not only authorized users might have access.
 Users might collude with the server (which re-encrypts logs on behalf of the user) to obtain decrypted logs.
 Overall, a proxy re-encryption based scheme does not adhere security requirement S1 (confidentiality of logs).
+Notice that no cryptographic standard exists for proxy re-encryption based cryptography.
+It is not included in the Web Cryptographic API~\cite{WebCryptoApi2017}.
+This conflicts with the non-functional requirement N3.
 
 \section{Further investigations}
 
-\todo{Consider ZOOM E2EE}
-Zoom operates within a live environment, e.g. all participants are online. 
-Encrypting data in Zoom relies on a DH key exchange during encryption. 
-This implies, that each data packet is encrypted with its own key enabling forward secrecy.~\cite{Isobe2021}
+Many modern communication applications rely on E2EE. 
+This section investigates approaches of the services Zoom, CloudSeal and the instant messaging services Whatsapp and Signal.
+It details the encryption techniques used by those services.
+The goal of this section is to demonstrate what encryption techniques are practically used in modern E2EE applications.
 
-\todo{Consider E2EE in IM messaging Apps}
-Our implementation should provide privacy but not anonymity, which is implemented in modern instant messaging applications~\cite{Akinbi2021}. 
-IM applications usually decrypt each message with its own fresh key and provide PFS in some cases (e.g. Double Ratchet protocol)
+All following techniques have in common that they do not rely on a PKI.
+This restriction, however, is not necessary for this thesis because the inverse transparency toolchain is intended to be distributed in an enterprise context.
+This simplifies the design of the final protocol.
 
-\todo{E2EE content distribution/file sharing}
-CloudSeal relies on Proxy Re-Encryption techniques.
-CloudSeal does not implement a Web application, but relies on native (OS) to implement the crypto~\cite{Xiong2012}.
-The scheme proposed by \citeauthor{Hoerandner2020} also implements a Proxy Re-Encryption scheme. \cite{Hoerandner2020}
-There are also bindings for WASM which implement Prox Re-Encryption (https://github.com/IronCoreLabs/recrypt-rs), thus one could implement Proxy Re-Encryption schemes also within web applications.
-Problem: Proxy Re-Encryption requires a semi trusted server.
-If the server has a re-encryption key, it can simply re-encrypt all traffic for this entity.
-This fundamentally breaks E2EE.
+\subsection{Zoom}
+Zoom provides a video conference platform\footnote{\url{https://zoom.us/}}. 
+It has integrated E2EE in their application to protect the communication among participants.
+The enterprise claims that even the Zoom service provider can not decrypt the exchanged data.~\cite{Blum2020}
 
+Once a meeting is started, the initiator of the meeting generates a meeting key.
+This secret is shared among all users participating in the meeting.
+Thus, the key needs to be transported securely to all users joining the meeting.
+In particular, this requires the joining users to be online.
+All communication is encrypted using the shared meeting key and a symmetric encryption schemes (AES-GCM).
+~\cite{Isobe2021}
+
+The protocol of Zoom is similar to the hybrid encryption described in section \ref{sec:hybrid-encryption}.
+However, it can not be applied in the context of this thesis because all participating users must be online.
+This assumption does not hold in the context of the inverse transparency toolchain.
+Specifically, a monitor needs to be able to encrypt a log for the data owner even the data owner is offline.
+The approach of Zoom shows, however, that hybrid encryption is practically used to broadcast encrypted data to multiple receivers.
+
+\subsection{CloudSeal}
+CloudSeal~\cite{Xiong2012} is a scheme to securely share and distribute files over cloud-based storages (e.g. AmazonS3).
+Their E2EE relies on proxy re-encryption based encryption (see section~\ref{sec:broadcast-proxy} for details).
+CloudSeal can currently not be provided as a web application because it relies on advanced cryptographic algorithms which are not included in the Wep Cryptographic API.
+Thus, their clients are required to run on native operating systems.~\cite{Xiong2012}
+
+As highlighted in section~\ref{sec:broadcast-proxy}, the construction of proxy re-encryption based schemes violates the identified requirements of this thesis.
+CloudSeal is exemplarily listed here because it shows that broadcast encryption schemes are practically implemented to achieve E2EE.
+It is not an option for this thesis because of the limited algorithms provided in the Wep Cryptographic API.
+
+\subsection{Instant messaging services}
+Whatsapp\footnote{\url{https://www.whatsapp.com/}} and Signal\footnote{\url{https://signal.org/}} are two popular instant messaging services.
+They claim to implement E2EE and rely both on the Signal protocol.
+The Signal protocol is a combination of the X3DH protocol~\cite{Marlinspike2016} and the Double Ratched protocol~\cite{Perrin2016}.
+The X3DH protocol establishes a shared secret between two authenticated users.
+This effectively allows the initialization of a secure channel between the users.
+The shared secret is used in the Double Ratched protocol to exchange encrypted messages.~\cite{Marlinspike2016, Perrin2016}
+
+The architecture of the Signal protocol establishes sessions between users.
+Encrypted data can be exchange within those session.
+Encryption and decryption always requires the initially established shared secret.
+If a hardware device is available (e.g. a smartphone with a secure storage element), this shared secret can be stored securely. 
+When encrypting data for a set of users (e.g. within a group chat) the plaintext is encrypted for each user separately.~\cite{Marlinspike2014}
+
+Unfortunately, the concept of sessions relying on an initially exchanged secret key does not fit the architecture of the toolchain.
+The Clotilde frontend allows users to login in a web application.
+Within this application the encrypted data is downloaded and decrypted.
+A session (as used in the Signal protocol) requires, however, that the exchange shared key is available for the user during decryption.
+Since the user can login from arbitrary devices and browsers, the session key needs to be transported among those devices.
+Either the user handles this manually (this conflicts with usability) or a trusted server stores the session key (this conflicts with the notion of E2EE).
+In both ways the requirements of this thesis can not be met.
+A possible solution to fix this is the implementation and distribution of the Clotilde frontend as an app.
+This way, a secure session could be established among users and the shared secret could be securely stored in dedicated secure hardware storages which are not available in browsers.
 
 \end{document}

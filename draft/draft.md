@@ -42,6 +42,8 @@
     Describes the problem statement, illustrates why this is a problem and describes the contribution the thesis makes in solving this problem. Optionally, it can give a short description (1-3 sentences each) of the remaining chapters. Good introductions are concise, typically no longer than 4 pages.
     The introduction reveals the full (but summarized) results of your work
 
+    Motivation for E2EE  here: https://eprint.iacr.org/2021/486.pdf
+
 
 # 2. Terms and Definitions
     Defines the fundamental concepts your thesis builds on. Your thesis implements a new type of parser generator and uses the term non-terminal symbol a lot? Here is where you define what you mean by it. The key to this chapter is to keep it very, very short. Whenever you can, don’t reinvent a description for an established concept, but reference a text book or paper instead.
