@@ -1,30 +1,86 @@
 \documentclass[../main.tex]{subfiles}
 
-\newcommand{\mycomment}[1]{}
 
 \begin{document}
 
 \chapter{Approach}
+\label{chap:approach}
 
-\mycomment{
-    - chapter before: solution space
-    - this chapter: what approach was chosen and what consequences did the approach have for the implementation
-    - Justification: Why? Differences to other/similiar protocols
-    - Implemented Libraries: requriement to implement crypto libs in three languages
-    - Toolchain modification: E2EE implies changes in the existent toolchain
-}
+This chapter covers the description, justification and realization of the protocol that encrypts logs in the toolchain.
+In the previous chapter \ref{chap:overview}, possible solution strategies were introduced and evaluated based on the identified system requirements in chapter \ref{chap:requirements}.
 
-\section{Justification}
+In order to derive a result, section \ref{sec:justification} summarizes the previous analysis and justifies why hybrid encryption is the most promising approach in the context of this thesis.
+This selection fixes the fundamental encryption techniques of the protocol.
+To comply with the requirements, however, the designed protocol not only performs encryption but also contains cryptographic signatures.
+The description of the implemented encryption and decryption algorithms can be found in \ref{sec:protocol-design}.
+Besides the theoretical outline of the implemented protocol, this chapter also details the corresponding libraries and packages that were developed in the scope of this thesis.
+Those libraries are implemented in three programming languages (Typescript, Python and Go).
+This ensures that different software components can handle logs as specified by the protocol.
+Details about this practical realization of the libraries can be found in section \ref{sec:implemented-libraries}.
+Moreover, the chosen approach heavily influences the existing toolchain.
+The existing source code of the toolchain was therefore refactored and adjusted to handle E2EE logs.
+This is described in detail in section \ref{sec:toolchain-modifications}.
+
+\section{Hybrid encryption}
+\label{sec:justification}
+The protocol introduced in this chapter relies on hybrid encryption.
+The purpose of this section is the justification of this encryption technique.
+Recall table \ref{tab:overview-summary} in chapter \ref{chap:overview}, where different approaches were evaluated under the given requirements.
+The table visualizes the fulfillment of requirements of each considered approach.
+Hybrid encryption satisfies all functional and security requirements.
+Only the non-functional performance criterion N4 can not be fully met because the shared secret key needs to encrypted for all receivers.
+The following argumentation illustrates why hybrid encryption is nevertheless the most promising approach.
+
+First of all, hybrid encryption improves mutual encryption because it avoids the encryption of application with asymmetric key cryptography.
+Instead of encrypting a log multiple times under different public keys, hybrid encryption applies fast symmetric algorithms to encrypt the log.
+It then additionally encrypts the symmetric key under the public keys of the receivers.
+This adheres to currently proposed best practices in applying cryptography~\cite[340]{Eckert2018}.
+The performance difference might not be noticeable in the current protocol because the encrypted logs do not contain a lot of information.
+However, the usage of hybrid encryption ensures that the encryption is still performant if the logs are extended in future.
+Notice that there is no difference in terms of security and functionality between the approaches.
+Thus, hybrid encryption outperforms mutual encryption.
+
+Another option to implement the intended protocol is based on broadcast encryption techniques which encrypt data for multiple receivers.
+As elaborated in section \ref{sec:broadcast-encryption}, different approaches are proposed to implement broadcast encryption.
+In general, there is no need to encrypt data $n$ times when it needs to be decrypted by $n$ users in those schemes.
+Considering the non-functional criterion N4 (minimal resource utilization), this property therefore outperforms hybrid encryption.
+The main disadvantage of broadcast encryption is the missing standardization.
+Specifically, the Web Cryptographic API does not include any of those schemes.
+Thus, they can only be used in browser if the reference implementations are translated into Javascript.
+Since Javascript is an interpreted language, however, this comes with considerable performance limitations.
+Moreover, the cryptographic library implemented in this thesis needs to be delivered in three programming languages.
+Translating a dedicated scheme into multiple languages is complex, error-prone and not realizable within the time constraint of this thesis.
+Please also notice that each approach introduced in section \ref{sec:broadcast-encryption} additionally suffers from security limitations undermining the understanding of E2EE.
+Since hybrid encryption relies on standardized and well-researched algorithms, it is preferred over broadcast encryption techniques.
+
+A third option is the implementation based on a key server.
+The log is encrypted with a symmetric scheme and the access to the decryption key is maintained by a key server.
+This approach only relies on well-researched symmetric encryption techniques.
+It can therefore be implemented in different programming languages and environments.
+A key server, however, introduces key escrow which harms the intended E2EE.
+This is a major drawback compared to hybrid encryption.
 
 \section{Protocol design}
+\label{sec:protocol-design}
+
+This section details the implemented protocol which is based on hybrid encryption to enable E2EE.
+The evaluation in terms of functionality, security and performance can be found in chapter~\ref{chap:evaluation}.
+The designed protocol internally uses the \textit{JSON Object Signing and Encryption} standard (\textit{JOSE})~\cite{Barnes2014}.
+Details about it can be found in section~\ref{sec:jose}.
+\textit{JOSE} defines encryption and signature standards that can be used to create a protocol satisfying all system requirements.
+The designed encryption and decryption algorithms are depicted and justified in sections \ref{sec:encryption} and \ref{sec:decryption}. 
 
 \subsection{Jose Standard}
+\label{sec:jose}
 
 \subsection{Encryption}
+\label{sec:encryption}
 
 \subsection{Decryption}
+\label{sec:decryption}
 
 \section{Implemented Libraries}
+\label{sec:implemented-libraries}
 
 \subsection{Ts-It-Crypto}
 
@@ -33,6 +89,7 @@
 \subsection{Go-It-Crypto}
 
 \section{Toolchain modifications}
+\label{sec:toolchain-modifications}
 
 
 \end{document}

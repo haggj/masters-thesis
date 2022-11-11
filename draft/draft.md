@@ -33,6 +33,7 @@
       - Curious server
       - Surreptitious forwarding
       - Malicious data owner
+    - Performance (1)
 7. Conclusion (3)
 
 

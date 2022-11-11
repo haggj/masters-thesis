@@ -3,6 +3,7 @@
 \begin{document}
 
 \chapter{Overview of potential solutions}
+\label{chap:overview}
 
 This chapter theoretically elaborates on different approaches to implementing the requirements defined in chapter \ref{requirements}.
 The sketched protocols illustrate different encryption techniques.
@@ -11,8 +12,8 @@ The outcome of this chapter is a set of possible solution strategies.
 
 The following table summarizes the results of this chapter.
 It provides an overview for the reader.
-A checkmark (\checkmark) means that a approach satisfies the corresponding requirement.
-A missing checkmark indicates that the approach conflicts with the requirement.
+A check (\checkmark) indicates that a approach satisfies the corresponding requirement.
+A missing check means that the approach conflicts with the requirement.
 Details and justifications can be found in the corresponding sections below.
 
 
@@ -30,6 +31,8 @@ Details and justifications can be found in the corresponding sections below.
     \ref{sec:broadcast-identity}    & CBBE                      & \checkmark  & \checkmark  & \checkmark    & \checkmark    & \checkmark    & \checkmark    & \checkmark    &               & \checkmark    & \checkmark    \\ \hline
     \ref{sec:broadcast-proxy}       & PRE                       & \checkmark  & \checkmark  & \checkmark    &               & \checkmark    & \checkmark    &               &               & \checkmark    & \checkmark    \\ \hline
 \end{tabular}
+\caption{Satisfaction of all considered encryption techniques regarding the given requirements.}
+\label{tab:overview-summary}
 \end{table}
 
 \section{External encryption}
