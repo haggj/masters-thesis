@@ -203,7 +203,7 @@ The implemented protocol should defend against this attack.
 This can be realized with cryptographic signatures.
 Upon creation of a log the data consumer signs the log.
 This way a receiving user can verify if the log was modified by the data owner.
-A malicious data owner can not create valid signatures for faked logs because it does not has access to the secret key of the monitor.
+A malicious data owner can not create valid signatures for faked logs because it does not has access to the private key of the monitor.
 Note that there is no risk of surreptitious forwarding here.
 A shared log is not determined for a single user. 
 Due to the dynamically changing set of users who might have access to the log, the data consumer can not specify the intended receivers during the creation of the log.

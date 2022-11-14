@@ -63,7 +63,7 @@ However, this approach integrates the encryption and decryption of logs into the
 To better understand this approach consider the following example.
 A monitor component accesses data of Alice and therefore creates a log.
 Since Alice needs to be able to access the log, the monitor encrypts the log under the public key of Alice and sends it to the server.
-If Alice keeps her secret key private she is the only entity who can decrypt the log.
+If Alice keeps her private key secret she is the only entity who can decrypt the log.
 She can download the log, decrypt it, and also share it with Bob by re-encrypting it under his public key.
 The re-encrypted data is then sent to the server where it is stored.
 Bob can finally download and decrypt the shared log.
@@ -74,12 +74,12 @@ The encrypted data is stored by the Overseer server.
 It allows Alice to request the deletion of the cipher from the server.
 This way Alice can revoke access to the log.
 Thus, all functional requirements are fulfilled.
-As long as all users have exclusive access to their secret key, this approach also ensures the confidentiality of the log (security requirement S1).
+As long as all users have exclusive access to their private key, this approach also ensures the confidentiality of the log (security requirement S1).
 To defend against malicious data owners creating forged logs, the monitor component (e.g. the entity creating a log) needs to cryptographically sign the log before encryption.
 If Alice shares the log, she does not share the plain log.
 Rather, she encrypts the signed log.
 Alice can not modify the existing log or create a completely new log because she is not able to compute a valid signature in the name of the monitor.
-She could only succeed by knowing the secret key of the monitor.
+She could only succeed by knowing the private key of the monitor.
 This structure allows the receiver to verify if the log was created by a valid monitor component.
 As a consequence, a forged log can be detected during decryption (security requirement S3).
 Security requirement S2 can also be satisfied.
@@ -127,7 +127,7 @@ Alice initially generates a symmetric key $k$.
 She uses $k$ to encrypt the payload with a symmetric scheme (e.g. AES).
 She then encrypts $k$ under the public key of Bob.
 Finally, she sends the encrypted key along with the encrypted payload.
-To decrypt the payload, Bob first decrypts the symmetric key $k$ using his secret key.
+To decrypt the payload, Bob first decrypts the symmetric key $k$ using his private key.
 In the final step, Bob can apply $k$ to decrypt the payload.
 
 This concept can be applied to the context of this thesis.
@@ -208,9 +208,9 @@ The attacker has unlimited access to the stored data because the access control 
 Attribute-based encryption schemes shift the logic of access control into encryption and decryption algorithms. 
 A distinction is made between a set of possible attributes (e.g. ${A,B,C}$) and a policy. 
 Policies are logical expressions over attributes (e.g. $A \land B \land \neg C$). 
-A secret key of a user contains certain attributes. 
+A private key of a user contains certain attributes. 
 During encryption, a user specifies a policy that is encoded into the ciphertext.
-A ciphertext can only be decrypted with a secret key fulfilling that policy.
+A ciphertext can only be decrypted with a private key fulfilling that policy.
 Within the domain of \textit{ABE}, one can differentiate between \textit{ciphertext-policy ABE} and \textit{key-policy ABE}. 
 The above-described scenario, where the policy is encoded into the ciphertext and the key of the user is checked against this policy, is called \textit{ciphertext-policy ABE}. 
 On the contrary, \textit{key-policy ABE} describes the scenario where the policy is encoded into the key of the user.
@@ -251,24 +251,24 @@ This section introduces different approaches to realize broadcast encryption.
 Identity-based broadcast encryption schemes (\textit{IBBE}) are the result of merging identity-based encryption (\textit{IBE}) with broadcast encryption techniques (\textit{BE})~\cite{Sakai2007}.
 \textit{IBE} was initially taken into consideration by Shamir in 1985~\cite{shamir1985}.
 It is public-key cryptography where the public key of a user is a unique string, e.g. its email address. 
-Secret keys are derived from this unique string via a dedicated derivation function. 
-To compute secret keys, identity-based encryption schemes require a trusted third party that computes and distributes secret keys for each user.
-Otherwise, everyone could compute the secret key of arbitrary users resulting in an inherent insecure public-key cryptography scheme.
+Private keys are derived from this unique string via a dedicated derivation function. 
+To compute private keys, identity-based encryption schemes require a trusted third party that computes and distributes private keys for each user.
+Otherwise, everyone could compute the private key of arbitrary users resulting in an inherent insecure public-key cryptography scheme.
 Identity-based cryptography was later combined with broadcast encryption resulting in \textit{IBBE}~\cite{Sakai2007}.
 In these systems, a message can be encrypted for a dedicated set of users, where each user is identified by a unique string.
 The encryption algorithm requires a plaintext and a set of identities~\cite{shamir1985}.
-Decryption requires the secret key of one of the users specified during encryption.
+Decryption requires the private key of one of the users specified during encryption.
 
 Suppose that Alice wants to share encrypted data with Bob.
-Once Alice and Bob received their secret keys from the trust center, Alice can encrypt the log and specify Bob as a valid receiver.
+Once Alice and Bob received their private keys from the trust center, Alice can encrypt the log and specify Bob as a valid receiver.
 She can then upload the cipher.
-Bob can download and decrypt it using his secret key.
+Bob can download and decrypt it using his private key.
 If Alice wants to revoke access of Bob, she needs to re-encrypt the cipher and upload it again.
 Thus, all three functional requirements can be fulfilled.
 The techniques from section \ref{sec:mutual-encryption} can be applied again.
 This satisfies the security requirements S2 (the receiver can verify it is a valid encryption endpoint) and S3 (the data owner can not forge logs).
 
-\textit{IBBE} schemes suffer from key escrow because a trusted party computes and distributes secret keys.
+\textit{IBBE} schemes suffer from key escrow because a trusted party computes and distributes private keys.
 This breaks the confidentiality of the encrypted logs (security requirement S2).
 The additional trusted entity also increases the attack surface breaking non-functional requirement N1 (minimal number of trusted entities).
 A lot of papers are published in the field of \textit{IBE}.
@@ -295,25 +295,25 @@ Consider the scenario where Alice wants to send encrypted data to Bob.
 According to~\cite{Gentry2003}, \textit{CBE} schemes function as followed:
 
 \begin{enumerate}
-    \item Alice generates a key pair with a \textit{PKE} key generation algorithm. She keeps the secret key secret. 
-    Not even the trust center is allowed to know this secret key.
+    \item Alice generates a key pair with a \textit{PKE} key generation algorithm. She keeps the private key secret. 
+    Not even the trust center is allowed to know this private key.
     \item Alice requests a certificate for her public key. 
     This certificate is created by the trust center by executing the \textit{IBE} key generation algorithm. 
-    Thus, this certificate can technically also be seen as the second secret key of Alice, which the trust center knows.
+    Thus, this certificate can technically also be seen as the second private key of Alice, which the trust center knows.
     \item Bob also executes steps 1 and 2.
     \item To encrypt data for Bob, Alice uses Bobs public key and encrypts the message twice: Once, with the \textit{IBE} encryption algorithm and once with the \textit{PKE} encryption algorithm. The doubly encrypted message is then sent to Bob. In particular, there is no need for Alice to check if Bob has a valid certificate. This avoids the certificate revocation problem.
     \item Upon receiving the encrypted message, Bob needs to double decrypt the cipher. 
     Once, with the \textit{IBE} decryption algorithm and once with the \textit{PKE} decryption algorithm. 
     This enforces the following.
-    First, only Bob can apply the \textit{PKE} decryption, because only he knows the required secret key. 
+    First, only Bob can apply the \textit{PKE} decryption, because only he knows the required private key. 
     Second, Bob needs a valid certificate because otherwise, he could not apply the \textit{IBE} decryption. 
-    In particular, the first fact avoids key escrow (because the trust center does not know the secret key of Bob) and the second fact avoids the certificate revocation problem (because Bob can only decrypt with a valid certificate).
+    In particular, the first fact avoids key escrow (because the trust center does not know the private key of Bob) and the second fact avoids the certificate revocation problem (because Bob can only decrypt with a valid certificate).
 \end{enumerate}
 This idea was later adopted to broadcast encryption yielding a certificate-based broadcast encryption scheme (\textit{CBBE})~\cite{Li2018}.
 Although this construction relies on a key generation center, it does not suffer from key escrow.
 Once keys are established, a user can encrypt data for a dedicated set of users.
 Only these users can decrypt the cipher.
-In particular, the key generation center can not decrypt the cipher because it does not have access to the PKE secret key of a user.
+In particular, the key generation center can not decrypt the cipher because it does not have access to the PKE private key of a user.
 Besides the functional requirements, \textit{CBBE} also satisfies the security requirements.
 The distinction of shared log and signed log introduced in section \ref{sec:mutual-encryption} can be applied again.
 Thus, all receivers can validate that they are intended decryption endpoints (security requirement S2) and that the access log was created by the claimed monitor (security requirement S3).
@@ -406,7 +406,7 @@ Encryption and decryption always requires the initially established shared secre
 If a hardware device is available (e.g. a smartphone with a secure storage element), this shared secret can be stored securely. 
 When encrypting data for a set of users (e.g. within a group chat) the plaintext is encrypted for each user separately.~\cite{Marlinspike2014}
 
-Unfortunately, the concept of sessions relying on an initially exchanged secret key does not fit the architecture of the toolchain.
+Unfortunately, the concept of sessions relying on an initially exchanged private key does not fit the architecture of the toolchain.
 The Clotilde frontend allows users to login in a web application.
 Within this application the encrypted data is downloaded and decrypted.
 A session (as used in the Signal protocol) requires, however, that the exchange shared key is available for the user during decryption.
