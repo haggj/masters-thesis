@@ -4,18 +4,91 @@
 \begin{document}
 
 \chapter{Implementation}
-\label{chap:design}
+\label{chap:implementation}
 
 This chapter details the corresponding libraries and packages that were developed in the scope of this thesis.
-Those libraries are implemented in the programming languages Typescript\footnote{\url{https://github.com/haggj/ts-it-crypto}}, Python\footnote{\url{https://github.com/haggj/py-it-crypto}} and Go\footnote{\url{https://github.com/haggj/go-it-crypto}}.
+Those libraries are implemented in the programming languages Typescript, Python and Go.
 This ensures that different software components in different environments can handle logs as specified by the protocol.
 Details about this practical realization of the libraries can be found in section \ref{sec:implemented-libraries}.
 Moreover, the chosen approach heavily influences the existing toolchain.
 The existing source code of the toolchain was therefore refactored and adjusted to handle E2EE logs.
-This is described in detail in section \ref{sec:toolchain-modifications}.
+This is described in section \ref{sec:toolchain-modifications}.
 
 \section{Implemented Libraries}
 \label{sec:implemented-libraries}
+
+The following table gives an overview about the implemented libraries.
+It includes links to the github repositories and the package indexes of the programming languages where the libraries are published.
+
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{|c|c|c|c|}
+    \hline
+    Name         & Language & Github                           & Package Index                                    \\ \hline
+    Ts-it-crypto & Typescript           & \href{https://github.com/haggj/ts-it-crypto}{haggj/ts-it-crypto} & \href{https://www.npmjs.com/package/ts-it-crypto}{NPM}       \\ \hline
+    Py-it-crypto & Python               & \href{https://github.com/haggj/py-it-crypto}{haggj/py-it-crypto} & \href{https://pypi.org/project/py-it-crypto/}{PyPI}          \\ \hline
+    Go-it-crypto & Go                   & \href{https://github.com/haggj/go-it-crypto}{haggj/go-it-crypto} & \href{https://pkg.go.dev/github.com/haggj/go-it-crypto}{PKG} \\ \hline
+    \end{tabular}
+\end{table}
+
+All three libraries are fully tested and compatible with each other.
+A token encrypted in one library can be decrypted by all libraries.
+It was taken care that classes, functions, constant and variables are named similar (identical names are not possible because of the different naming conventions in Go, Python and Typescript).
+Moreover, all libraries employ the same folder structure.
+This aims to improve maintainability of the source code.
+As a result, all three libraries expose the same interface to users.
+This interface is highly related to the algorithms described in chapter~\ref{chap:design}.
+The usage of the library is generally described in the following.
+Please also refer to the pseudocode depicted in listing~\ref{lst:pseudocode}.
+If you are interested in the concrete implementation in a specific language have a look to the corresponding github repository.
+
+To make use of the library a instance of type \verb|ItCrypto| must be instantiated.
+This instantiation requires the function \verb|fetchUser|.
+It resolves an identity of a user (which is a \verb|string|) to an instance of type \verb|RemoteUser|.
+The function usually request a server which provides the public keys of the users within the system.
+It needs to implement the following signature: \verb|RemoteUser fetchUser(string)|.
+A \verb|RemoteUser| object stores the public keys of the user along with its identity.
+
+Once the \verb|ItCrypto| object is instantiated a user needs to log.
+A logged-in in user is represented by a \verb|AuthenticatedUser| object.
+It extends the \verb|RemoteUser| object because it additionally provides the private keys of the user.
+This allows the logged-in user to sign and decrypt data.
+A login is realized by calling the \verb|login| method on the \verb|ItCrypto| object.
+This function expects the PEM-encoded key material.
+
+If a user is logged the \verb|ItCrypto| object becomes fully functional.
+The logged-in user can sign logs by calling the method \verb|signLog|.
+It can encrypt logs by calling \verb|encryptLog| and it can decrypt a given log by calling \verb|decryptLog|.
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\begin{lstlisting}[label=lst:pseudocode,float,floatplacement=tbp, language=Java, caption={Pseudocode of creating, encrypting and decrypting logs using the provided libraries.}, morekeywords={RemoteUser, var, assert}, commentstyle=\color{codegreen}]
+RemoteUser fetchUser(string identity){
+    /*
+    Fetch keys from server
+    */
+    return RemoteUser(identity, /* keys */)
+}
+
+// Initialize itCrypto object
+var itCrypto = ItCrypto(fetchUser)
+itCrypto.login(/* keys */)
+
+// Sign log data
+var singedLog = itCrypto.signLog(/* log data */)
+
+// Encrypt log for a set of recipients
+var alice = fetchUser("identity@alice.com")
+var bob = fetchUser("identity@bob.com")
+var loggedInUser = itCrypto.user
+var encryptedLog = itCrypto.encryptLog(singedLog, 
+                    [alice, bob, loggedInUser])
+
+// Decrypt log
+var decryptedLog = itCrypto.decryptLog(encryptedLog)
+assert(decryptedLog == singedLog)
+\end{lstlisting}
+
+The following subsections shortly highlight peculiarities of the libraries.
 
 \subsection{Ts-It-Crypto}
 
