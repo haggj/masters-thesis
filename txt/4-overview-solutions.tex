@@ -69,13 +69,14 @@ She can download the log, decrypt it, and also share it with Bob by re-encryptin
 The re-encrypted data is then sent to the server where it is stored.
 Bob can finally download and decrypt the shared log.
 
+All functional requirements are fulfilled:
 Alice can access the log because the monitor encrypted it with her public key.
 She can also share logs with others.
 The encrypted data is stored by the Overseer server.
 It allows Alice to request the deletion of the cipher from the server.
 This way Alice can revoke access to the log.
-Thus, all functional requirements are fulfilled.
 As long as all users have exclusive access to their private key, this approach also ensures the confidentiality of the log (security requirement S1).
+
 To defend against malicious data owners creating forged logs, the monitor component (e.g. the entity creating a log) needs to cryptographically sign the log before encryption.
 If Alice shares the log, she does not share the plain log.
 Rather, she encrypts the signed log.
@@ -83,17 +84,19 @@ Alice can not modify the existing log or create a completely new log because she
 She could only succeed by knowing the private key of the monitor.
 This structure allows the receiver to verify if the log was created by a valid monitor component.
 As a consequence, a forged log can be detected during decryption (security requirement S3).
+
 Security requirement S2 can also be satisfied.
-To achieve this, Alice does not only encrypt the signed log.
+To achieve this, Alice does not only encrypt the signed log directly.
 She additionally signs and includes the identity of the receiving user.
-This allows receivers to verify if the log was intended for them.
+This allows receivers to verify if the log was intentionally shared with them~\cite{Davis2001}.
 Figure \ref{fig:mutual_encryption} shows the structure of a shared log before it is encrypted.
 The actual log data is signed by the monitor.
 The shared log is a data structure that contains the signed log.
-It additionally specifies the user with whom the log is shared (e.g. receiver).
+It additionally specifies the user with whom the log is shared (e.g. the receiver).
 The shared log itself is signed by the data owner.
-The signed shared log is passed to the encryption algorithm.
-After decryption, a receiver can validate if the sender intentionally shared the log.
+The shared log is passed to the encryption algorithm.
+After a successful decryption, a receiver receives this shared log.
+This allows him to validate if the sender intentionally shared the log.
 The receiver can also verify if the nested access log was signed by the claimed monitor.
 
 \begin{figure}[ht]

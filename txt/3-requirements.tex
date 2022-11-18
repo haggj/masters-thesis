@@ -54,8 +54,8 @@ For details and the rationale behind each requirements see the corresponding sub
 \subsubsection{Security requirements}
 \begin{itemize}
     \item [S1.] Only the data owner and those explicitly given access to the logs can access them.
-    \item [S2.] The receiving users can verify that the data owner has intended to share the log with them.
-    \item [S3.] The receiving users can validate the creator of a log.
+    \item [S2.] The users receiving a shared log can verify that the data owner has intended to share the log with them.
+    \item [S3.] The users receiving a shared log can verify that the log was created by a valid monitor.
 \end{itemize}
 
 \subsubsection{Non-functional requirements}
@@ -114,11 +114,10 @@ The revocation can be described as:
 \section{Security requirements}\label{security-requriements}
 As proposed by~\citeauthor{Fabian2010}~\cite{Fabian2010}, this section determines the security goals of this thesis and refines them into security requirements.
 Based on the major goals specified above and the identified functional requirements the following security goals have been identified:
-
 \begin{itemize}
     \item Only the data owner and those explicitly given access to the logs can access them.
-    \item The receiving users can verify that the data owner has intended to share the log with them.
-    \item The receiving users can validate the creator of a log.
+    \item The users receiving a shared log can verify that the data owner has intended to share the log with them.
+    \item The users receiving a shared log can verify that the log was created by a valid monitor.
 \end{itemize}
 
 These security goals can be refined into security requirements by annotating them with additional information, a counter-stakeholder and specific circumstances~\cite{Fabian2010}.
@@ -133,10 +132,10 @@ In the context of the inverse transparency toolchain, the intended end-to-end en
 As specified in the functional requirements, the data owner can always decrypt the log.
 The data owner can also share the log with other users which are then able to decrypt.
 Authorized users are the data owner of the log plus all users the data owner has given access.
-From the perspective of E2EE all other entities are untrusted.
+From the perspective of E2EE, all other entities are untrusted.
 Untrusted entities must not be able to decrypt logs.
 The untrusted network includes the whole infrastructure of the toolchain, except the application a user interacts with.
-This implies, that all frontend applications must trusted (e.g. the Clotilde UI and all integrated Monitor components).
+This implies, that all frontend applications must trusted (e.g. the \textit{Clotilde UI} and all integrated \texit{Monitor} components).
 
 The following example attack motivates this requirement.
 Consider an attacker Eve who is the database admin of the Overseer server.
@@ -150,7 +149,7 @@ He simply observes the stored data.
 The implemented protocol should defend against this attacker.
 
 
-\subsubsection{S2. The receiving users can verify that the data owner has intended to share the log with them.}
+\subsubsection{S2. The users receiving a shared log can verify that the data owner has intended to share the log with them.}
 
 The functional requirements require, that only the data owner of a log is allowed to share a log.
 No other user should be able to share the log in the name of the data owner.
@@ -161,8 +160,8 @@ The following exemplary attack motivates this requirement.
 Assume Alice to be a data owner and Eve to be a malicious user.
 Further assume that Alice shares a access log with Eve.
 Eve now has valid access to the log and can decrypt the encrypted log.
-Eve could itself apply the encryption algorithm and could specify Bob als valid receiver.
-If the exchanged message does not contain information about the sender and intended receiver, there is no way for Bob to know who actually sent the message and if the log was intentionally shared with him.
+Eve could itself apply the encryption algorithm and could specify Bob as receiver.
+If the exchanged message does not contain information about the sender and the intended recipients, there is no way for Bob to know who actually sent the message and if the log was intentionally shared with him.
 Bob might assume that Alice sent the message because she is the data owner of the received log.
 Moreover, Bob could implicitly assume that he is a valid receiver because he can decrypt the message.
 In this scenario, however, Alice did not want to share the log with Bob.
@@ -170,17 +169,9 @@ The log was simply forwarded by Eve without permission.
 
 This attack demonstrates how an active attacker could share logs with unintended users.
 The attacker forwards a valid log to an arbitrary user in the system.
-The implemented protocol in the context of this thesis should defend against this attack.
-A first idea to resolve this requirement is the use of cryptographic signatures.
-If a data owner signs the shared log, the receiver can verify that the sender indeed wanted to share the log.
-However, a simple signature does not prevent the described attack due to the risk of surreptitious forwarding~\cite{Davis2001}.
-This makes sense because Eve could simply forward the signed message to Bob.
-Bob can verify that Alice wanted to share the log but Bob does not know if Alice wanted to share the log with him.
-This can be fixed if the data owner additionally includes and signs the set of valid receivers into the exchanged message~\cite{Davis2001}.
-If the identity of the receiving user is singed by the data owner, the receiver can be sure that the data owner intentionally shared the log for him or her.
+The implemented protocol in the context of this thesis must defend against this attack.
 
-
-\subsubsection{S3. The receiving users can validate the creator of a log.}
+\subsubsection{S3. The users receiving a shared log can verify that the log was created by a valid monitor.}
 
 A data owner can share logs with others within the system.
 However, this introduces the risk that a malicious data owner shares forged logs with other users by manipulating existing logs or creating arbitrary new logs.
@@ -199,31 +190,7 @@ Without further protection the receiving users can not verify the creator of the
 There is no way to detect this fraud.
 
 This example demonstrates how a malicious data owner could insert forged log into the system.
-The implemented protocol should defend against this attack.
-This can be realized with cryptographic signatures.
-Upon creation of a log the data consumer signs the log.
-This way a receiving user can verify if the log was modified by the data owner.
-A malicious data owner can not create valid signatures for faked logs because it does not has access to the private key of the monitor.
-Note that there is no risk of surreptitious forwarding here.
-A shared log is not determined for a single user. 
-Due to the dynamically changing set of users who might have access to the log, the data consumer can not specify the intended receivers during the creation of the log.
-Moreover, this is not a decision the data consumer is allowed to make.
-
-
-This security goal is intended to defend against a malicious data owner, who tries to manipulate logs. 
-Specifically, the adversary performs the following steps:
-\begin{itemize}
-    \item The malicious data owner decrypts the log as intended.
-    \item The malicious data owner modifies the decrypted data.
-    \item The malicious data owner finally shares the modified data with other users.
-\end{itemize}
-Thus, it is assumed to defend against an active attacker not following the intended protocol.
-Further it is assumed, that the attacker does not have the computational power to to break cryptographic primitives without knowing the keys.
-
-An authorized monitor component initially create logs. 
-Upon creation, these logs can only be accessed by the data owner (see goal F1).
-The data owner might want to share these logs.
-Each time a user receives a shared log, the user needs to verify if the log was created by a authorized monitor.
+The implemented protocol must defend against this attack.
 
 \section{Non-functional requirements}\label{non-functional-requriements}
 Non-functional requirements can be characterized as \enquote{global requirements on its development or operational costs, performance, reliability, maintainability, portability, robustness and the like}~\cite[11]{Mylopoulos1992}.
