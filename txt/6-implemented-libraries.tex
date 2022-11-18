@@ -6,8 +6,8 @@
 \chapter{Implementation}
 \label{chap:implementation}
 
-This chapter details the corresponding libraries and packages that were developed in the scope of this thesis.
-Those libraries are implemented in the programming languages Typescript, Python and Go.
+This chapter describes the libraries that were developed in the scope of this thesis.
+They are available in the programming languages Typescript, Python and Go.
 This ensures that different software components in different environments can handle logs as specified by the protocol.
 Details about this practical realization of the libraries can be found in section \ref{sec:implemented-libraries}.
 Moreover, the chosen approach heavily influences the existing toolchain.
@@ -18,7 +18,8 @@ This is described in section \ref{sec:toolchain-modifications}.
 \label{sec:implemented-libraries}
 
 The following table gives an overview about the implemented libraries.
-It includes links to the github repositories and the package indexes of the programming languages where the libraries are published.
+It includes links to the github repositories and the package indexes of the programming languages where the libraries were published.
+The acronym \textit{it-crypto} stands for inverse transparency cryptography.
 
 \begin{table}[ht]
     \centering
@@ -32,33 +33,40 @@ It includes links to the github repositories and the package indexes of the prog
 \end{table}
 
 All three libraries are fully tested and compatible with each other.
-A token encrypted in one library can be decrypted by all libraries.
+Data which was encrypted in one library can be decrypted by all libraries.
 It was taken care that classes, functions, constant and variables are named similar (identical names are not possible because of the different naming conventions in Go, Python and Typescript).
 Moreover, all libraries employ the same folder structure.
 This aims to improve maintainability of the source code.
 As a result, all three libraries expose the same interface to users.
 This interface is highly related to the algorithms described in chapter~\ref{chap:design}.
-The usage of the library is generally described in the following.
-Please also refer to the pseudocode depicted in listing~\ref{lst:pseudocode}.
-If you are interested in the concrete implementation in a specific language have a look to the corresponding github repository.
 
-To make use of the library a instance of type \verb|ItCrypto| must be instantiated.
+\subsection{General usage}
+
+This section describes the usage of the libraries in general.
+Please also refer to the pseudocode depicted in listing~\ref{lst:pseudocode}.
+If you are interested in the concrete realization in a specific language have a look to the corresponding github repositories.
+
+To make use of the library an instance of type \verb|ItCrypto| must be instantiated.
 This instantiation requires the function \verb|fetchUser|.
 It resolves an identity of a user (which is a \verb|string|) to an instance of type \verb|RemoteUser|.
-The function usually request a server which provides the public keys of the users within the system.
+The function usually request a server which is able to resolve the identity of a user to its public keys.
 It needs to implement the following signature: \verb|RemoteUser fetchUser(string)|.
 A \verb|RemoteUser| object stores the public keys of the user along with its identity.
+Please note that a \verb|RemoteUser| object should never be constructed directly.
+Rather, the \verb|importRemoteUser| function must be called.
+This function expects a trusted certificate as parameter.
+This trusted certificate is assumed to contain the public key of a root certificate authority within the PKI.
+The public keys of all users are assumed to be singed by this certificate authority.
+The function \verb|importRemoteUser| verifies if the provided public keys are singed accordingly.
 
-Once the \verb|ItCrypto| object is instantiated a user needs to log.
+Once the \verb|ItCrypto| object is instantiated a user needs to log in.
 A logged-in in user is represented by a \verb|AuthenticatedUser| object.
 It extends the \verb|RemoteUser| object because it additionally provides the private keys of the user.
 This allows the logged-in user to sign and decrypt data.
 A login is realized by calling the \verb|login| method on the \verb|ItCrypto| object.
 This function expects the PEM-encoded key material.
-
-If a user is logged the \verb|ItCrypto| object becomes fully functional.
-The logged-in user can sign logs by calling the method \verb|signLog|.
-It can encrypt logs by calling \verb|encryptLog| and it can decrypt a given log by calling \verb|decryptLog|.
+If a user is logged-in the \verb|ItCrypto| object becomes fully functional.
+The logged-in user can create, encrypt and decrypt logs using the provided keys.
 
 \definecolor{codegreen}{rgb}{0,0.6,0}
 \begin{lstlisting}[label=lst:pseudocode,float,floatplacement=tbp, language=Java, caption={Pseudocode of creating, encrypting and decrypting logs using the provided libraries.}, morekeywords={RemoteUser, var, assert}, commentstyle=\color{codegreen}]
@@ -66,7 +74,7 @@ RemoteUser fetchUser(string identity){
     /*
     Fetch keys from server
     */
-    return RemoteUser(identity, /* keys */)
+    return importRemoteUser(identity, /* keys */, rootCA)
 }
 
 // Initialize itCrypto object
@@ -88,16 +96,130 @@ var decryptedLog = itCrypto.decryptLog(encryptedLog)
 assert(decryptedLog == singedLog)
 \end{lstlisting}
 
-The following subsections shortly highlight peculiarities of the libraries.
+\subsection{Documentation ItCrypto}
+This section further details the \verb|ItCrypto| object.
+It aims to provide a documentation for developers who integrate the library into their software.
+In particular, the methods \verb|signLog|, \verb|encryptLog| and \verb|decryptLog| are detailed.
+As described in chapter~\ref{chap:design}, those methods can be used to provide the full functionality of the intended protocol.
 
-\subsection{Ts-It-Crypto}
+\begin{enumerate}
+    \item
+    The method \verb|signLog| cryptographically signs the given log data.
+    Monitors must call this encryption function to initially sign a instantiated log.
+    The protocol does not allow any raw logs in the system.
+    Rather, all logs must be signed by the monitor that created the log. 
+    This method relies on the private signing key of the logged-in user.\\\\
+    \begin{tabular}{p{3cm}p{9cm}}
+        \hline
+        \multicolumn{2}{l}{Input parameters}    \\ \hline
+        \verb|accessData|              & This is a data structure which contains the raw log data. In particular, this raw data must be encodable as json data. It contains all relevant information to log the observed data access.           \\ \hline
+        \multicolumn{2}{l}{Output}   \\ \hline
+        \multicolumn{2}{p{12cm}}{The method returns a \textit{JWS} token encoded as string. It is signed by the logged-in user and it contains the json-encoded accessLog as payload.}
+    \end{tabular} \\
+    \item
+    The method \verb|encryptLog| encrypts a given log for a given set of recipients.
+    Monitors must call this function to initially encrypt the log for the data owner.
+    It is crucial to the security of the protocol that the monitor chooses the data owner as single recipient. 
+    This encryption function can be used to share or revoke access to the log.
+    In this case, it must be called by the data owner of the particular log. 
+    This method relies on the private signing key of the logged-in user.\\\\
+    \begin{tabular}{p{3cm}p{9cm}}
+        \hline
+        \multicolumn{2}{l}{Input parameters}    \\ \hline
+        \verb|log|              & This is the log which needs to be encrypted. It must be singed by a monitor. The output of \verb|signLog| can be directly used here.           \\
+        \verb|recipients|       & This is a list of \verb|RemoteUser| objects containing the identity and public encryption key for each recipient. This set defines which users can decrypt the created cipher.           \\ \hline
+        \multicolumn{2}{l}{Output}   \\ \hline
+        \multicolumn{2}{p{12cm}}{The method returns a \textit{JWE} token encoded as string. It contains the provided signed log and can only be decrypted by the specified recipients. The token specifies the logged-in user as creator of the token. It also contains the set of recipients and the identity of the data owner as metadata.}
+    \end{tabular} \\
+    \item
+    The method \verb|decryptLog| decrypts a given encrypted data.
+    A user can only decrypt this log if it was included as recipient during encryption.
+    It might be called by any user that received an encrypted log.
+    The method performs multiple validations to detect any misusage of the protocol.
+    In particular, it verifies all signatures of the encoded \textit{JWS} tokens.
+    This function relies on the private decryption key of the logged-in user. \\\\
+    \begin{tabular}{p{3cm}p{9cm}}
+        \hline
+        \multicolumn{2}{l}{Input parameters}    \\ \hline
+        \verb|jwe|              & This is a \textit{JWE} token that represents an encrypted log. This token is the result of \verb|encryptLog|. \\ \hline
+         \multicolumn{2}{l}{Output}   \\ \hline
+        \multicolumn{2}{p{12cm}}{The method returns a log. This is the same object that was passed to the encryption function. Therefore it is still signed by a monitor. The signature, however, was already verified during decryption. This construction allows a data owner to easily re-encrypt the log.}
+    \end{tabular}
+\end{enumerate}
 
-\subsection{Py-It-Crypto}
+\subsection{Cryptographic keys}
 
-\subsection{Go-It-Crypto}
+The libraries require cryptographic keys to create, encrypt and decrypt logs.
+As described in section~\ref{sec:overview}, the protocol assumes an externally established PKI.
+The development environment of the toolchain contains a script \verb|prebuild.sh|.
+This script exemplary computes keys which are known to work.
+Currently the libraries only support elliptic curve cryptography.
+The OpenSSL parameters \verb|prime256v1| are known to work in all three implementations.
+Private keys are assumed to be PEM-encoded.
+Public keys are assumed to be PEM-encoded certificates which are singed by a trusted certificate authority.
+Please have a look to \verb|prebuild.sh| for details.
 
 \section{Toolchain modifications}
 \label{sec:toolchain-modifications}
+The integration of the protocol requires the adoption of the existing toolchain.
+Figure~\ref{fig:encrypted-toolchain} was taken from~\cite{Zieglmeier2021}.
+It additionally visualizes the encrypted data flow in the toolchain.
+In particular, a monitor encrypts the log for the data owner.
+A user who is logged in into the display component can decrypt its logs.
+Moreover, access to the logs can be shared and revoked.
+This functionality requires changes in the \textit{Monitor}, \textit{Safekeeper} and \textit{Display} component.
+Those changes were implemented in the context of this thesis.
+The development environment of the toolchain is a proof-of-concept.
+It shows how a \textit{PKI} infrastructure can be used to integrate encrypted logs.
+The following section describe different perspectives of this integration.
+They provide details about the implemented changes.
+
+
+\begin{figure}[h!]
+    \includegraphics[width=8cm]{../img/06/encrypted_toolchain.jpg}
+    \centering
+    \caption{The general data flow in the toolchain has not changed. The passed data, however, is end-to-end encrypted.}
+    \label{fig:encrypted-toolchain}
+\end{figure}
+
+\subsection{User management}
+The toolchain relies on a single-sign-on server responsible for authenticating users.
+The development environment provides an implementation of this server.
+Besides the user information it now additionally stores certificates containing the public keys of the users.
+An additionally implemented endpoint resolves the identity of the user to its stored keys.
+This allows all other components within the toolchain to fetch public keys of participating users.
+
+\subsection{Display component}
+The display component is the front-end of the toolchain.
+It visualizes all data accesses concerning the logged-in user.
+Since all logs are end-to-end encrypted it must handle the logs provided by the \textit{Safekeeper}.
+In particular, the logs must be decrypted in the front-end.
+The access to the logs can also be shared and revoked by the data owner.
+This allows a data owner to authorize any other user in the system to temporarily access a log.
+The adopted implementation provides this functionality.
+To perform the necessary cryptographic actions, it integrates the \textit{ts-it-crypto} library to the front-end application.
+Appendix~\ref{app:screenshots} contains screenshots of the realized UI.
+
+\subsection{Safekeeper component}
+The \textit{Safekeeper} component is responsible to store logs.
+It was adopted to handle encrypted data.
+As described in section~\ref{sec:metadata}, a encrypted log contains metadata to support intermediate servers.
+This metadata contains the set of recipients (e.g. the users that can decrypt the log) and the identity of the data owner.
+Once a loc is sent to the server, thus, this metadata must be parsed.
+It is stored along with the encrypted log in the database.
+This allows the \textit{Safekeeper} to associate a log with users.
+A new endpoint was implemented that allows users to request its encrypted logs.
+Based on the provided metadata, the server can filter all logs concerting this particular user.
+Moreover, the data owner of a log can update a log in order to share or revoke access.
+Thus, a second endpoint was created that allows data owners to modify stored logs.
+
+Since all logs are end-to-end encrypted it can not access any content of the stored data.
+This implies that it can not verify if a performed access was permitted by the data owner.
+However, those endpoints still exists.
+This allows data owners to provide detailed policies about who can access what data.
+A monitor tracking data usages and creating corresponding logs can check if the observed access is allowed by calling those endpoints.
+Since the \textit{Safekeeper} can not validate the compliance of these policies, this validation is outsourced to the monitor.
+
 
 
 \end{document}

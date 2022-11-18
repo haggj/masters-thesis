@@ -22,13 +22,18 @@ The imposed algorithms to create, encrypt and decrypt logs are explained in the 
 The implemented protocol extends the current toolchain because it supports encrypted logs.
 Additionally, access to encrypted logs can be shared and revoked by the data owner.
 
-The protocol relies on a PKI.
+The protocol relies on an established PKI.
 Each user requires two key pairs.
-One key pair is dedicated to encrypting data.
+The first key pair is dedicated to encrypting data.
+Its public key is called encryption key while its private key is called decryption key.
 The second key pair is intended to sign data.
+Its public key is called verification key while its private key is called signing key.
+Public keys are represented by a PEM-encoded certificate which is signed by a trusted CA.
+Private keys are represented by a PEM-encoded private key.
 This separation of keys is considered to be the best practice in modern key management.~\todo{quelle}
 Each user needs to have exclusive access to its private keys.
 The public keys of all users are expected to be publicly available in the system.
+The protocol further assumes that a user that participates in the system has access to its key material (e.g. via hardware token).
 
 The protocol relies on three fundamental operations: 
 Creating, encrypting and decrypting logs.
@@ -203,6 +208,7 @@ This requires the re-encryption of the log.
 The encryption algorithm outputs a \textit{JWE} token which can be decrypted by the specified users.
 
 Internally, the encryption algorithm creates another \textit{JWS} token.
+This token is signed with the private signing key of the user encrypting the log (e.g. the creator).
 It is called a shared log because it contains a nested log plus the set of recipients plus the identity of the creator (see figure~\ref{fig:nested-jws}).
 The latter allows a decrypting user to download the public key of the creator which is used to verify the shared log.
 The set of recipients is included to mitigate surreptitious forwarding.
@@ -216,11 +222,14 @@ The set of recipients and the identity of the owner are passed as metadata into 
 The choice of used algorithms to encrypt the data implies hybrid encryption:
 The plaintext is encrypted with the authenticated encryption algorithm \verb|A256GCM| (symmetric encryption via 256-bit AES in Galois/Counter Mode).
 The applied key-wrapping algorithm is \verb|ECDH-ES+A256KW|.
-It is responsible for encrypting the symmetric key for authorized users (asymmetric encryption).
-This algorithm establishes a Diffie-Hellman secret between the sender and receiver which is used to symmetrically encrypt the symmetric key using AES.
+It is responsible computing encrypted keys.
+For each user specified as valid recipient, the symmetric key is encrypted under the public encryption key of the user (asymmetric encryption).
+This algorithm establishes a Diffie-Hellman secret between the creator and recipient.
+This DH-secret is finally used to encrypt the symmetric key using AES.
 Details about this approach can be found in \cite[100]{Barker2017}.
 Both algorithms are specified by the JSON Web Algorithm specification~\cite{Jones2015}.
-The outcome of the encryption is a \textit{JWE} token which can only be decrypted by the specified users.
+The resulting \textit{JWE} token contains the symmetrically encrypted log, all encrypted keys, and the protected header.
+It can only be decrypted by the specified recipients because they are the only users who can restore the symmetric encryption key.
 This is intended to resolve security requirement S1 because it effectively end-to-end encrypts a log.
 The whole encryption process is depicted in detail in the appendix~\ref{app:encryption}.
 

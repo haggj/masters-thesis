@@ -19,7 +19,7 @@ Details and justifications can be found in the corresponding sections below.
 
 
 \begin{table}[h]
-    \centering
+    \centering 
     \begin{tabular}{|l|l|c|c|c|c|c|c|c|c|c|c|}
     \hline
     Section                         & Approach                  & F1          & F2          & F3            & S1            & S2            & S3            & N1            & N2            & N3            & N4            \\ \hline
@@ -87,9 +87,9 @@ Security requirement S2 can also be satisfied.
 To achieve this, Alice does not only encrypt the signed log.
 She additionally signs and includes the identity of the receiving user.
 This allows receivers to verify if the log was intended for them.
-Figure \ref{fig:mutual_encryption} shows the structure of a log before it is encrypted.
-The actual access log is signed by the monitor.
-The shared log is a data structure that contains the signed access log.
+Figure \ref{fig:mutual_encryption} shows the structure of a shared log before it is encrypted.
+The actual log data is signed by the monitor.
+The shared log is a data structure that contains the signed log.
 It additionally specifies the user with whom the log is shared (e.g. receiver).
 The shared log itself is signed by the data owner.
 The signed shared log is passed to the encryption algorithm.
@@ -97,7 +97,7 @@ After decryption, a receiver can validate if the sender intentionally shared the
 The receiver can also verify if the nested access log was signed by the claimed monitor.
 
 \begin{figure}[ht]
-    \includegraphics[scale=0.12]{../img/04/mutual_encryption.jpg}
+    \includegraphics[scale=0.2]{../img/04/mutual_encryption.jpg}
     \centering
     \caption{Structure of a shared log before encryption.}
     \label{fig:mutual_encryption}
@@ -149,9 +149,9 @@ Alice can also revoke access to the log by re-encrypting the log.
 This requires a fresh symmetric key $k$.
 
 \begin{figure}[ht]
-    \includegraphics[scale=0.2]{../img/04/hybrid_encryption.jpg}
+    \includegraphics[scale=0.22]{../img/04/hybrid_encryption.jpg}
     \centering
-    \caption{Structure of an encrypted log using hybrid encryption.}
+    \caption{Structure of an encrypted log using hybrid encryption. The cipher contains the encrypted log and an encrypted key for each recipient.}
     \label{fig:hybrid_encryption}
 \end{figure}
 
@@ -239,40 +239,42 @@ It is not included in the Web Cryptographic API~\cite{WebCryptoApi2017}.
 \section{Broadcast encryption}
 \label{sec:broadcast-encryption}
 
-The notation of broadcast encryption (\textit{BE}) was first introduced by~\citeauthor{fiat1993broadcast}~\cite{fiat1993broadcast}. 
-Since then many different approaches to broadcast encryption schemes were proposed. 
-All of them solve the following challenge: 
-How to broadcast encrypted data while only an explicitly defined set of users can decrypt the data?
-This section introduces different approaches to realize broadcast encryption.
-
+Broadcast encryption (\textit{BE}) is an encryption technique that allows the encrypting user to specify a set of authorized recipients.
+Only those users can decrypt the produced ciphertext.
+It was initially proposed by~\citeauthor{fiat1993broadcast}~\cite{fiat1993broadcast}.
+In the last years different realization of broadcast encryption schemes were discussed~\cite{Sakai2007, Li2018, Hagg2022, Fan2013}.
+This section categorizes and summarizes those approaches as suggested in~\cite{Hagg2022}.
+Furthermore, each approach is evaluated against the system requirements.
 
 \subsection{Identity-based broadcast encryption} 
 \label{sec:broadcast-identity}
 
-Identity-based broadcast encryption schemes (\textit{IBBE}) are the result of merging identity-based encryption (\textit{IBE}) with broadcast encryption techniques (\textit{BE})~\cite{Sakai2007}.
-\textit{IBE} was initially taken into consideration by Shamir in 1985~\cite{shamir1985}.
-It is public-key cryptography where the public key of a user is a unique string, e.g. its email address. 
-Private keys are derived from this unique string via a dedicated derivation function. 
-To compute private keys, identity-based encryption schemes require a trusted third party that computes and distributes private keys for each user.
-Otherwise, everyone could compute the private key of arbitrary users resulting in an inherent insecure public-key cryptography scheme.
-Identity-based cryptography was later combined with broadcast encryption resulting in \textit{IBBE}~\cite{Sakai2007}.
-In these systems, a message can be encrypted for a dedicated set of users, where each user is identified by a unique string.
-The encryption algorithm requires a plaintext and a set of identities~\cite{shamir1985}.
-Decryption requires the private key of one of the users specified during encryption.
+Traditional identity-based encryption (\textit{IBE})) schemes are  a type of public-key cryptography.
+The public key of a user is a human rememberable string (e.g. the email address).
+For a given public key the private key can be generated using a dedicated derivation function.
+Those private keys must be computed by a trusted entity which has access to secret system parameters.~\cite{shamir1985}
 
-Suppose that Alice wants to share encrypted data with Bob.
-Once Alice and Bob received their private keys from the trust center, Alice can encrypt the log and specify Bob as a valid receiver.
-She can then upload the cipher.
-Bob can download and decrypt it using his private key.
-If Alice wants to revoke access of Bob, she needs to re-encrypt the cipher and upload it again.
-Thus, all three functional requirements can be fulfilled.
+This basic idea was later adopted to implement broadcast encryption~\cite{Hagg2022}.
+The resulting schemes are called identity-based broadcast encryption (\textit{IBBE})~\cite{Sakai2007}.
+The following example illustrates its functionality~\cite{Hagg2022}:
+Assume the users Alice and Bob.
+Both own unique email addresses.
+First of all, the \textit{IBBE} scheme needs to be instantiated.
+The trust center computes the private keys on behalf of Alice and Bob based on their email addresses.
+It also distributes the private keys and public system parameters to both users.
+Alice wants to send confidential data to Bob.
+She applies the encryption algorithm which requires a set of public keys and the public system parameters as input.
+Next, she uploads the cipher to a server.
+This allows Bob to download and decrypt it using his private key.
+In order to revoke a user, Alice must re-encrypt the data and upload it again.
+
+The example shows that all three functional requirements can be fulfilled.
 The techniques from section \ref{sec:mutual-encryption} can be applied again.
-This satisfies the security requirements S2 (the receiver can verify it is a valid encryption endpoint) and S3 (the data owner can not forge logs).
-
-\textit{IBBE} schemes suffer from key escrow because a trusted party computes and distributes private keys.
+This satisfies the security requirement S2 (the receiver can verify it is a valid encryption endpoint) and S3 (the data owner can not forge logs).
+\textit{IBBE} schemes suffer from key escrow because a trusted party computes and distributes private keys~\cite{Hagg2022}.
 This breaks the confidentiality of the encrypted logs (security requirement S2).
 The additional trusted entity also increases the attack surface breaking non-functional requirement N1 (minimal number of trusted entities).
-A lot of papers are published in the field of \textit{IBE}.
+A lot of research is going on in the field of \textit{IBE}~\cite{Hagg2022}.
 However, no cryptographic standard exists for \textit{IBE} or \textit{IBBE}.
 It is not included in the Web Cryptographic API~\cite{WebCryptoApi2017}.
 This conflicts with the non-functional requirement N3.
@@ -280,47 +282,33 @@ This conflicts with the non-functional requirement N3.
 \subsection{Certificate-based broadcast encryption}
 \label{sec:broadcast-certificate}
 
-Certificate-based encryption (\textit{CBE}) was introduced by \citeauthor{Gentry2003} in 2003~\cite{Gentry2003}. 
-Later, this idea was adopted with broadcast encryption by allowing multiple receivers~\cite{Li2018, Fan2013}.
-The construction of \textit{CBE} schemes is motivated by the following observations~\cite{Gentry2003}:
-
+Certificate-based encryption (\textit{CBE}) was initially proposed in 2003~\cite{Gentry2003}. 
+The following observations motivated this approach~\cite{Hagg2022}:
 \begin{itemize}
-    \item Classical public key encryption (\textit{PKE}) schemes suffer from the certificate revocation problem (detail in \cref{terms}).
-    \item Identity-based encryption schemes suffer from key escrow (details in \cref{IBBE}).
-    However, since they make use of implicit certification (details in \cref{IBBE}), \textit{IBE} schemes do not suffer from the certificate revocation problem.
-    \item Combining both techniques -- \textit{PKE} and \textit{IBE} -- yields the new construction \textit{CBE}. 
-    It neither suffers from key escrow nor from the certificate revocation problem.
+    \item 
+    Traditional public key encryption schemes are faced with the certificate revocation problem (details in \cref{terms}).
+    \item 
+    Identity-based encryption schemes usually rely on trusted entities. 
+    This introduces key escrow (details in \cref{IBBE}).
+    However, they do not suffer from the certificate revocation problem.
+    \item 
+    Traditional public key schemes can be combined with identity-based schemes by double encrypting the plaintext.
+    In particular, the plaintext is encrypted once under the public key of the traditional scheme and once under the public key of the identity-based scheme.
+    The result of this construction are \textit{CBE} schemes.
+    They eliminate key escrow and the certificate revocation problem.
 \end{itemize}
 
-Consider the scenario where Alice wants to send encrypted data to Bob. 
-According to~\cite{Gentry2003}, \textit{CBE} schemes function as followed:
-
-\begin{enumerate}
-    \item Alice generates a key pair with a \textit{PKE} key generation algorithm. She keeps the private key secret. 
-    Not even the trust center is allowed to know this private key.
-    \item Alice requests a certificate for her public key. 
-    This certificate is created by the trust center by executing the \textit{IBE} key generation algorithm. 
-    Thus, this certificate can technically also be seen as the second private key of Alice, which the trust center knows.
-    \item Bob also executes steps 1 and 2.
-    \item To encrypt data for Bob, Alice uses Bobs public key and encrypts the message twice: Once, with the \textit{IBE} encryption algorithm and once with the \textit{PKE} encryption algorithm. The doubly encrypted message is then sent to Bob. In particular, there is no need for Alice to check if Bob has a valid certificate. This avoids the certificate revocation problem.
-    \item Upon receiving the encrypted message, Bob needs to double decrypt the cipher. 
-    Once, with the \textit{IBE} decryption algorithm and once with the \textit{PKE} decryption algorithm. 
-    This enforces the following.
-    First, only Bob can apply the \textit{PKE} decryption, because only he knows the required private key. 
-    Second, Bob needs a valid certificate because otherwise, he could not apply the \textit{IBE} decryption. 
-    In particular, the first fact avoids key escrow (because the trust center does not know the private key of Bob) and the second fact avoids the certificate revocation problem (because Bob can only decrypt with a valid certificate).
-\end{enumerate}
 This idea was later adopted to broadcast encryption yielding a certificate-based broadcast encryption scheme (\textit{CBBE})~\cite{Li2018}.
-Although this construction relies on a key generation center, it does not suffer from key escrow.
-Once keys are established, a user can encrypt data for a dedicated set of users.
-Only these users can decrypt the cipher.
-In particular, the key generation center can not decrypt the cipher because it does not have access to the PKE private key of a user.
+Although this construction relies on a key generation center, it does not suffer from key escrow~\cite{Hagg2022}.
+Once keys are established, a user can encrypt data for dedicated recipients.
+Only the users specified during encryption can decrypt the cipher.
+The key generation center can not decrypt the cipher because it does not have access to any private key of the traditional scheme~\cite{Hagg2022}.
 Besides the functional requirements, \textit{CBBE} also satisfies the security requirements.
 The distinction of shared log and signed log introduced in section \ref{sec:mutual-encryption} can be applied again.
 Thus, all receivers can validate that they are intended decryption endpoints (security requirement S2) and that the access log was created by the claimed monitor (security requirement S3).
 The notion of E2EE is also fulfilled because the trusted server can not decrypt the logs.
 
-Unfortunately, no reference implementations of \textit{CBBE} exist. 
+Unfortunately, no reference implementations of \textit{CBBE} exist.
 This fact is a major drawback in the context of this thesis.
 These cryptographic systems are currently the subject of research.
 There are no ongoing standardization processes to analyze their security.
@@ -329,19 +317,16 @@ Using those schemes in a practical implementation is avoided in this thesis beca
 
 \subsection{Proxy re-encryption based broadcast encryption}
 \label{sec:broadcast-proxy}
-Broadcast encryption schemes can be implemented with a technique named proxy re-encryption (\textit{PRE}).
-Proxy re-encryption systems are cryptographic schemes, in which a third party (a.k.a. a \textit{proxy}) converts a ciphertext, which was originally intended for Alice, to a new ciphertext, which is intended for Bob. 
-For this conversion, the proxy requires a re-encryption key. 
-Further, the cryptographic system requires that the proxy does not obtain knowledge about the plaintext during re-encryption.~\cite{Chen2018}
+Proxy re-encryption (\textit{PRE}) is another encryption technique proposed to realize broadcast encryption~\cite{Hagg2022}.
+Its fundamental concept relies on a trusted proxy which can transform encrypted data between users.
+It is an important requirement of those schemes that the proxy does not learn anything about the plaintext during this re-encryption~\cite{Chen2018}.
 
-Similar to the example given in~\cite{Chen2018}, consider a user Alice who stores encrypted data $E_A$ in the cloud.
-$E_A$ can only be decrypted by Alice.
-Suppose that the data center is also the re-encryption proxy.
-To delegate this data to Bob, Alice creates a re-encryption key $rk_{Alice,Bob}$. 
-This key is transferred to the proxy.
-It allows the proxy to re-encrypt $E_A$ to $E_B$.
-Bob can then download and only he can decrypt $E_B$.
-Alice can revoke access to a log by instructing the server to delete the cipher for a dedicated user.
+Similar to the example given in~\cite{Hagg2022}, consider a user Alice who stores a ciphertext $E_A$ in the cloud.
+Only Alice can decrypt $E_A$, however, she wants to make the plaintext available for Bob.
+This requires Alice to share a re-encryption key $rk_{Alice,Bob}$ with the proxy.
+The knowledge of this key allows the proxy to transform $E_A$ to $E_B$.
+Bob can then download and decrypt $E_B$
+Alice could revoke access to a log by instructing the server to delete the cipher for a dedicated user.
 
 The proxy needs to be semi-trusted because with the knowledge of $rk_{Alice,Bob}$ it can re-encrypt all ciphers from Alice to Bob~\cite{Chen2018}.
 This has important consequences for the security of the protocol implemented in this thesis.
@@ -354,13 +339,12 @@ Notice that no cryptographic standard exists for proxy re-encryption based crypt
 It is not included in the Web Cryptographic API~\cite{WebCryptoApi2017}.
 This conflicts with the non-functional requirement N3.
 
-\section{Further investigations}
+\section{E2EE in modern technology}
 
 Many modern communication applications rely on E2EE. 
-This section investigates approaches of the services Zoom, CloudSeal and the instant messaging services Whatsapp and Signal.
-It details the encryption techniques used by those services.
-The goal of this section is to demonstrate what encryption techniques are practically used in modern E2EE applications.
-
+This section exemplarily investigates the implemented protocols of Zoom, CloudSeal and of the messaging services Whatsapp and Signal.
+The goal of this section is to demonstrate what E2EE techniques are practically used in modern applications.
+Moreover, those approaches are discussed in the context of the this thesis.
 All following techniques have in common that they do not rely on a PKI.
 This restriction, however, is not necessary for this thesis because the inverse transparency toolchain is intended to be distributed in an enterprise context.
 This simplifies the design of the final protocol.
@@ -395,7 +379,8 @@ It is not an option for this thesis because of the limited algorithms provided i
 
 \subsection{Instant messaging services}
 Whatsapp\footnote{\url{https://www.whatsapp.com/}} and Signal\footnote{\url{https://signal.org/}} are two popular instant messaging services.
-They claim to implement E2EE and rely both on the Signal protocol.
+They claim to implement E2EE.
+Both services rely on the Signal protocol.
 The Signal protocol is a combination of the X3DH protocol~\cite{Marlinspike2016} and the Double Ratched protocol~\cite{Perrin2016}.
 The X3DH protocol establishes a shared secret between two authenticated users.
 This effectively allows the initialization of a secure channel between the users.

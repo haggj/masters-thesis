@@ -152,12 +152,12 @@ The implemented protocol should defend against this attacker.
 
 \subsubsection{S2. The receiving users can verify that the data owner has intended to share the log with them.}
 
-The functional requirements demand, that only the data owner of a log is allowed to share a log.
+The functional requirements require, that only the data owner of a log is allowed to share a log.
 No other user should be able to share the log in the name of the data owner.
 Whenever a user receives an encrypted log it needs to be sure that the originator of the cipher is the data owner of the encrypted log.
 Moreover, the receiver also needs to be sure that the data owner actually has intended to share the log with him or her.
 
-The following example attack motivates this requirement.
+The following exemplary attack motivates this requirement.
 Assume Alice to be a data owner and Eve to be a malicious user.
 Further assume that Alice shares a access log with Eve.
 Eve now has valid access to the log and can decrypt the encrypted log.
@@ -168,7 +168,7 @@ Moreover, Bob could implicitly assume that he is a valid receiver because he can
 In this scenario, however, Alice did not want to share the log with Bob.
 The log was simply forwarded by Eve without permission.
 
-This example demonstrates how an active attacker could share logs with unintended users without notice.
+This attack demonstrates how an active attacker could share logs with unintended users.
 The attacker forwards a valid log to an arbitrary user in the system.
 The implemented protocol in the context of this thesis should defend against this attack.
 A first idea to resolve this requirement is the use of cryptographic signatures.

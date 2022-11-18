@@ -15,13 +15,15 @@
     - Broadcast encryption (3)
     - Hybrid encryption (2)
     - Further investigations (2)
-5. Approach (9)
-    - Reasoning for approach (1)
+    - Justification of hybrid encryption
+5. Protocol Design (6)
+    - Security considerations (2)
     - Protocol (4)
-      - JOSE
-      - Encryption
-      - Decryption
-    - Implemented Libraries (4)
+      - Overview
+      - Signing logs
+      - Encrypting logs
+      - Decrypting logs
+6. Implemented Libraries (4)
       - Overview/Architecture
       - Ts-It-Crypto
       - Py-It-Crypto
