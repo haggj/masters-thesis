@@ -7,7 +7,7 @@
 \chapter{Requirements}
 \label{chap:requirements}
 
-This chapter identifies the requirements of the software which needs to be implemented in the context of this thesis.
+This chapter identifies the requirements of the protocol which needs to be implemented in the context of this thesis.
 Overall, there are three major goals which need to be achieved. 
 
 \begin{enumerate}[label=\Roman*.]
@@ -33,16 +33,11 @@ Further non-functional goals will be identified in subsection \ref{non-functiona
 Within each subsection the identified goals will be refined into requirements.
 This finally results in a list of verifiable and consistent system requirements for this thesis (subsection \ref{system-requriements}).
 
-Please note that the identification of these requirements was not a linear process as presented in this chapter.
-Instead, multiple iterations of reasoning about possible solutions and considering their implications for the inverse transparency toolchain were necessary.
-This process finally lead to the detailed decomposition of the requirements depicted in the following.
-
-
 
 \section{System requirements}\label{system-requriements}
 This section summarizes all identified requirements elaborated in this chapter.
-They were derived from the major goals of this thesis.
-For details and the rationale behind each requirements see the corresponding subsections below.
+They were derived from the major goals above.
+For details and the rationales ot each requirement please have a look the corresponding subsections below.
 
 \subsubsection{Functional requirements}
 \begin{itemize}
@@ -135,7 +130,7 @@ Authorized users are the data owner of the log plus all users the data owner has
 From the perspective of E2EE, all other entities are untrusted.
 Untrusted entities must not be able to decrypt logs.
 The untrusted network includes the whole infrastructure of the toolchain, except the application a user interacts with.
-This implies, that all frontend applications must trusted (e.g. the \textit{Clotilde UI} and all integrated \texit{Monitor} components).
+This implies, that all frontend applications must trusted (e.g. the \emph{Clotilde UI} and all integrated \emph{Monitor} components).
 
 The following example attack motivates this requirement.
 Consider an attacker Eve who is the database admin of the Overseer server.
@@ -178,14 +173,15 @@ However, this introduces the risk that a malicious data owner shares forged logs
 The manipulation of logs can be detected by integrity protection mechanisms.
 Unfortunately, this does not prevent a data owner from create new logs with a valid integrity checksum.
 A stronger defense is necessary here because any user who receives a log needs to verify who the creator of this log is.
-Only a log of a trusted or valid creator should be accepted.
+Only a log of a trusted and valid creator should be accepted.
 
 The following example motivates this requirement.
 Assume Eve to be a malicious data owner.
 Thus, he has access to all logs concerning him.
-Eve might want to harm a specific data consumer for any reason.
-To do so, Eve modifies an existing log or he creates new logs that claim the data consumer to access illegal data.
-Eve applies to encryption algorithm and shares the forged log with other users.
+Eve wants to harm a specific data consumer.
+To do so, Eve modifies an existing log or he creates a new log.
+This log indicates an illegal behavior of a targeted data consumer.
+Eve applies the encryption algorithm and shares the forged log with other users.
 Without further protection the receiving users can not verify the creator of the log.
 There is no way to detect this fraud.
 
@@ -213,9 +209,10 @@ To reduce the risk and attack surface, the toolchain should rely on a minimal nu
 The current implemented frontend of the inverse transparency toolchain runs within the browser. 
 The Web Cryptographic API~\cite{WebCryptoApi2017} defines an interface to perform cryptographic operations within browsers. 
 It \enquote{exposes already existing and often heavily verified cryptographic functionality to Web application developers through a standardized interface}~\cite[959]{Halpin2014}.
-This allows to run cryptographic operations outside of JavaScript and enables secure and performant cryptography within the browser~\cite{Halpin2014}.
-This API, however, is limited to specific primitives. 
-Advanced encryption schemes developed within recent years are not yet defined and available in the API.
+This enables secure and performant cryptography within the browser~\cite{Halpin2014}.
+However, it is limited to specific primitives. 
+Advanced encryption schemes are not yet defined and available in the API yet.
+Specifically, advanced encryption schemes which are currently under research are not integrated.
 To ensure portability of the inverse transparency toolchain, the implementation of this thesis should thus only rely on primitives defined by the Web Cryptographic API.
 This is specifically important because the Clotilde frontend is a web application.
 
@@ -225,9 +222,9 @@ In the context of this thesis, however, the complexity of security is a key-driv
 By integrating the error-prone cryptography tasks (e.g. encryption or integrity checks) into the application, we can increase the usability and thus the acceptance of the toolchain.
 At the same time, the security is improved because these tasks are performed within the toolchain and can be heavily tested.
 However, this comes with the cost of increased design and implementation effort.
-
-Furthermore, this approach is motivated by the principle of least effort, which states that humans will spent the least amount of work to get a task done~\cite{Levenson2018}.
-
+This approach is motivated by the principle of least effort, which states that humans will spent the least amount of work to get a task done~\cite{Levenson2018}.
+As a result, an optimal solution should integrate all cryptographic tasks into the toolchain.
+It should not demand users to perform them themselves.
 
 \subsubsection{N4. Minimal resource utilization}
 This is a performance criterion.

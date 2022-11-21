@@ -19,13 +19,13 @@ This is described in section \ref{sec:toolchain-modifications}.
 
 The following table gives an overview of the implemented libraries.
 It includes links to the GitHub repositories and the package indexes of the programming languages where the libraries were published.
-The acronym \textit{it-crypto} stands for inverse transparency cryptography.
+The acronym \emph{it-crypto} stands for inverse transparency cryptography.
 
 \begin{table}[ht]
     \centering
     \begin{tabular}{|c|c|c|c|}
     \hline
-    Name         & Language & Github                           & Package Index                                    \\ \hline
+    Name         & Language & Github                           & Link to package index                                   \\ \hline
     Ts-it-crypto & Typescript           & \href{https://github.com/haggj/ts-it-crypto}{haggj/ts-it-crypto} & \href{https://www.npmjs.com/package/ts-it-crypto}{NPM}       \\ \hline
     Py-it-crypto & Python               & \href{https://github.com/haggj/py-it-crypto}{haggj/py-it-crypto} & \href{https://pypi.org/project/py-it-crypto/}{PyPI}          \\ \hline
     Go-it-crypto & Go                   & \href{https://github.com/haggj/go-it-crypto}{haggj/go-it-crypto} & \href{https://pkg.go.dev/github.com/haggj/go-it-crypto}{PKG} \\ \hline
@@ -39,6 +39,11 @@ Moreover, all libraries employ the same folder structure.
 This aims to improve the maintainability of the source code.
 As a result, all three libraries expose the same interface to users.
 This interface is highly related to the algorithms described in chapter~\ref{chap:design}.
+The designed protocol relies on the \emph{JOSE} standard.
+Thus, each library depends on an implementation of the standard.
+Ts-it-crypto depends on the Typescript package \emph{jose}\footnote{\url{https://www.npmjs.com/package/jose}}.
+Py-it-crypto depends on the Python package \emph{jwcrypto}\footnote{\url{https://pypi.org/project/jwcrypto/}}.
+Go-it-crypto depends on the Go package \emph{jose}\footnote{\url{https://pkg.go.dev/gopkg.in/square/go-jose.v2}}.
 
 \subsection{General usage}
 
@@ -114,7 +119,7 @@ As described in chapter~\ref{chap:design}, those methods can be used to provide 
         \multicolumn{2}{l}{Input parameters}    \\ \hline
         \verb|accessData|              & This is a data structure containing the raw log data. In particular, this raw data must be encodable as JSON data. It contains all relevant information to log the observed data access.           \\ \hline
         \multicolumn{2}{l}{Output}   \\ \hline
-        \multicolumn{2}{p{12cm}}{The method returns a \textit{JWS} token encoded as string. It is signed by the logged-in user and it contains the JSON-encoded accessLog as payload.}
+        \multicolumn{2}{p{12cm}}{The method returns a \emph{JWS} token encoded as string. It is signed by the logged-in user and it contains the JSON-encoded accessLog as payload.}
     \end{tabular} \\
     \item
     The method \verb|encryptLog| encrypts a given log for a given set of recipients.
@@ -129,19 +134,19 @@ As described in chapter~\ref{chap:design}, those methods can be used to provide 
         \verb|log|              & This is the log that needs to be encrypted. It must be signed by a monitor. The output of \verb|signLog| can be directly used here.           \\
         \verb|recipients|       & This is a list of \verb|RemoteUser| objects containing the identity and public encryption key for each recipient. This set defines which users can decrypt the created cipher.           \\ \hline
         \multicolumn{2}{l}{Output}   \\ \hline
-        \multicolumn{2}{p{12cm}}{The method returns a \textit{JWE} token encoded as string. It contains the provided signed log and can only be decrypted by the specified recipients. The token specifies the logged-in user as creator of the token. It also contains the set of recipients and the identity of the data owner as metadata.}
+        \multicolumn{2}{p{12cm}}{The method returns a \emph{JWE} token encoded as string. It contains the provided signed log and can only be decrypted by the specified recipients. The token specifies the logged-in user as creator of the token. It also contains the set of recipients and the identity of the data owner as metadata.}
     \end{tabular} \\
     \item
     The method \verb|decryptLog| decrypts a given encrypted data.
     A user can only decrypt this log if it was included as a recipient during encryption.
     It might be called by any user that received an encrypted log.
     The method performs multiple validations to detect any misusage of the protocol.
-    In particular, it verifies all signatures of the encoded \textit{JWS} tokens.
+    In particular, it verifies all signatures of the encoded \emph{JWS} tokens.
     This function relies on the private decryption key of the logged-in user. \\\\
     \begin{tabular}{p{3cm}p{9cm}}
         \hline
         \multicolumn{2}{l}{Input parameters}    \\ \hline
-        \verb|jwe|              & This is a \textit{JWE} token that represents an encrypted log. This token is the result of \verb|encryptLog|. \\ \hline
+        \verb|jwe|              & This is a \emph{JWE} token that represents an encrypted log. This token is the result of \verb|encryptLog|. \\ \hline
          \multicolumn{2}{l}{Output}   \\ \hline
         \multicolumn{2}{p{12cm}}{The method returns a log. This is the same object that was passed to the encryption function. Therefore it is still signed by a monitor. The signature, however, was already verified during decryption. This construction allows a data owner to easily re-encrypt the log.}
     \end{tabular}
@@ -167,10 +172,10 @@ It additionally visualizes the encrypted data flow in the toolchain.
 In particular, a monitor encrypts the log for the data owner.
 A user who is logged in to the display component can decrypt its logs.
 Moreover, access to the logs can be shared and revoked.
-This functionality requires changes in the \textit{Monitor}, \textit{Safekeeper} and \textit{Display} component.
+This functionality requires changes in the \emph{Monitor}, \emph{Safekeeper} and \emph{Display} component.
 Those changes were implemented in the context of this thesis.
 The development environment of the toolchain is a proof-of-concept.
-It shows how a \textit{PKI} infrastructure can be used to integrate encrypted logs.
+It shows how a \emph{PKI} infrastructure can be used to integrate encrypted logs.
 The following sections describe different perspectives on this integration.
 They provide details about the implemented changes.
 
@@ -192,22 +197,22 @@ This allows all other components within the toolchain to fetch the public keys o
 \subsection{Display component}
 The display component is the front-end of the toolchain.
 It visualizes all data accesses concerning the logged-in user.
-Since all logs are end-to-end encrypted it must handle the logs provided by the \textit{Safekeeper}.
+Since all logs are end-to-end encrypted it must handle the logs provided by the \emph{Safekeeper}.
 In particular, the logs must be decrypted in the front-end.
 Access to the logs can also be shared and revoked by the data owner.
 This allows a data owner to authorize any other user in the system to temporarily access a log.
 The adopted implementation provides this functionality.
-To perform the necessary cryptographic actions, it integrates the \textit{ts-it-crypto} library into the front-end application.
+To perform the necessary cryptographic actions, it integrates the \emph{ts-it-crypto} library into the front-end application.
 Appendix~\ref{app:screenshots} contains screenshots of the realized UI.
 
 \subsection{Safekeeper component}
-The \textit{Safekeeper} component is responsible to store logs.
+The \emph{Safekeeper} component is responsible to store logs.
 It was adopted to handle encrypted data.
 As described in section~\ref{sec:metadata}, an encrypted log contains metadata to support intermediate servers.
 This metadata contains the set of recipients (e.g. the users that can decrypt the log) and the identity of the data owner.
 Once a loc is sent to the server, thus, this metadata must be parsed.
 It is stored along with the encrypted log in the database.
-This allows the \textit{Safekeeper} to associate a log with users.
+This allows the \emph{Safekeeper} to associate a log with users.
 A new endpoint was implemented that allows users to request its encrypted logs.
 Based on the provided metadata, the server can filter all logs concerning this particular user.
 Moreover, the data owner of a log can update a log to share or revoke access.
@@ -218,7 +223,7 @@ This implies that it can not verify if a performed access was permitted by the d
 However, those endpoints still exist.
 This allows data owners to provide detailed policies about who can access what data.
 A monitor tracking data usage and creating corresponding logs can check if the observed access is allowed by calling those endpoints.
-Since the \textit{Safekeeper} can not validate the compliance of these policies, this validation is outsourced to the monitor.
+Since the \emph{Safekeeper} can not validate the compliance of these policies, this validation is outsourced to the monitor.
 
 
 
