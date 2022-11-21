@@ -71,7 +71,7 @@ If any of those assumptions is broken the protocol must be considered to be unse
 \subsection{Curious server}
 A curious server is a passive attacker which tries to access the logs within the toolchain.
 It motivated security requirement S1 which states that only the data owner and explicitly authorized users can access logs.
-Recall the attacker Eve who is the database admin of the Overseer server.
+Recall the attacker Eve who is the database admin of the Overseer server.\todo{cite section}
 This section argues why Eve can not access logs if he was not explicitly authorized.
 
 The protocol enforces that only encrypted data is stored in the database.
@@ -120,6 +120,76 @@ Only if he was explicitly authorized he can restore the symmetric key $k$ which 
 
 
 \subsection{Surreptitious forwarding}
+Surreptitious forwarding refers to an attack where a malicious user re-encrypts a received log for unintended users (details in section~\ref{sec:surreptitious-forwarding}).
+Since such attacks must be detected the security requirement S2 was introduced.
+It requires that receivers of encrypted logs can verify that the log was intentionally shared with them.
+Recall the attacker described in \todo{cite section}.
+Alice shares a log with Eve.
+Eve, however, does not stick to the protocol and encrypts the received log for Bob.
+Bob must be able to detect this fraud because the log he received was not encrypted by the data owner (Alice).
+The following section argues why this attack can be detected.
+
+The mechanism implemented in the protocol to defend this attack is the shared log.
+It is a \emph(JWS) token which is signed by the creator of the log.
+It is illustrated in figure~\ref{fig:nested-jws}.
+It contains the log as a nested \emph{JWS} token.
+Moreover, it contains the identity of the creator and the identities of the intended receivers.
+Whenever a user successfully decrypted a log it must verify that the shared log is a valid data structure.
+\begin{enumerate}
+\item 
+First of all, the receiver needs to verify if the shared log was signed by the claimed creator.
+It fetches the public key of the claimed creator and verifies the cryptographic signature.
+If the signature is valid the receiver can be sure that log was signed by the private signing key of the creator.
+\item 
+The receiver then needs to check if the creator is the data owner. 
+This is achieved by checking if the identity of the creator (shared log) is equal to the identity of the data owner in the nested log.
+If this holds and if the log was indeed signed by a valid monitor the receiver can be sure that the data-owner crated and signed the shared log.
+This, however, does still not pretend surreptitious forwarding.
+\item 
+In a third step, the receiver must verify if his identity is specified in the list of intended receivers (shared log).
+If this is true the receiver knows that the data owner intentionally shared the log with him or her.
+This follows from two observations:
+First, the receiver can be sure that the shared log was indeed created by the data owner.
+Second, the receiver knows that the data owner included his identity into the set of intended receivers.
+This gives the receiver confidentiality that no malicious entity re-encrypted the log for him or her.
+\end{enumerate}
+
+There is a logical consequence from this validation:
+The creator specified in the shared log must have signed the shared log.
+The creator specified in the shared log must be equal to the data owner.
+Thus, the shared log is only valid if the data owner has shared the signed log.
+
+If Eve wants to forward an encrypted log to the unintended receiver Bob he must either modify the data owner or he must forge a signature of the data owner.
+If Eve decides to modify the data owner his attack becomes pointless.
+Eve does not want to introduce faked logs.
+He wants to forward existing logs to unintended receivers.
+Moreover, this requires Eve to be a valid monitor because only they are allowed to sign logs.
+On the other hand, Eve might try to forge a signature of the data owner.
+However, this contradicts with the assumptions.
+To successfully forge a signature Bob either has access to the private signing key of the data owner or he breaks the signing algorithm.
+The first breaks the security of the assumed PKI.
+The second breaks the security of the chosen signing algorithm.
+There is no way for Eve to forward a received log to unintended recipients if those recipients validate the shared log correctly.
+
+
+Again consider Eve who wants to forward encrypted logs to the unintended receiver Bob.
+Eve has access to the log which was singed by a monitor.
+He can not sign this log by himself because he is not a valid monitor.
+Moreover, Eve does not want to introduce faked logs.
+He wants to forward existing logs to unintended receivers.
+Thus, his attack relies on the log which was signed by a valid monitor.
+To succeed he must create a shared log which passes the validation of Bob.
+Specifically, Bob's identity must included in the list of intended receivers.
+Assume Eve creates a shared log which contains the existing log.
+Eve can specify itself as creator and sign the log with his private signing key.
+Bob will detect this fraud because the identity of the creator (Eve) is not equal to the identity of the data owner (Alice).
+Hence, Bob must specify Alice as creator of the shared log.
+Bob will also detect this fraud because in this case Eve signs the shared log which claims to be created by Alice.
+Eve can only share the log with Bob if he knows the private signing key of Alice.
+This allows him to specify the creator to be the Alice and to successfully sign the shared log.
+However, this contradicts with the assumption of a valid PKI where each user has exclusive access to its keys.
+
+
 \subsection{Malicious data owner}
 
 \section{Performance}
