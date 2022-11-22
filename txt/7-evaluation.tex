@@ -244,29 +244,29 @@ Always the same log data is encrypted.
 However, the number of recipients changes during different tests.
 For a fixed number of recipients a tests is repeated $100$ times.
 The average of those runs is said to be the encryption costs for the number of recipients in the library under test.
-The performance tests were executed on a machine running \emph{macOS Monterey} with a \emph{Apple M1} CPU.
+The performance tests were executed on a machine running \emph{macOS Monterey} with an \emph{Apple M1} CPU.
 
 \subsection{Results}
 The results of all three libraries is illustrated in figure~\ref{fig:performance}.
 It shows the encryption costs in milliseconds for a different number of recipients.
-In general one can observe that the Go implementation is the fastest library.
+In general, one can observe that the Go implementation is the fastest library.
 This meets the expectations because Go is a compiled language while python is interpreted.
 Please note that Typescript is compiled into Javascript.
 The resulting Javascript code, however, is also interpreted.
 
 For all languages one can observe a linear growth of encryption costs when adding additional recipients.
-This expected because all libraries rely on hybrid encryption.
+This meets the expectations because all libraries rely on hybrid encryption.
 When adding a new user the encrypting party must additionally encrypt the secret key for this user.
 The encryption for a single receiver in Go takes $0.12ms$.
 The encryption for two receivers takes $0.17ms$.
-The additional receiver increases the costs by a about $0.05ms$ since both runs encrypt the same log.
+The additional receiver increases the costs by a about $0.05ms$ since both runs encrypted the same log.
 In Python and Typescript an additional recipient increases the costs by approximately $0.50ms$ and $0.30ms$.
 
 From the perspective of a user a system reacts instantaneously if a computation takes less than $100ms$~\cite{Nielson1993}.
 In those cases no visual feedback is necessary.
 Experiments with the performance libraries show that this treshold is reached in Typescript if encrypting the log for about $330$ users.
-The Python implementation reaches the boundary when encrypted data for $170$ users.
-In Go the encryption for $1500$ recipients takes more on average slightly more than $100ms$.
+The Python implementation reaches the boundary if data is encrypted for $170$ users.
+In Go the encryption for $1500$ recipients takes on average slightly more than $100ms$.
 This proofs that the implemented library can be used in practice.
 
 

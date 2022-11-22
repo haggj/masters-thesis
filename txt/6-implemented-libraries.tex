@@ -56,7 +56,8 @@ This instantiation requires the function \verb|fetchUser|.
 It resolves an identity of a user (which is a \verb|string|) to an instance of type \verb|RemoteUser|.
 The function usually requests a server which can resolve the identity of a user to its public keys.
 It needs to implement the following signature: \verb|RemoteUser fetchUser(string)|.
-A \verb|RemoteUser| object stores the public keys of the user along with its identity.
+A \verb|RemoteUser| object stores the public keys of the user along with its identity and the information if the user is a trusted monitor.
+This information is mainly used during decryption to verify if the signed data is valid.
 Please note that a \verb|RemoteUser| object should never be constructed directly.
 Rather, the \verb|importRemoteUser| function must be called.
 This function expects a trusted certificate as a parameter.
@@ -74,12 +75,18 @@ If a user is logged in the \verb|ItCrypto| object becomes fully functional.
 The logged-in user can create, encrypt and decrypt logs using the provided keys.
 
 \definecolor{codegreen}{rgb}{0,0.6,0}
-\begin{lstlisting}[label=lst:pseudocode,float,floatplacement=tbp, language=Java, caption={Pseudocode of creating, encrypting and decrypting logs using the provided libraries.}, morekeywords={RemoteUser, var, assert}, commentstyle=\color{codegreen}]
+\begin{lstlisting}[basicstyle=\small, label=lst:pseudocode,float,floatplacement=tbp, language=Java, caption={Pseudocode of creating, encrypting and decrypting logs using the provided libraries.}, morekeywords={RemoteUser, var, assert}, commentstyle=\color{codegreen}]
 RemoteUser fetchUser(string identity){
     /*
-    Fetch keys from the server
+    Fetch keys from the server and check if user 
+    is a trusted monitor.
     */
-    return importRemoteUser(identity, /* keys */, rootCA)
+    return importRemoteUser(
+        identity,
+        /* keys */, 
+        isMonitor, 
+        rootCA
+    )
 }
 
 // Initialize itCrypto object
@@ -93,8 +100,10 @@ var signedLog = itCrypto.signLog(/* log data */)
 var alice = fetchUser("identity@alice.com")
 var bob = fetchUser("identity@bob.com")
 var loggedInUser = itCrypto.user
-var encryptedLog = itCrypto.encryptLog(signedLog, 
-                    [alice, bob, loggedInUser])
+var encryptedLog = itCrypto.encryptLog(
+    signedLog, 
+    [alice, bob, loggedInUser]
+)
 
 // Decrypt log
 var decryptedLog = itCrypto.decryptLog(encryptedLog)
@@ -114,12 +123,12 @@ As described in chapter~\ref{chap:design}, those methods can be used to provide 
     The protocol does not allow any raw logs in the system.
     Rather, all logs must be signed by the monitor that created the log. 
     This method relies on the private signing key of the logged-in user.\\\\
-    \begin{tabular}{p{3cm}p{9cm}}
+    \begin{tabular}{|p{3cm}p{10cm}|}
         \hline
-        \multicolumn{2}{l}{Input parameters}    \\ \hline
+        \multicolumn{2}{|l|}{Input parameters}    \\ \hline
         \verb|accessData|              & This is a data structure containing the raw log data. In particular, this raw data must be encodable as JSON data. It contains all relevant information to log the observed data access.           \\ \hline
-        \multicolumn{2}{l}{Output}   \\ \hline
-        \multicolumn{2}{p{12cm}}{The method returns a \emph{JWS} token encoded as string. It is signed by the logged-in user and it contains the JSON-encoded accessLog as payload.}
+        \multicolumn{2}{|l|}{Output}   \\ \hline
+        \multicolumn{2}{|p{13cm}|}{The method returns a \emph{JWS} token encoded as string. It is signed by the logged-in user and it contains the JSON-encoded accessLog as payload.} \\ \hline
     \end{tabular} \\
     \item
     The method \verb|encryptLog| encrypts a given log for a given set of recipients.
@@ -128,13 +137,13 @@ As described in chapter~\ref{chap:design}, those methods can be used to provide 
     This encryption function can be used to share or revoke access to the log.
     In this case, it must be called by the data owner of the particular log. 
     This method relies on the private signing key of the logged-in user.\\\\
-    \begin{tabular}{p{3cm}p{9cm}}
+    \begin{tabular}{|p{3cm}p{10cm}|}
         \hline
-        \multicolumn{2}{l}{Input parameters}    \\ \hline
+        \multicolumn{2}{|l|}{Input parameters}    \\ \hline
         \verb|log|              & This is the log that needs to be encrypted. It must be signed by a monitor. The output of \verb|signLog| can be directly used here.           \\
         \verb|recipients|       & This is a list of \verb|RemoteUser| objects containing the identity and public encryption key for each recipient. This set defines which users can decrypt the created cipher.           \\ \hline
-        \multicolumn{2}{l}{Output}   \\ \hline
-        \multicolumn{2}{p{12cm}}{The method returns a \emph{JWE} token encoded as string. It contains the provided signed log and can only be decrypted by the specified recipients. The token specifies the logged-in user as creator of the token. It also contains the set of recipients and the identity of the data owner as metadata.}
+        \multicolumn{2}{|l|}{Output}   \\ \hline
+        \multicolumn{2}{|p{13cm}|}{The method returns a \emph{JWE} token encoded as string. It contains the provided signed log and can only be decrypted by the specified recipients. The token specifies the logged-in user as creator of the token. It also contains the set of recipients and the identity of the data owner as metadata.} \\ \hline
     \end{tabular} \\
     \item
     The method \verb|decryptLog| decrypts a given encrypted data.
@@ -143,17 +152,15 @@ As described in chapter~\ref{chap:design}, those methods can be used to provide 
     The method performs multiple validations to detect any misusage of the protocol.
     In particular, it verifies all signatures of the encoded \emph{JWS} tokens.
     This function relies on the private decryption key of the logged-in user. \\\\
-    \begin{tabular}{p{3cm}p{9cm}}
+    \begin{tabular}{|p{3cm}p{10cm}|}
         \hline
-        \multicolumn{2}{l}{Input parameters}    \\ \hline
+        \multicolumn{2}{|l|}{Input parameters}    \\ \hline
         \verb|jwe|              & This is a \emph{JWE} token that represents an encrypted log. This token is the result of \verb|encryptLog|. \\ \hline
-         \multicolumn{2}{l}{Output}   \\ \hline
-        \multicolumn{2}{p{12cm}}{The method returns a log. This is the same object that was passed to the encryption function. Therefore it is still signed by a monitor. The signature, however, was already verified during decryption. This construction allows a data owner to easily re-encrypt the log.}
+         \multicolumn{2}{|l|}{Output}   \\ \hline
+        \multicolumn{2}{|p{13cm}|}{The method returns a log. This is the same object that was passed to the encryption function. Therefore it is still signed by a monitor. The signature, however, was already verified during decryption. This construction allows a data owner to easily re-encrypt the log.} \\ \hline
     \end{tabular}
 \end{enumerate}
-
 \subsection{Cryptographic keys}
-
 The libraries require cryptographic keys to create, encrypt and decrypt logs.
 As described in section~\ref{sec:overview}, the protocol assumes an externally established PKI.
 The development environment of the toolchain contains a script \verb|prebuild.sh|.
