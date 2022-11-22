@@ -276,6 +276,7 @@ If any of them fails the decryption must be aborted.
     \item
     The signature of the nested log (inner \emph{JWS} token) must be validated.
     Again, the public key of the specified monitor needs to be downloaded.
+    The PKI must ensure that this public key belongs to a valid and trusted monitor component.
     If the verification of the signatures succeeds, the decrypting user can be sure that the claimed monitor indeed signed the log.
     \item
     The metadata includes the set of recipients.
