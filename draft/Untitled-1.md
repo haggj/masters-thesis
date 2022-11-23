@@ -32,3 +32,27 @@
         - To avoid this, the encrypted log must specify the data owner of the log with the metadata (which are not encrypted).
     - To avoid these problems, the set of receivers and the identity of the data owner needs to be accessible without decryption.
     - Thus, this data can be interpreted as routing information and must be attached as metadata to the encrypted logs.
+
+
+# Key management in development environment setup
+
+- prepare.sh
+    - expects users.json as input
+        - sepcifies the users available in dev
+    - generates a CA key pair
+    - extracts user information and creates crypt keys
+        - key pair to sign data
+        - key pair to encrypt data
+        - public key is signed by a CA private key
+    - creates a new users.json which attaches the public keys (e.g. their certificates)
+
+- setup.sh
+    - expects a users.json which has attached crypto keys
+    - it registers those users in the revolori server
+    - relies on the cli of ts-it-crypto to create encrypted logs for users
+    - encrypted logs of users are sent to overseer
+
+- container startup
+    - development container of clotilde knows all keys
+    - once a user logs it it fetches its private keys of this user via the users.json
+    - moreover it fetches the ca public certificate which is used to verify if the fetched public keys are signed by a correct CA

@@ -37,7 +37,7 @@ This finally results in a list of verifiable and consistent system requirements 
 \section{System requirements}\label{system-requriements}
 This section summarizes all identified requirements elaborated in this chapter.
 They were derived from the major goals above.
-For details and the rationales ot each requirement please have a look the corresponding subsections below.
+For details and the rationales of each requirement please have a look the corresponding subsections below.
 
 \subsubsection{Functional requirements}
 \begin{itemize}
@@ -65,46 +65,12 @@ For details and the rationales ot each requirement please have a look the corres
 Functional requirements describe \enquote{what the system does}~\cite[11]{Mylopoulos1992}.
 They describe the accessability of logs in the inverse transparency toolchain.
 Having access to a log effectively means that a user is able to decrypt the encrypted log.
-In the context of this thesis, the following functional goals are identified:
+In the context of this thesis, the following functional requirements are identified:
 \begin{itemize}
     \item Data owners can always access logs concerning them.
     \item Data owners can share their logs with other users in the system.
     \item Data owners can revoke the access of other users to their logs.
 \end{itemize}
-
-These goals can be refined into more concrete requirements. 
-Let $L_{o_i}$ denote an log. 
-This log reflects the fact, that a data consumer has accessed data of the user with identity $o_i$.
-Let $Access(L_{o_i})$ denote the set of all users, which can access the log $L_{o_i}$.
-E.g. $Access(L_{o_i}) =\{1,2,3\}$ reflects the situation, where user $1$, $2$ and $3$ have access to $L_{o_i}$.
-This notation allows an exact definition of the functional requirements and will be used later to validate the implemented protocol.
-
-
-\subsubsection{F1. Data owners can always access logs concerning them.}
-The system needs to ensure that the owner has always access to logs concerning him or her. 
-Thus, the following invariant needs to hold at all times:
-\begin{displaymath}
-    o_i \in Access(L_{o_i})
-\end{displaymath}
-
-
-\subsubsection{F2. Data owners can share their logs with other users in the system.}
-The data owner can share a log with other users in the system. 
-Assume the log is shared to the set of users $S$.
-After the sharing operation has finished, each user in $S$ can access the log.
-The sharing can be described as: 
-\begin{displaymath}
-    Access(L_{o_i}) = Access(L_{o_i}) \cup S
-\end{displaymath}
-
-\subsubsection{F3. Data owners can revoke the access of other users to their logs.}
-The data owner of a log can revoke the access to the log.
-Assume the log is revoked from the set of users $R$.
-After revocation operation has finished, no user in $S$ can access the log anymore.
-The revocation can be described as:
-\begin{displaymath}
-    Access(L_{o_i}) = Access(L_{o_i}) \setminus R
-\end{displaymath}
 
 \section{Security requirements}\label{security-requriements}
 As proposed by~\citeauthor{Fabian2010}~\cite{Fabian2010}, this section determines the security goals of this thesis and refines them into security requirements.
@@ -120,9 +86,9 @@ Following this approach, each security requirement is specified by providing the
 The counter-stakeholder is an adversary attacking the system.
 Satisfying a security requirement should effectively defend against this adversary.
 The specified circumstances elaborate additional conditions which affect the security goal.
+The following elaboration is intended to refine the security goals into concrete security requirements.
 
-\subsubsection{S1. Only the data owner and those explicitly given access to the logs can access them.}
-
+\subsubsection{Only the data owner and those explicitly given access to the logs can access them.}
 In the context of the inverse transparency toolchain, the intended end-to-end encryption should ensure that only authorized users can access logs.
 As specified in the functional requirements, the data owner can always decrypt the log.
 The data owner can also share the log with other users which are then able to decrypt.
@@ -137,14 +103,12 @@ Consider an attacker Eve who is the database admin of the Overseer server.
 Eve wants to know which monitor accesses which data frequently.
 Thus, he logs into the server and tries to extract this information from the database.
 If the stored logs are not encrypted, Eve can learn anything about the logs he might be interested in.
-
 This example demonstrates how a passive attacker could access the content of all logs stored in the toolchain.
 The attacker is passive because Eve does not participate in the protocol.
 He simply observes the stored data.
 The implemented protocol should defend against this attacker.
 
-
-\subsubsection{S2. The users receiving a shared log can verify that the data owner has intended to share the log with them.}
+\subsubsection{The users receiving a shared log can verify that the data owner has intended to share the log with them.}
 
 The functional requirements require, that only the data owner of a log is allowed to share a log.
 No other user should be able to share the log in the name of the data owner.
@@ -161,12 +125,11 @@ Bob might assume that Alice sent the message because she is the data owner of th
 Moreover, Bob could implicitly assume that he is a valid receiver because he can decrypt the message.
 In this scenario, however, Alice did not want to share the log with Bob.
 The log was simply forwarded by Eve without permission.
-
 This attack demonstrates how an active attacker could share logs with unintended users.
 The attacker forwards a valid log to an arbitrary user in the system.
 The implemented protocol in the context of this thesis must defend against this attack.
 
-\subsubsection{S3. The users receiving a shared log can verify that the log was created by a valid monitor.}
+\subsubsection{The users receiving a shared log can verify that the log was created by a valid monitor.}
 
 A data owner can share logs with others within the system.
 However, this introduces the risk that a malicious data owner shares forged logs with other users by manipulating existing logs or creating arbitrary new logs.
@@ -184,7 +147,6 @@ This log indicates an illegal behavior of a targeted data consumer.
 Eve applies the encryption algorithm and shares the forged log with other users.
 Without further protection the receiving users can not verify the creator of the log.
 There is no way to detect this fraud.
-
 This example demonstrates how a malicious data owner could insert forged log into the system.
 The implemented protocol must defend against this attack.
 
@@ -198,14 +160,13 @@ The solution $A$ should be preferred over a solution $B$, if $A$ resolves more n
 
 During multiple iterations of elaborating potential solutions, the list of non-functional goals has grown to the following stable collection:
 
-
-\subsubsection{N1. Minimal number of trusted entities}
+\subsubsection{Minimal number of trusted entities}
 By definition, trusted entities are not part of the untrusted network. 
 Thus, the proposed E2EE (detail in section \ref{security-requriements}) does not defend against them.
 This implies that a compromised trusted server undermines the security of the whole toolchain.
 To reduce the risk and attack surface, the toolchain should rely on a minimal number of trusted entities.
 
-\subsubsection{N2. Standardized cryptographic algorithms}
+\subsubsection{Standardized cryptographic algorithms}
 The current implemented frontend of the inverse transparency toolchain runs within the browser. 
 The Web Cryptographic API~\cite{WebCryptoApi2017} defines an interface to perform cryptographic operations within browsers. 
 It \enquote{exposes already existing and often heavily verified cryptographic functionality to Web application developers through a standardized interface}~\cite[959]{Halpin2014}.
@@ -216,7 +177,7 @@ Specifically, advanced encryption schemes which are currently under research are
 To ensure portability of the inverse transparency toolchain, the implementation of this thesis should thus only rely on primitives defined by the Web Cryptographic API.
 This is specifically important because the Clotilde frontend is a web application.
 
-\subsubsection{N3. Usability}
+\subsubsection{Usability}
 Usually a trade-off between Security and Usability needs to be resolved during system design~\todo{quelle}.
 In the context of this thesis, however, the complexity of security is a key-driver to improve usability. 
 By integrating the error-prone cryptography tasks (e.g. encryption or integrity checks) into the application, we can increase the usability and thus the acceptance of the toolchain.
@@ -226,7 +187,7 @@ This approach is motivated by the principle of least effort, which states that h
 As a result, an optimal solution should integrate all cryptographic tasks into the toolchain.
 It should not demand users to perform them themselves.
 
-\subsubsection{N4. Minimal resource utilization}
+\subsubsection{Minimal resource utilization}
 This is a performance criterion.
 The implemented solution should avoid resource overhead in terms of storage and computation.
 While this is directly related to the non-functional requirement N2, more aspects need to be considered here.

@@ -231,30 +231,30 @@ As elaborated in the previous chapters, the designed and implemented protocol is
 Logs can therefore  be encrypted for multiple recipients.
 The symmetric key $k$ (which encrypts the log) must be encrypted for each receiver.
 This implies that if a log is shared with $n$ users the key $k$ must be encrypted $n$ times.
-The encryption costs increase linearly with the number of recipients.
+The encryption duration increases linearly with the number of recipients.
 This section aims to provide resilient measurements of those costs.
 
 
 \subsection{Methodology}
-The encryption costs are measured for each library separately (ts-it-crypto, py-it-crypto and go-it-crypto).
+The encryption times are measured for each library separately (ts-it-crypto, py-it-crypto and go-it-crypto).
 The measurements are implemented as performance tests in each library.
 All of them follow the same principles.
-The encryption costs are quantified by measuring the passed milliseconds during encryption.
+The encryption duration are quantified by measuring the passed milliseconds during encryption.
 Always the same log data is encrypted.
 However, the number of recipients changes during different tests.
 For a fixed number of recipients a tests is repeated $100$ times.
-The average of those runs is said to be the encryption costs for the number of recipients in the library under test.
+The average of those runs is said to be the encryption duration for the number of recipients in the library under test.
 The performance tests were executed on a machine running \emph{macOS Monterey} with an \emph{Apple M1} CPU.
 
 \subsection{Results}
 The results of all three libraries is illustrated in figure~\ref{fig:performance}.
-It shows the encryption costs in milliseconds for a different number of recipients.
+It shows the encryption duration in milliseconds for a different number of recipients.
 In general, one can observe that the Go implementation is the fastest library.
 This meets the expectations because Go is a compiled language while python is interpreted.
 Please note that Typescript is compiled into Javascript.
 The resulting Javascript code, however, is also interpreted.
 
-For all languages one can observe a linear growth of encryption costs when adding additional recipients.
+For all languages one can observe a linear growth of encryption times when adding additional recipients.
 This meets the expectations because all libraries rely on hybrid encryption.
 When adding a new user the encrypting party must additionally encrypt the secret key for this user.
 The encryption for a single receiver in Go takes $0.12ms$.
@@ -275,7 +275,7 @@ This proofs that the implemented library can be used in practice.
 \begin{figure}[ht]
     \includegraphics[scale=0.5]{../img/07/performance_tests.jpg}
     \centering
-    \caption{This figure visualizes the encryption costs of the different libraries in milliseconds. The same log data was encrypted for a different number of recipients.}
+    \caption[Encryption duration]{This figure visualizes the encryption duration of the different libraries in milliseconds. The same log data was encrypted for a different number of recipients.}
     \label{fig:performance}
 \end{figure}
 

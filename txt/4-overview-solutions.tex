@@ -33,7 +33,7 @@ Details and justifications can be found in the corresponding sections below.
     \ref{sec:broadcast-identity}    & CBBE                      & \checkmark  & \checkmark  & \checkmark    & \checkmark    & \checkmark    & \checkmark    & \checkmark    &               & \checkmark    & \checkmark    \\ \hline
     \ref{sec:broadcast-proxy}       & PRE                       & \checkmark  & \checkmark  & \checkmark    &               & \checkmark    & \checkmark    &               &               & \checkmark    & \checkmark    \\ \hline
 \end{tabular}
-\caption{Overview of the considered encryption techniques and their implications to the system requirements.}
+\caption[Overview encryption techniques]{Overview of the considered encryption techniques and their implications to the system requirements.}
 \label{tab:overview-summary}
 \end{table}
 
@@ -103,7 +103,7 @@ The receiver can also verify if the nested access log was signed by the claimed 
 \begin{figure}[ht]
     \includegraphics[scale=0.2]{../img/04/mutual_encryption.jpg}
     \centering
-    \caption{Structure of a shared log before encryption.}
+    \caption[Structure shared log]{Structure of a shared log before encryption.}
     \label{fig:mutual_encryption}
 \end{figure}
 
@@ -156,7 +156,7 @@ This requires a fresh symmetric key $k$.
 \begin{figure}[ht]
     \includegraphics[scale=0.22]{../img/04/hybrid_encryption.jpg}
     \centering
-    \caption{Structure of an encrypted log using hybrid encryption. The cipher contains the encrypted log and an encrypted key for each recipient.}
+    \caption[Structure encrypted log]{Structure of an encrypted log using hybrid encryption. The cipher contains the encrypted log and an encrypted key for each recipient.}
     \label{fig:hybrid_encryption}
 \end{figure}
 

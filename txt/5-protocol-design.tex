@@ -80,7 +80,7 @@ To ensure that the monitor does not specify other unintended users, validation c
 \begin{figure}[h!]
     \includegraphics[width=10cm]{../img/05/overview.jpg}
     \centering
-    \caption{
+    \caption[Protocol overview]{
         The performed tasks and data flows when creating, encrypting, decrypting and sharing logs in the toolchain.
         The monitor creates a log and encrypts it for Alice.
         Alice downloads and decrypts the log.
@@ -196,7 +196,7 @@ Since \emph{JWS} and \emph{JWE} tokens can also be nested into each other, \emph
 \begin{figure}[h!]
     \includegraphics[width=4cm]{../img/05/nested_jws.jpg}
     \centering
-    \caption{A log is a \emph{JWS} token signed by the monitor. A shared log is a \emph{JWS} token that contains a nested log. It is signed by the entity encrypting the log.}
+    \caption[Nested JWS tokens]{A log is a \emph{JWS} token signed by the monitor. A shared log is a \emph{JWS} token that contains a nested log. It is signed by the entity encrypting the log.}
     \label{fig:nested-jws}
 \end{figure}
 
