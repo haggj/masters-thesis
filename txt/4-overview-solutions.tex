@@ -401,13 +401,13 @@ If a hardware device is available (e.g. a smartphone with a secure storage eleme
 When encrypting data for a set of users (e.g. within a group chat) the plaintext is encrypted for each user separately.~\cite{Marlinspike2014}
 
 Unfortunately, the concept of sessions relying on an initially exchanged private key does not fit the architecture of the toolchain.
-The Clotilde frontend allows users to login in a web application.
+The Clotilde front-end allows users to login in a web application.
 Within this application the encrypted data is downloaded and decrypted.
 A session (as used in the Signal protocol) requires, however, that the exchange shared key is available for the user during decryption.
 Since the user can login from arbitrary devices and browsers, the session key needs to be transported among those devices.
 Either the user handles this manually (this conflicts with usability) or a trusted server stores the session key (this conflicts with the notion of E2EE).
 In both ways the requirements of this thesis can not be met.
-A possible solution to fix this is the implementation and distribution of the Clotilde frontend as an app.
+A possible solution to fix this is the implementation and distribution of the Clotilde front-end as an app.
 This way, a secure session could be established among users and the shared secret could be securely stored in dedicated secure hardware storages which are not available in browsers.
 
 \section{Justification of hybrid encryption}

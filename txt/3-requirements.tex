@@ -96,7 +96,7 @@ Authorized users are the data owner of the log plus all users the data owner has
 From the perspective of E2EE, all other entities are untrusted.
 Untrusted entities must not be able to decrypt logs.
 The untrusted network includes the whole infrastructure of the toolchain, except the application a user interacts with.
-This implies, that all frontend applications must trusted (e.g. the \emph{Clotilde UI} and all integrated \emph{Monitor} components).
+This implies, that all front-end applications must trusted (e.g. the \emph{Clotilde UI} and all integrated \emph{Monitor} components).
 
 The following example attack motivates this requirement.
 Consider an attacker Eve who is the database admin of the Overseer server.
@@ -167,7 +167,7 @@ This implies that a compromised trusted server undermines the security of the wh
 To reduce the risk and attack surface, the toolchain should rely on a minimal number of trusted entities.
 
 \subsubsection{Standardized cryptographic algorithms}
-The current implemented frontend of the inverse transparency toolchain runs within the browser. 
+The current implemented front-end of the inverse transparency toolchain runs within the browser. 
 The Web Cryptographic API~\cite{WebCryptoApi2017} defines an interface to perform cryptographic operations within browsers. 
 It \enquote{exposes already existing and often heavily verified cryptographic functionality to Web application developers through a standardized interface}~\cite[959]{Halpin2014}.
 This enables secure and performant cryptography within the browser~\cite{Halpin2014}.
@@ -175,7 +175,7 @@ However, it is limited to specific primitives.
 Advanced encryption schemes are not yet defined and available in the API yet.
 Specifically, advanced encryption schemes which are currently under research are not integrated.
 To ensure portability of the inverse transparency toolchain, the implementation of this thesis should thus only rely on primitives defined by the Web Cryptographic API.
-This is specifically important because the Clotilde frontend is a web application.
+This is specifically important because the Clotilde front-end is a web application.
 
 \subsubsection{Usability}
 Usually a trade-off between Security and Usability needs to be resolved during system design~\todo{quelle}.

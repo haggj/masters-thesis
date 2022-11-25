@@ -16,12 +16,12 @@ Specifically, the protocol must ensure that the data owner can always access its
 The data owner must also be able to share and revoke access to logs.
 Please see section~\ref{functional-requriements} for details about those functional requirements.
 
-To ensure that data owner can always access logs the protocol relies on three mechanisms:
+To ensure that data owners can always access their logs the protocol relies on three mechanisms:
 First, the monitor must encrypt a new log only for the data owner.
 A log is therefore accessible for the data owner upon creation.
 Second, whenever the data owner shares or revokes access to a log it must include its own identity in the set of authorized users.
 Finally, the server must ensure that no other user besides the data owner can modify logs.
-Since no unauthorized users can tamper a log this guarantees that that the data owner is always able to download and decrypt its logs.
+Since no unauthorized users can tamper with a log this guarantees that the data owner is always able to download and decrypt its logs.
 
 The protocol is based on hybrid encryption.
 This means that the log is first encrypted with a symmetric encryption scheme.
@@ -33,7 +33,7 @@ The specified metadata allows the server to distribute logs to requesting users 
 Moreover, the server can ensure that only the specified data owner can update a log.
 This effectively enables the functionality to share and revoke access to the log.
 Sharing a log is realized by adding additional users to the set of authorized users.
-Revoking the access to logs requires to remove a user from this set.
+Revoking the access to logs requires removing a user from this set.
 Since new key material is generated during encryption, revoked users can not re-use older decryption keys to access the log.
 
 This analysis shows that the designed protocol fulfills all identified functional requirements.
@@ -50,22 +50,22 @@ This creates further confidence in their functionality.
 This section investigates the security of the designed protocol.
 Three security requirements were identified during requirements engineering (details in section ~\ref{security-requriements}).
 Each requirement was motivated by an exemplary attack scenario.
-The following sections face the proposed protocol with those attacks.
+In the following sections, the proposed protocol is confronted with those attacks.
 They argue why the established security mechanisms resist them.
 
 \subsection{Assumptions}
 
 The security of the protocol relies on three fundamental assumptions.
-If any of those assumptions is broken the protocol must be considered to be insecure.
+If one of those assumptions is violated the protocol must be considered to be insecure.
 
 \begin{enumerate}
     \item 
     The protocol has access to a secure PKI.
     The PKI assigns the identities of users to their public keys via certificates.
     Each user requires two key pairs (one for encrypting data and one for signing data).
-    Each user must has exclusive access to his private keys.
-    The public keys are distributed via certificates which are signed by a trusted certificate authority.
-    If any private key (either of a user or of the certificate authority) is compromised the intended E2EE is broken.
+    The user must have exclusive access to his private keys.
+    The public keys are distributed via certificates signed by a trusted certificate authority.
+    If any private key (either of a user or the certificate authority) is compromised the intended E2EE is broken.
     A private key is assumed to be compromised if any entity besides the owner of the private key has access to it.
     
     \item 
@@ -90,7 +90,7 @@ This \emph{JWE} token relies on hybrid encryption:
 First, a symmetric key $k$ is randomly generated and the data is encrypted via \verb|A256GCM|.
 This is an authenticated symmetric encryption algorithm based on \emph{AES}~\cite{Jones2015}.
 Secondly, this symmetric key $k$ is encrypted for each receiver using \verb|ECDH-ES+A256KW|~\cite{Jones2015}.
-This key wrapping algorithm establishes an ephemeral key between two users.
+This key-wrapping algorithm establishes an ephemeral key between two users.
 This ephemeral key is finally used to encrypt the symmetric key $k$.
 The specification of \verb|ECDH-ES+A256KW| requires the following steps to establish this ephemeral key between a sender and receiver~\cite[100]{Barker2017}.
 This is also illustrated in figure~\ref{fig:key_wrapping}.
@@ -98,8 +98,8 @@ This is also illustrated in figure~\ref{fig:key_wrapping}.
 \begin{figure}[ht]
     \includegraphics[scale=0.2]{../img/07/key_wrapping.jpg}
     \centering
-    \caption[Key wrapping]{
-        Key wrapping of the symmetric key k using ECDH-ES+A256KW. 
+    \caption[Key-wrapping ECDH-ES+A256KW]{
+        Key-wrapping of the symmetric key k using ECDH-ES+A256KW.
         Based on the exchanged public keys the sender and receiver can both compute the same shared secret.
         The derived ephemeral key is finally used to decrypt the symmetric encryption key k.}
     \label{fig:key_wrapping}
@@ -110,12 +110,12 @@ This is also illustrated in figure~\ref{fig:key_wrapping}.
     The sender must know the static public key of the receiver. 
     In our case, this is the public encryption key.
     The receiver must have exclusive access to its static private key.
-    In our case, this it the private decryption key.
+    In our case, this is the private decryption key.
     \item 
     The sender creates a new ephemeral key pair. 
     This key pair must be used only once.
     \item 
-    The sender sends the ephemeral public key of to the receiver.
+    The sender sends the ephemeral public key to the receiver.
     In our case, the key is encoded into the \emph{JWE} token.
     The ephemeral private key must be kept secret.
     \item 
@@ -259,12 +259,12 @@ All of them follow the same principles.
 The encryption duration is quantified by measuring the passed milliseconds during encryption.
 Always the same log data is encrypted.
 However, the number of recipients changes during different tests.
-For a fixed number of recipients a tests is repeated $100$ times.
+For a fixed number of recipients, a test is repeated $100$ times.
 The average of those runs is said to be the encryption duration for the number of recipients in the library under test.
 
 The performance tests were executed on a machine running \emph{macOS Monterey} with an \emph{Apple M1} CPU (ARM64).
 The Go library was compiled with Go 1.18.3\footnote{\url{https://go.dev/doc/devel/release}}.
-The Typescript package was compiled to Javascript using TSC 4.8.3\footnote{\url{https://www.typescriptlang.org/docs/handbook/compiler-options.html}}. 
+The Typescript package was compiled into Javascript using TSC 4.8.3\footnote{\url{https://www.typescriptlang.org/docs/handbook/compiler-options.html}}. 
 It was then executed by the Node.js version 18.12.1\footnote{\url{https://nodejs.org/ca/blog/release/v18.12.1/}} which is built upon the V8 engine 10.2.154.15\footnote{\url{https://v8.dev/}}.
 The Python tests were run under Python 3.9.6\footnote{\url{https://www.python.org/downloads/release/python-396/}} using the CPython\footnote{\url{https://github.com/python/cpython}} interpreter.
 
@@ -282,21 +282,21 @@ This improves the performance of both libraries.
 The observed speed difference can be explained best when considering the performance differences between the Javascript engine V8 and the CPython interpreter:
 The experiments performed by~\cite{Lion2022} indicate that execution times under V8 are on average almost four times faster than under CPython.
 
-For all languages one can observe a linear growth of encryption times when adding additional recipients.
+For all packages, one can observe a linear growth of encryption times when adding additional recipients.
 This meets the expectations because all libraries rely on hybrid encryption.
 When adding a new user the encrypting party must additionally encrypt the secret key for this user.
 The encryption for a single receiver in Go takes $0.12ms$.
 The encryption for two receivers takes $0.17ms$.
-The additional receiver increases the costs by a about $0.05ms$ because both runs encrypted the same log.
+The additional receiver increases the costs by about $0.05ms$ because both runs encrypted the same log.
 The same analysis can be done for the Python and Typescript measurements.
 While an additional recipient in Python increases the encryption costs by approximately $0.50ms$, the Typescript implementation requires about $0.30ms$ for an additional user.
 
 From the perspective of a user, a system reacts instantaneously if a computation takes less than $100ms$~\cite{Nielson1993}.
 In those cases no visual feedback is necessary.
-Experiments with the packages show that this treshold is reached in Typescript if encrypting the log for about $330$ users.
+Experiments with the packages show that this threshold is reached in Typescript if encrypting the log for about $330$ users.
 The Python implementation reaches the boundary if data is encrypted for $170$ users.
-In Go the encryption for $1500$ recipients takes on average slightly more than $100ms$.
-This proofs that a data owner can share his logs with up to 170 users without noticing a computation delay.
+In Go, the encryption for $1500$ recipients takes on average slightly more than $100ms$.
+This proves that a data owner can share his logs with up to 170 users without noticing a computation delay.
 Hence, the designed protocol can be used in practice.
 
 
