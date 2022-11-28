@@ -141,6 +141,14 @@ If Eve can access a private key of a user the PKI is not secure.
 This leads to the conclusion that the malicious database admin Eve can not access decrypted logs.
 Only if he was explicitly authorized he can restore the symmetric key $k$ which allows the decryption of a log.
 
+Please note that a curious server has access to the metadata of an encrypted log.
+This metadata consists of the identity of the data owner (which ensures only authorized users ca update the stored log) and the identities of the recipients (which ensures that the Overseer can distribute the logs to the correct users.)
+Although intermediate servers can not access the log data itself anymore, the metadata yields the information of which users have access to which log.
+This information could be subject to a metadata analysis attack~\cite{Greschbach2012,Mayer2016}.
+If the underlying single-sign-on server supports pseudonyms for users, however, this attack could be made significantly more difficult.
+Pseudonyms could be assigned to the users participating in the system.
+Instead of providing an unique identity within the metadata, a random pseudonym of the user could be chosen.
+Assuming that the intermediate server can not link pseudonyms back to users, this would make the metadata analysis pointless.
 
 \subsection{Surreptitious forwarding}
 Surreptitious forwarding refers to an attack where a malicious user re-encrypts a received log for unintended users (details in section~\ref{sec:surreptitious-forwarding}).

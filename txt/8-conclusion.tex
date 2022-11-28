@@ -4,5 +4,28 @@
 
 \chapter{Conclusion}
 
+This thesis designs, implements and evaluates an end-to-end encrypted protocol which allows to share logs in the \emph{Inverse Transparency} toolchain~\cite{Zieglmeier2021}.
+The survey of encryption technologies showed that hybrid encryption meets the identified protocol requirements best.
+The designed protocol therefore relies on hybrid encryption which enables efficient multi-party E2EE.
+It makes it possible for data owners to share and revoke access to their logs while the data stays encrypted.
+The protocol was created to resist three type of attackers: 
+A curious server (e.g. the \emph{Safekeeper} component) can not access the logs because all logs are encrypted.
+Surreptitious forwarding attacks are detected since the user sharing a log cryptographically signs the log along with the indented receivers.
+A malicious data owner can not forge logs because each log is cryptographically signed by a trusted monitor component.
+
+The protocol was implemented in the programming languages Go, Python and Typescript.
+For each of those a library was developed which can be used to sign, encrypt and decrypt logs.
+These libraries enable the intended functionality of a multi-party E2EE protocol.
+Moreover, each library is tested, documented and was published to the respective package indexes.
+
+The existing toolchain was adopted to enable the functionality of sharing encrypted logs.
+The implemented protocol was therefore included into the toolchain.
+A proof-of-concept environment demonstrates how an established PKI may be used to instantiate the protocol.
+This verifies that the protocol can be used in practice to share encrypted logs among users.
+From the perspective of a user, access to a logs can be shared and revoked.
+The implemented UI fully abstracts from any underlying protocol details such as cryptographic signatures, encryption and decryption algorithms.
+The evaluation of the protocol shows that the it is practically usable because data can be encrypted for up to 170 users without any noticeable delay.
+
+
 
 \end{document}
