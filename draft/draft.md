@@ -45,6 +45,63 @@
     Describes the problem statement, illustrates why this is a problem and describes the contribution the thesis makes in solving this problem. Optionally, it can give a short description (1-3 sentences each) of the remaining chapters. Good introductions are concise, typically no longer than 4 pages.
     The introduction reveals the full (but summarized) results of your work
 
+
+1.) General observations:
+- In modern societies more and more systems become digital.
+- This process goes hand in hand with the collection of unprecedented amounts of data leading to the age of big data.
+- This enables great possibilities for data-driven technologies to improve living conditions in our complex and modern world.
+- But it also introduces the risks such as surveillance and the abuse of power.
+- This observation leads to the fundamental question of digital transformation: How can data be used to drive innovation while protecting privacy?
+- (https://www.inversetransparenz.de/wp-content/uploads/2022/05/Forschungsreport-Daten-Innovation-Privatheit.pdf)
+
+2.) Why Inverse transparency?
+- The concept of inverse transparency aims to ... (from my proposal)
+- "Watch-the-watcher" (s. 30 im Forschungsreport)
+  - make data usage transparent
+  - knowledge for users: what data is stored and who uses it for what?
+  - tack data usages to enable true data data sovereignty
+
+3.) Inverse Transparency Toolchain
+  - Toolchain to realize inverse transparency in practice
+  - data access is logged and visualized to data owners
+  - components etc.
+
+4.) Limitations of the toolchain
+  - Logs can not be shared
+    Why sharing logs:
+    - redress in case of harmful misusage of data (s.3 toolchain)
+  - Logs are not encrypted during transit
+    - TLS
+    - End-to-end encryption
+
+    Why End2End:
+    - protect confidentiality of data from intermediate serves of the toolchain
+    - privacy aims to reduce the disclosure of private information (eckert s. 34) 
+
+    Why End2End encrypted logs:
+    - practical dimension: toolchain aims to provide a framework. Specificall it is designed for companies which have full access to the servers. Thus servers often run in the cloud (e.g. AWS), thus, companies are faced with the threat to lose control of their data. If the stored data usages are stored encrypted the service provider does not learn anything from the stored data
+    - privacy: 
+      - overseer should not learn which data was accesses frequently (e.g. "the working hours of Alice are requested frequently, there seems to be a problem" )
+      - empowerment of employees: They can also request their own data in order to improve their work situation. This should be protected
+
+5.) Contribution:
+    - Implement encrypted logs which ca be shared among users. Therefore:
+      1.) Protocol design which is based on a literature survey of possible encryption techniques
+      2.) Implementation of the protocol in terms of encryption libraries
+      3.) Integration of the protocol into the existing toolchain
+
+- This development contributed to the elaboration of the european data protection directives.
+- The EU commision states that this (https://ec.europa.eu/info/law/law-topic/data-protection/data-protection-eu_en)
+- "The regulation is an essential step to strengthen individuals' fundamental rights in the digital age and facilitate business by clarifying rules for companies and public bodies in the digital single market."
+- Users of digital services should have full control over their data at all times.
+- The practical realization requires users to accept potential data usages in advance.
+- This preemptive approach differs from the approach applied in the US (Trustworthy Transparency by design)
+
+
+
+
+
+
     Motivation for E2EE  here: https://eprint.iacr.org/2021/486.pdf
 
 
@@ -497,3 +554,17 @@ Security implications:
 
     Short summary of the contribution and its implications. The goal is to drive home the result of your thesis. Do not repeat all the stuff you have written in other parts of the thesis in detail. Again, limit this chapter to very few pages. The shorter, the easier it is to keep consistent with the parts it summarizes.
 
+Implement encrypted logs which ca be shared among users. Therefore:
+1.) Protocol design which is based on a literature survey of possible encryption techniques.
+- Hybrid encryption
+- intended to resists against three type of attackers
+- evaluation shows that it can be used in practice and does not harm usability
+2.) Implementation of the protocol in terms of encryption libraries
+- Three libraries were implemented and published to the package indexes
+- heavily tested and compatible with each other
+- documentation provided, code quality
+3.) Integration of the protocol into the existing toolchain
+- Existing toolchain contains a proof-of-concept environment
+- shows how the designed protocol can be applied
+- demonstrates how encrypted logs can be shared among users
+- implements UI which fully abstracts the underlying encryption from the perspective of the user
