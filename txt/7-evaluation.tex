@@ -88,7 +88,7 @@ Both, the monitor creating a log and the data owner sharing a log must encrypt t
 The server only has access to the \emph{JWE} token created by the encryption algorithm.
 This \emph{JWE} token relies on hybrid encryption:
 First, a symmetric key $k$ is randomly generated and the data is encrypted via \verb|A256GCM|.
-This is an authenticated symmetric encryption algorithm based on \emph{AES}~\cite{Jones2015}.
+This is an authenticated\footnote{Please note that this authentication does not guarantee that the authenticity of the sending user. This is because in a symmetric encryption scheme the authenticity is always bound the the knowledge of the symmetric key. Since multiple receivers might have access to the symmetric key this authentication only ensures that any of those users generated the cipher. To ensure the authenticity of the sending user the protocol must include a digital signature.~\cite[315]{Eckert2018}} symmetric encryption algorithm based on \emph{AES}~\cite{Jones2015}.
 Secondly, this symmetric key $k$ is encrypted for each receiver using \verb|ECDH-ES+A256KW|~\cite{Jones2015}.
 This key-wrapping algorithm establishes an ephemeral key between two users.
 This ephemeral key is finally used to encrypt the symmetric key $k$.

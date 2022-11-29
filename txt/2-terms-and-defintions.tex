@@ -2,26 +2,118 @@
 
 \begin{document}
 
-\chapter{Terms and Definitions}
-\section{AEAD}
+\chapter{Technical background}
+This chapter contains the technical and theoretical background of the thesis.
+It provides short explanations of the concepts addressed in this work.
+Further, it aims to clarify what is meant by the used terms.
+
+
+\section{Cryptographic concepts}
+This section covers the cryptographic concepts on which this thesis relies on.
+
+\subsection{Symmetric encryption}
+Symmetric encryption is characterized by the fact that the same key is used during encryption and decryption.
+This key is referred to as symmetric encryption key.
+It must be transported securely from the sender to the receiver.
+Hence, symmetric encryption relies on a secure channel between the communicating entities.
+Symmetric encryption algorithms can be implemented very efficiently in hardware.
+For this reason they are of great practical importance.~\cite[300]{Eckert2018}
+
+\subsection{Asymmetric encryption}
+On the contrast to symmetric encryption, asymmetric schemes do not use the same key for encryption and decryption.
+Each communicating partner is assigned a key-pair which consists of a public key and a private key.
+While the private key must be kept secret, the public key must be known by other users and is thus publicly available.
+Asymmetric encryption schemes are characterized by the fact that data is encrypted using the public key of the receiver.
+The data can only be decrypted using the private key of the respective user.
+These schemes rely on sophisticated mathematical constructions which require complex computations.
+Hence, encrypting and decrypting data under asymmetric schemes is not as efficient as in symmetric schemes.
+However, no secure channel is necessary between the communicating entities.~\cite[331]{Eckert2018}
+
+
+\subsection{Hybrid encryption}
+\label{sec:hybrid}
+Hybrid encryption schemes combine symmetric and asymmetric schemes to overcome their limitations.
+Efficient and optimized symmetric schemes are used to encrypt the actual application data.
+The short symmetric key is then encrypted by an asymmetric scheme.
+This construction neither requires a secure channel, nor suffers it from the computational overhead of asymmetric schemes.~\cite{Wolf2007}
+
+\subsection{Authenticated encryption}
 \label{sec:aead}
+Classical symmetrical or asymmetrical encryption algorithms protect the confidentiality of data.
+However, integrity and authenticity are not guaranteed.
+Authenticated encryption overcomes this limitation.~\cite{Eckert2018, An2002}
+
+Symmetric schemes can be improved by integrating integrity protection (e.g. by hashing the content and attaching the hash to the cipher).
+If the integrity protection also involves a secret (e.g. by hashing the content along with the symmetric key used for encryption) the data can be also authenticated.
+The resulting hash value is referred to as authentication tag.
+In practice, those schemes are known as the AEAD encryption mode of block ciphers (e.g. AES-GCM).
+They ensure the integrity and authenticity of the symmetrically encrypted data.
+A user is authenticated if it knows the symmetric key used to construct the cipher and the authentication tag.
+Please note that if a symmetric encryption key is shared among a group of users this weakens the authenticity:
+In this case a decrypting party can only ensure that any of the users knowing the secret key created the cipher.~\cite[315]{Eckert2018}
+
+Asymmetric schemes provide stronger security guarantees.
+A digital signature proves that a message was signed by a certain user (assuming the private key of the user is not leaked).
+If a digitally signed message is encrypted, the receiver can verify the originator of the message.
+Thus, combining public key encryption with digital signatures can also ensure confidentiality, authenticity and integrity of exchanged messages.~\cite{An2002}
+
+\section{JSON Object Signing and Encryption}
+JSON Object Signing and Encryption (JOSE) is a collection of standards defined by the IETF~\cite{Barnes2014}.
+It was created because traditional channel-based encryption layers (such as IPsec~\cite{IPSEC2011} or TLS~\cite{TLS2018}) only protect data between intermediate servers.
+However, those layers of encryption do not protected the data from the intermediate server itself.
+JOSE aims to provide security on the application layer, meaning that data handled by the application is embedded into a secure object.
+The JOSE specifications define three fundamental representations to serve for this purpose.~\cite{Barnes2014}
+\begin{itemize}
+    \item The JSON Web Signature (\emph{JWS}) format represents an integrity-protected object~\cite{JWS2015}.
+    \item The JSON Web Encryption (\emph{JWE}) format represents an confidentiality-protected object~\cite{JWE2015}.
+    \item The JSON Web Key (\emph{JWK}) format represents cryptographic keys~\cite{JWK2015}.
+\end{itemize}
+Further, a JSON Web Token (\emph{JWT}) is a compact representation of JSON data~\cite{JWT2015}.
+It is passed as payload to \emph{JWS} and \emph{JWE} tokens.
+A \emph{JWT} token contains the JSON-encoded application data which must be protected.
+The protocol designed by this thesis relies on \emph{JWS} and \emph{JWE} tokens.
+The following sections provide details about their internal structure.
+
+\subsection{JSON Web Signature}
+A JWS token contains integrity-protected data.
+It supports both, symmetric integrity protection (via message authentication codes) and asymmetric integrity protection (via digital signatures).
+It consists of a header, a payload and a signature.
+The payload contains the actual data which needs to be integrity-protected.
+The signature stores the MAC or the digital signature created by the sender of the message.
+This signature protects the payload and parts of the header.
+The header itself is split up into a protected header (which is integrity protected) and a unprotected heder.
+As the name suggests, the signature does not protect the unprotected header.
+The header contains information about the algorithm used to secure the application data.~\cite{JWS2015}
+
+\subsection{JSON Web Encryption}
+JWE tokens represent encrypted data~\cite{JWE2015}.
+Multiple encryption algorithms can be used to encrypt the application data.
+They are defined in the JSON Web Algorithm (\emph{JWA}) specification~\cite{JWA2015}.
+\emph{JWE} tokens enforce authenticated encryption and data can be encrypted for multiple recipients.
+Two algorithms are required to construct them:
+First, the application data is encrypted using an authenticated symmetric encryption algorithm.
+The key used for this algorithm is then encrypted with a dedicated key-wrapping algorithm.
+The receiver of the token must first apply the key-wrapping algorithm to restore the symmetric key which then allows the decryption of the application data.
+Thus, a JWE token contains the following parts~\cite{JWE2015}:
+\begin{itemize}
+    \item JOSE Header:
+    It contains information about the used algorithms.
+    \item JWE Encrypted Key:
+    This contains the encrypted key which was used to encrypt the application data.
+    \item JWE Initialization Vector: This part stores initialization vectors of the used encryption algorithms.
+    \item JWE Additional Authenticated Data: This field might contain data which must be authenticated and integrity protected but not encrypted.
+    \item JWE Ciphertext: This stores the encrypted application data.
+    \item JWE Authentication Tag: This field contains the authentication tag which allows a receiver to validate the received token.
+\end{itemize}
+
 
 \section{Key escrow}
 \label{sec:key-escrow}
-
-\section{Certificate revocation problem}
-\label{sec:crp}
-
-\section{Certificate revocation problem}
-\label{sec:crp}
-
-\section{JOSE}
-% - overview jose: cite from Barnes2014
-% - investigate JWS and JWE as subsections?
-
-\section{Surreptitious Forwarding}
-\label{sec:surreptitious-forwarding}
-Qulle here~\cite{Davis2001}
+Key escrow refers to the fact that cryptographic keys are known by a server in the system~\cite{Gentry2003}.
+Cryptographic schemes exists where a key generation center computes and distributes keys for all participants~\cite{Sakai2007, Bethencourt2007}.
+This key generation center must be trusted since it knows all keys within the system.
+In particular, this allows the center to access private keys of the users meaning it can decrypt and sign arbitrary data.
+While this can be beneficial in certain scenarios (e.g. to provide access to personal keys during vacation substitutions~\cite{Hagg2022}), this conflicts with a strict interpretation of end-to-end encryption because it implies that not only the intended users can decrypt the data.
 
 \section{End-to-end encryption} 
 \label{sec:end-to-end}
@@ -138,7 +230,7 @@ The following points need to be ensured.
     If a receiver can not validate the origin of the message, an attacker could simply impersonate the sender and encrypt faked data under the public key of the receiver.
     This requirement demands cryptographically signed messages to ensure that the message was actually sent by the claimed sender.
     Depending on the implemented E2EE protocol the receiver might be required to verify that the sender intended to share the data with him or her.
-    Due to the risk of surreptitious forwarding this requires additional security mechanisms besides a plain cryptographic signature.
+    Due to the risk of surreptitious forwarding this requires additional security mechanisms besides a plain cryptographic signature~\cite{Davis2001}.
 \end{enumerate}
 
 
