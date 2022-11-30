@@ -151,19 +151,19 @@ Specifically, it cannot break correctly implemented cryptographic schemes withou
 In the following, active and passive attackers are further distinguished. 
 
 \subsubsection{Passive adversaries}
-In general, passive attacks aim to break confidentiality through eavesdropping or unauthorized reading of data~\cite{Eckert2018}. 
+In general, passive attacks aim to break confidentiality through eavesdropping or unauthorized reading of data~\cite[18]{Eckert2018}. 
 In literature, this is often referred to as an honest-but-curious attacker~\cite{Nabeel2017}.
 The classical understanding of E2EE protects against passive adversaries. 
 The attacker is part of the untrusted network and observes the passed data.
 He wants to access the content of the exchanged messages.
-To defend against this passive attacker, cryptography can be applied to make passive attacks ineffective and to protect confidentiality~\cite{Eckert2018}.
+To defend against this passive attacker, cryptography can be applied to make passive attacks ineffective and to protect confidentiality~\cite[18]{Eckert2018}.
 
 
 \subsubsection{Active adversaries}
 Today's interpretation of E2EE-based systems is motivated by a stronger attacker model~\cite{Hale2022}.
 An active attacker not only listens to the passing traffic.
 Rather, this attacker tries to insert, replace, drop, modify or replay messages to disrupt the communication~\cite{Nabeel2017}.
-More sophisticated active attacks also include spoofing or denial of service attacks~\cite{Eckert2018}.
+More sophisticated active attacks also include spoofing or denial of service attacks~\cite[19]{Eckert2018}.
 The motivation can be diverse: 
 The attacker might want to access confidential content, introduce forged data, or delete valid data passing the network.
 Another goal might be the impersonation of a user participating in the system.
