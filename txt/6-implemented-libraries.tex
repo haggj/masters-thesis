@@ -1,5 +1,5 @@
 \documentclass[../main.tex]{subfiles}
-
+\crefname{lstlisting}{Listing}{Listings}
 
 \begin{document}
 
@@ -7,12 +7,12 @@
 \label{chap:implementation}
 
 This chapter describes the libraries that were developed in the scope of this thesis.
-They are available in the programming languages Typescript, Python and Go.
+They are available in the programming languages Python, Go, and Typescript.
 This ensures that software components in different environments can handle logs as specified by the protocol.
-Details about this practical realization of the libraries can be found in section \ref{sec:implemented-libraries}.
+Details about this practical realization of the libraries can be found in \cref{sec:implemented-libraries}.
 Moreover, the chosen approach heavily influences the existing toolchain.
 The existing source code of the toolchain was therefore refactored and adjusted to handle encrypted logs.
-This is described in section \ref{sec:toolchain-modifications}.
+This is described in \cref{sec:toolchain-modifications}.
 
 \section{Implemented Libraries}
 \label{sec:implemented-libraries}
@@ -25,37 +25,38 @@ The acronym \emph{it-crypto} stands for inverse transparency cryptography.
     \centering
     \begin{tabular}{|c|c|c|c|}
     \hline
-    Name         & Language & Github                           & Link to package index                                   \\ \hline
-    Ts-it-crypto & Typescript           & \href{https://github.com/haggj/ts-it-crypto}{haggj/ts-it-crypto} & \href{https://www.npmjs.com/package/ts-it-crypto}{NPM}       \\ \hline
-    Py-it-crypto & Python               & \href{https://github.com/haggj/py-it-crypto}{haggj/py-it-crypto} & \href{https://pypi.org/project/py-it-crypto/}{PyPI}          \\ \hline
+    Name         & Language & GitHub                           & Link to package index                                   \\ \hline
     Go-it-crypto & Go                   & \href{https://github.com/haggj/go-it-crypto}{haggj/go-it-crypto} & \href{https://pkg.go.dev/github.com/haggj/go-it-crypto}{PKG} \\ \hline
+    Py-it-crypto & Python               & \href{https://github.com/haggj/py-it-crypto}{haggj/py-it-crypto} & \href{https://pypi.org/project/py-it-crypto/}{PyPI}          \\ \hline
+    Ts-it-crypto & Typescript           & \href{https://github.com/haggj/ts-it-crypto}{haggj/ts-it-crypto} & \href{https://www.npmjs.com/package/ts-it-crypto}{NPM}       \\ \hline
     \end{tabular}
     \caption[Overview implemented libraries]{Overview and links of the implemented libraries to handle encrypted logs.}
 \end{table}
 
 All three libraries are fully tested and compatible with each other.
 Data that was encrypted in one library can be decrypted by all libraries.
-It was taken care that classes, functions, constants, and variables are named similarly (identical names are not possible because of the different naming conventions in Go, Python and Typescript).
+It was taken care that classes, functions, constants, and variables are named similarly (identical names are not possible because of the different naming conventions in Go, Python, and Typescript).
 Moreover, all libraries employ the same folder structure.
 This aims to improve the maintainability of the source code.
 As a result, all three libraries expose the same interface to users.
-This interface is highly related to the algorithms described in chapter~\ref{chap:design}.
+This interface is highly related to the algorithms described in \cref{chap:design}.
 The designed protocol relies on the JOSE standard.
 Thus, each library depends on a third-party package implementing JOSE.
-Ts-it-crypto depends on the Typescript package JOSE\footnote{\url{https://www.npmjs.com/package/jose}}.
-Py-it-crypto depends on the Python package \emph{jwcrypto}\footnote{\url{https://pypi.org/project/jwcrypto/}}.
 Go-it-crypto depends on the Go package JOSE\footnote{\url{https://pkg.go.dev/gopkg.in/square/go-jose.v2}}.
+Py-it-crypto depends on the Python package \emph{jwcrypto}\footnote{\url{https://pypi.org/project/jwcrypto/}}.
+Ts-it-crypto depends on the Typescript package JOSE\footnote{\url{https://www.npmjs.com/package/jose}}.
+
 
 \subsection{General usage}
 
 This section describes the usage of the implemented libraries in general.
-Please also refer to the pseudocode depicted in listing~\ref{lst:pseudocode}.
-If you are interested in the concrete realization in a specific language have a look at the corresponding Github repositories.
+Please also refer to the pseudocode depicted in \cref{lst:pseudocode}.
+If you are interested in the concrete realization in a specific language have a look at the corresponding GitHub repositories.
 
 To make use of the library an instance of type \verb|ItCrypto| must be instantiated.
 This instantiation requires the function \verb|fetchUser|.
 It resolves an identity of a user (which is a \verb|string|) to an instance of type \verb|RemoteUser|.
-The function usually requests a server resolving the identity of a user to its public keys.
+The function usually requests a server to resolve the identity of a user to its public keys.
 It needs to implement the following signature: \verb|RemoteUser fetchUser(string)|.
 A \verb|RemoteUser| object stores the public keys of the user along with its identity and the information if the user is a trusted monitor.
 This information is mainly used during decryption to verify if the signed data is valid.
@@ -66,17 +67,17 @@ This trusted certificate is assumed to contain the public key of a root certific
 The public keys of all users are assumed to be signed by this certificate authority.
 The function \verb|importRemoteUser| verifies if the provided public keys are signed accordingly.
 
-Once the \verb|ItCrypto| object is instantiated a user needs to log in.
+Once the \verb|ItCrypto| object is instantiated, a user needs to log in.
 A logged-in in user is represented by an \verb|AuthenticatedUser| object.
 It extends the \verb|RemoteUser| object because it additionally provides the private keys of the user.
 This allows the logged-in user to sign and decrypt data.
 A login is realized by calling the \verb|login| method on the \verb|ItCrypto| object.
 This function expects the PEM-encoded key material.
-If a user is logged in the \verb|ItCrypto| object becomes fully functional.
-The logged-in user can create, encrypt and decrypt logs using the provided keys.
+the \verb|ItCrypto| object becomes fully functional if a user is logged-in.
+This allows the user to create, encrypt, and decrypt logs using the provided keys.
 
 \definecolor{codegreen}{rgb}{0,0.6,0}
-\begin{lstlisting}[basicstyle=\small, label=lst:pseudocode,float,floatplacement=tbp, language=Java, caption={[Pseudocode library usage]Pseudocode of creating, encrypting and decrypting logs using the provided libraries.}, morekeywords={RemoteUser, var, assert}, commentstyle=\color{codegreen}]
+\begin{lstlisting}[basicstyle=\small, label=lst:pseudocode,float,floatplacement=tbp, language=Java, caption={[Pseudocode library usage]Pseudocode of creating, encrypting, and decrypting logs using the provided libraries.}, morekeywords={RemoteUser, var, assert}, commentstyle=\color{codegreen}]
 RemoteUser fetchUser(string identity){
     /*
     Fetch keys from the server and check if a user 
@@ -113,9 +114,9 @@ assert(decryptedLog == signedLog)
 
 \subsection{Documentation ItCrypto}
 This section further details the \verb|ItCrypto| object.
-It aims to provide documentation for developers who integrate the library into their software.
-In particular, the methods \verb|signLog|, \verb|encryptLog| and \verb|decryptLog| are detailed.
-As described in chapter~\ref{chap:design}, those methods can be used to provide the full functionality of the intended protocol.
+It aims to provide a documentation for developers who integrate the library into their software.
+In particular, the methods \verb|signLog|, \verb|encryptLog|, and \verb|decryptLog| are detailed.
+As described in \cref{chap:design}, those methods can be used to provide the full functionality of the intended protocol.
 
 The method \verb|signLog| cryptographically signs the given log data.
 Monitors must call this encryption function to initially sign an instantiated log.
@@ -172,8 +173,8 @@ This function relies on the private decryption key of the logged-in user.
 \end{table}
 
 \subsection{Cryptographic keys}
-The libraries require cryptographic keys to create, encrypt and decrypt logs.
-As described in section~\ref{sec:overview}, the protocol assumes an externally established PKI.
+The libraries require cryptographic keys to create, encrypt, and decrypt logs.
+As described in \cref{sec:overview}, the protocol assumes an externally established PKI.
 Each user is assigned two key pairs (one for signing and one for encrypting data).
 The private keys are assumed to be PEM-encoded.
 Public keys are assumed to be PEM-encoded certificates that are signed by a trusted certificate authority.
@@ -184,15 +185,15 @@ The elliptic curve OpenSSL parameters \verb|prime256v1| are known to work in all
 \section{Toolchain modifications}
 \label{sec:toolchain-modifications}
 The integration of the protocol requires the adoption of the existing toolchain.
-Figure~\ref{fig:encrypted-toolchain} was taken from~\cite{Zieglmeier2021}.
-It additionally visualizes the encrypted data flow in the toolchain.
+\cref{fig:encrypted-toolchain} was taken from~\citeauthor{Zieglmeier2021}~\cite{Zieglmeier2021}.
+It additionally visualizes the end-to-end-encrypted data flow in the toolchain.
 In particular, a monitor encrypts the log for the data owner.
 A user who is logged in to the display component can decrypt its logs.
 Moreover, access to the logs can be shared and revoked.
-This functionality requires changes in the \emph{Monitor}, \emph{Safekeeper} and \emph{Display} component.
+This functionality requires changes in the \emph{Monitor}, \emph{Safekeeper} and \emph{Display} components.
 Those changes were implemented in the context of this thesis.
 The development environment of the toolchain is a proof-of-concept.
-It shows how a \emph{PKI} infrastructure can be used to integrate encrypted logs.
+It shows how a PKI infrastructure can be used to integrate encrypted logs.
 The following sections describe different perspectives on this integration.
 They provide details about the implemented changes.
 
@@ -209,7 +210,7 @@ The toolchain relies on a single-sign-on server responsible for authenticating u
 The development environment provides the \emph{Revolori} server which is an implementation of this service.
 Besides the user information it now additionally stores certificates containing the public keys of the users and the information if a user is an authorized monitor.
 This additional information is used by the front-end to encrypt and decrypt logs.
-Therefore, a new endpoint was introduced which resolves the identity of this information (e.g. the certificates and if the user is a trusted monitor).
+Therefore, a new endpoint was introduced which resolves the identity of a user to this data.
 
 The development environment of the toolchain is a proof-of-concept that shows how an external PKI can be connected.
 There are two scripts used to load pre-configured users into the development environment.
@@ -226,7 +227,7 @@ Both were updated to establish an exemplary PKI:
     Two key pairs for each user are generated.
     The public keys of all users are signed by the public key of the certificate authority.
     This effectively creates certificates binding the identities of the users to their public keys.
-    Finally, the script updates the provided \verb|users.json| to contain the cryptographic keys of each user.
+    Finally, the script updates the provided \verb|users.json| to contain the generated cryptographic keys of each user.
     \item 
     The script \verb|setup.sh| is responsible for creating users in a running \emph{Revolori} instance.
     It is also used to create exemplary data accesses for each user.
@@ -234,24 +235,24 @@ Both were updated to establish an exemplary PKI:
     First of all, the script expects the file \verb|users.json| which contains user information along with their cryptographic keys.
     It then parses the user information and creates the respective users in the \emph{Revolori} server.
     In particular, this includes the certificates of the user's public keys.
-    To pre-compute encrypted logs the \emph{CLI} of the \emph{ts-it-crypto} library needs to be installed.
-    It allows encrypting log data in the name of a monitor.
+    To pre-compute encrypted logs, the command-line interface of the \emph{ts-it-crypto} library needs to be installed.
+    It allows to encrypt log data in the name of a user.
     The encrypted logs are then uploaded to the \emph{Overseer}.
-
 \end{itemize}
 
-This setup allows fetching the public keys for a given user from the \emph{Revolori} server.
+This setup allows to fetch the public keys for a given user from the \emph{Revolori} server.
 The development environment also provides the private keys for a user upon login.
 This is realized by passing the \verb|users.json| file to the \emph{Clotilde} process.
 Please note that this implies that the front-end has unrestricted access to all private keys.
 Thus, this setup can only be used in the development environment.
 In productive systems, the \emph{Clotilde} front-end must securely import the private keys from the user (e.g. via hardware token).
 If a user logs in to the system, the front-end instantiates an \verb|ItCrypto| object using the provided key material.
-This finally enables all cryptographic tasks.
+This finally enables all cryptographic tasks for a user.
 
 
 \subsection{Display component}
-The display component is the front-end of the toolchain.
+The \emph{Display} component is the front-end of the toolchain.
+It is instantiated as the emph{Clotilde} server in the development environment.
 It visualizes all data accesses concerning the logged-in user.
 Since all logs are end-to-end encrypted it must handle the logs provided by the \emph{Safekeeper}.
 In particular, the logs must be decrypted in the front-end.
@@ -259,14 +260,14 @@ Access to the logs can also be shared and revoked by the data owner.
 This allows a data owner to authorize any other user in the system to temporarily access a log.
 The adopted implementation provides this functionality.
 To perform the necessary cryptographic actions, it integrates the \emph{ts-it-crypto} library into the front-end application.
-Appendix~\ref{app:screenshots} contains screenshots of the realized UI.
+\cref{app:screenshots} contains screenshots of the realized UI.
 
 \subsection{Safekeeper component}
 The \emph{Safekeeper} component is responsible to store logs.
 It was adopted to handle encrypted data.
-As described in section~\ref{sec:metadata}, an encrypted log contains metadata to support intermediate servers.
+As described in \cref{sec:metadata}, an encrypted log contains metadata to support intermediate servers.
 This metadata contains the set of recipients (e.g. the users that can decrypt the log) and the identity of the data owner.
-Once a loc is sent to the server, thus, this metadata must be parsed.
+Once a log is sent to the server, thus, this metadata must be parsed.
 It is stored along with the encrypted log in the database.
 This allows the \emph{Safekeeper} to associate a log with users.
 A new endpoint was implemented that allows users to request its encrypted logs.

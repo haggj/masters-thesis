@@ -3,10 +3,11 @@
 \begin{document}
 
 \chapter{Evaluation}
+\label{chap:evaluation}
 
-This chapter evaluates the protocol proposed in chapter~\ref{chap:design}.
-Besides the verification of the intended functionality in section~\ref{sec:evaluation-func}, the security and performance of the protocol are investigated in sections \ref{sec:evaluation-sec} and \ref{sec:evaluation-perf}.
-This evaluation verifies that the system requirements given in section~\ref{chap:requirements} can be fulfilled.
+This chapter evaluates the protocol proposed in \cref{chap:design}.
+Besides the verification of the intended functionality in \cref{sec:evaluation-func}, the security and performance of the protocol are investigated in Sections \ref{sec:evaluation-sec} and \ref{sec:evaluation-perf}.
+This evaluation verifies that the system requirements given in \cref{chap:requirements} can be fulfilled.
 
 \section{Functionality}
 \label{sec:evaluation-func}
@@ -14,14 +15,14 @@ This evaluation verifies that the system requirements given in section~\ref{chap
 This section evaluates the functionality of the designed protocol.
 Specifically, the protocol must ensure that the data owner can always access its logs.
 The data owner must also be able to share and revoke access to logs.
-Please see section~\ref{functional-requriements} for details about those functional requirements.
+Please see \cref{functional-requriements} for details about those functional requirements.
 
 To ensure that data owners can always access their logs the protocol relies on three mechanisms:
 First, the monitor must encrypt a new log only for the data owner.
 A log is therefore accessible for the data owner upon creation.
 Second, whenever the data owner shares or revokes access to a log it must include its own identity in the set of authorized users.
-Finally, the server must ensure that no other user besides the data owner can modify logs.
-Since no unauthorized users can tamper with a log this guarantees that the data owner is always able to download and decrypt its logs.
+Finally, the server must ensure that no other user besides the data owner can modify encrypted logs.
+This guarantees that the data owner is always able to download and decrypt its logs.
 
 The protocol is based on hybrid encryption.
 This means that the log is first encrypted with a symmetric encryption scheme.
@@ -33,22 +34,22 @@ The specified metadata allows the server to distribute logs to requesting users 
 Moreover, the server can ensure that only the specified data owner can update a log.
 This effectively enables the functionality to share and revoke access to the log.
 Sharing a log is realized by adding additional users to the set of authorized users.
-Revoking the access to logs requires removing a user from this set.
+Revoking access to logs requires removing a user from this set.
 Since new key material is generated during encryption, revoked users can not re-use older decryption keys to access the log.
 
 This analysis shows that the designed protocol fulfills all identified functional requirements.
 A data owner can always access its logs and it can share and revoke access to them.
-The protocol was included in the existing toolchain within the scope of the master thesis.
-Section \ref{sec:toolchain-modifications} investigates the implemented changes.
+The protocol was included in the existing toolchain within the scope of this thesis.
+\cref{sec:toolchain-modifications} investigates the implemented changes.
 This integration verifies that the protocol has the intended functionality and can be used in practice.
-Moreover, the implemented libraries are heavily tested.
+Moreover, the implemented libraries are well tested.
 This creates further confidence in their functionality.
 
 \section{Security}
 \label{sec:evaluation-sec}
 
 This section investigates the security of the designed protocol.
-Three security requirements were identified during requirements engineering (details in section ~\ref{security-requriements}).
+Three security requirements were identified during requirements engineering (details in \cref{security-requriements}).
 Each requirement was motivated by an exemplary attack scenario.
 In the following sections, the proposed protocol is confronted with those attacks.
 They argue why the established security mechanisms resist them.
@@ -73,14 +74,14 @@ If one of those assumptions is violated the protocol must be considered to be in
     Specifically, \verb|A256GCM| and \verb|ECDH-ES+A256KW| must be secure encryption algorithms and \verb|ES256| must be a secure signing algorithm.
     This implies that it is computationally infeasible to break those algorithms without knowing the respective keys~\cite{Katz2020}.
     \item 
-    The libraries implemented in this thesis rely on language-specific JOSE implementations (details in~\ref{sec:implemented-libraries}).
+    The libraries implemented in this thesis rely on language-specific JOSE implementations (details in \cref{sec:implemented-libraries}).
     It is crucial for the security of the protocol that those libraries follow the specifications and definitions of the JOSE protocol.
 \end{enumerate}
 
 \subsection{Curious server}
 A curious server is a passive attacker which tries to access the logs within the toolchain.
 It motivated security requirement S1 which states that only the data owner and explicitly authorized users can access logs.
-Recall the attacker Eve who is the database admin of the Overseer server.\todo{cite section}
+Recall the attacker Eve who is the database admin of the \emph{Safekeeper} server (details in \cref{security-requriements}).
 This section argues why Eve can not access logs if he was not explicitly authorized.
 
 The protocol enforces that only encrypted data is stored in the database.
@@ -88,12 +89,12 @@ Both, the monitor creating a log and the data owner sharing a log must encrypt t
 The server only has access to the JWE token created by the encryption algorithm.
 This JWE token relies on hybrid encryption:
 First, a symmetric key $k$ is randomly generated and the data is encrypted via \verb|A256GCM|.
-This is an authenticated\footnote{Please note that this authentication does not guarantee that the authenticity of the sending user. This is because in a symmetric encryption scheme the authenticity is always bound the the knowledge of the symmetric key. Since multiple receivers might have access to the symmetric key this authentication only ensures that any of those users generated the cipher. To ensure the authenticity of the sending user the protocol must include a digital signature.~\cite[315]{Eckert2018}} symmetric encryption algorithm based on \emph{AES}~\cite{Jones2015}.
-Secondly, this symmetric key $k$ is encrypted for each receiver using \verb|ECDH-ES+A256KW|~\cite{Jones2015}.
+This is an authenticated\footnote{Please note that this authentication does not guarantee the authenticity of the sending user. This is because in a symmetric encryption scheme the authenticity is always bound the knowledge of the symmetric key. Since multiple receivers might have access to the symmetric key this authentication only ensures that any of those users generated the cipher. To ensure the authenticity of the sending user, the protocol must include a digital signature.~\cite[315]{Eckert2018}} symmetric encryption algorithm based on AES~\cite{JWA2015}.
+Secondly, this symmetric key $k$ is encrypted for each receiver using \verb|ECDH-ES+A256KW|~\cite{JWA2015}.
 This key-wrapping algorithm establishes an ephemeral key between two users.
 This ephemeral key is finally used to encrypt the symmetric key $k$.
 The specification of \verb|ECDH-ES+A256KW| requires the following steps to establish this ephemeral key between a sender and receiver~\cite[100]{Barker2017}.
-This is also illustrated in figure~\ref{fig:key_wrapping}.
+This is also illustrated in \cref{fig:key_wrapping}.
 
 \begin{figure}[ht]
     \includegraphics[scale=0.2]{../img/07/key_wrapping.jpg}
@@ -121,9 +122,9 @@ This is also illustrated in figure~\ref{fig:key_wrapping}.
     \item 
     The sender knows the static public key of the receiver and the ephemeral private key of the sender.
     The receiver knows the ephemeral public key of the sender and the static private key of the receiver.
-    Thus, the Diffie-Hellman key agreement protocol can be used to compute a shared secret between the sender and the receiver~\cite[section 9.3.6]{Eckert2018}.
+    Thus, the Diffie-Hellman key agreement protocol can be used to compute a shared secret between the sender and the receiver~\cite[438]{Eckert2018}.
     The computation of the shared secret requires either the ephemeral private key or the static private key.
-    If both are kept secret it is assumed to be computationally infeasible to compute the shared secret~\cite[section 9.3.6]{Eckert2018}.
+    If both are kept secret it is assumed to be computationally infeasible to compute the shared secret~\cite[438]{Eckert2018}.
     \item 
     The shared secret (which is the result of the Diffie-Hellman key agreement protocol) is finally used as input for a key derivation function.
     This function finally computes the ephemeral key between the sender and the receiver.
@@ -142,19 +143,19 @@ This leads to the conclusion that the malicious database admin Eve can not acces
 Only if he was explicitly authorized he can restore the symmetric key $k$ which allows the decryption of a log.
 
 Please note that a curious server has access to the metadata of an encrypted log.
-This metadata consists of the identity of the data owner (which ensures only authorized users ca update the stored log) and the identities of the recipients (which ensures that the Overseer can distribute the logs to the correct users.)
+This metadata consists of the identity of the data owner (which ensures only authorized users can update the stored log) and the identities of the recipients (which ensures that the \emph{Safekeeper} can distribute the logs to the correct users.)
 Although intermediate servers can not access the log data itself anymore, the metadata yields the information of which users have access to which log.
 This information could be subject to a metadata analysis attack~\cite{Greschbach2012,Mayer2016}.
 If the underlying single-sign-on server supports pseudonyms for users, however, this attack could be made significantly more difficult.
 Pseudonyms could be assigned to the users participating in the system.
-Instead of providing an unique identity within the metadata, a random pseudonym of the user could be chosen.
+Instead of providing a unique identity within the metadata, a random pseudonym of the user could be chosen.
 Assuming that the intermediate server can not link pseudonyms back to users, this would make the metadata analysis pointless.
 
 \subsection{Surreptitious forwarding}
-Surreptitious forwarding refers to an attack where a malicious user re-encrypts a received log for unintended users (details in section~\ref{sec:surreptitious-forwarding}).
+Surreptitious forwarding refers to an attack where a malicious user re-encrypts a received log for unintended users~\cite{Davis2001}.
 Since such attacks must be detected the security requirement S2 was introduced.
 Receivers of encrypted logs must be able to verify that the log was intentionally shared with them.
-Recall the attacker described in \todo{cite section}.
+Recall the attacker described in \cref{security-requriements}.
 Alice shares a log with Eve.
 This implies that Eve has access to the decrypted data.
 Eve, however, does not stick to the protocol and encrypts the received log for Bob.
@@ -163,7 +164,7 @@ This section argues why the designed protocol can detect this attack.
 
 The construction introduced to defend against this attack is the shared log.
 It is a JWS token that is signed by the creator of the log.
-For details see the visualization in figure~\ref{fig:nested-jws}.
+For details see the visualization in \cref{fig:nested-jws}.
 A shared log contains the log as a nested JWS token.
 Moreover, it contains the identity of the creator and the identities of the intended receivers.
 Whenever a user successfully decrypted a log, it must verify that the shared log is a valid data structure.
@@ -261,7 +262,7 @@ This section aims to provide resilient measurements of those costs.
 
 
 \subsection{Methodology}
-The encryption times are measured for each library separately (ts-it-crypto, py-it-crypto and go-it-crypto).
+The encryption times are measured for each library separately (ts-it-crypto, py-it-crypto, and go-it-crypto).
 The measurements are implemented as performance tests in each library.
 All of them follow the same principles.
 The encryption duration is quantified by measuring the passed milliseconds during encryption.
@@ -277,7 +278,7 @@ It was then executed by the Node.js version 18.12.1\footnote{\url{https://nodejs
 The Python tests were run under Python 3.9.6\footnote{\url{https://www.python.org/downloads/release/python-396/}} using the CPython\footnote{\url{https://github.com/python/cpython}} interpreter.
 
 \subsection{Results}
-The results of all three libraries are illustrated in figure~\ref{fig:performance}.
+The results of all three libraries are illustrated in \cref{fig:performance}.
 It shows the encryption duration in milliseconds for a different number of recipients.
 In general, one can observe that the Go implementation is the fastest library.
 This meets the expectations because Go is a compiled language while Python and Typescript are interpreted.
