@@ -85,8 +85,8 @@ This section argues why Eve can not access logs if he was not explicitly authori
 
 The protocol enforces that only encrypted data is stored in the database.
 Both, the monitor creating a log and the data owner sharing a log must encrypt the data before sending it to the server.
-The server only has access to the \emph{JWE} token created by the encryption algorithm.
-This \emph{JWE} token relies on hybrid encryption:
+The server only has access to the JWE token created by the encryption algorithm.
+This JWE token relies on hybrid encryption:
 First, a symmetric key $k$ is randomly generated and the data is encrypted via \verb|A256GCM|.
 This is an authenticated\footnote{Please note that this authentication does not guarantee that the authenticity of the sending user. This is because in a symmetric encryption scheme the authenticity is always bound the the knowledge of the symmetric key. Since multiple receivers might have access to the symmetric key this authentication only ensures that any of those users generated the cipher. To ensure the authenticity of the sending user the protocol must include a digital signature.~\cite[315]{Eckert2018}} symmetric encryption algorithm based on \emph{AES}~\cite{Jones2015}.
 Secondly, this symmetric key $k$ is encrypted for each receiver using \verb|ECDH-ES+A256KW|~\cite{Jones2015}.
@@ -116,7 +116,7 @@ This is also illustrated in figure~\ref{fig:key_wrapping}.
     This key pair must be used only once.
     \item 
     The sender sends the ephemeral public key to the receiver.
-    In our case, the key is encoded into the \emph{JWE} token.
+    In our case, the key is encoded into the JWE token.
     The ephemeral private key must be kept secret.
     \item 
     The sender knows the static public key of the receiver and the ephemeral private key of the sender.
@@ -130,7 +130,7 @@ This is also illustrated in figure~\ref{fig:key_wrapping}.
 \end{enumerate}
 
 To access a decrypted log the attacker Eve needs to have access to the symmetric key $k$.
-This requires him to decrypt any of the encrypted keys attached to the \emph{JWE} token.
+This requires him to decrypt any of the encrypted keys attached to the JWE token.
 To succeed, Eve must have access to any of the ephemeral keys which were used to encrypt $k$.
 Eve can compute an ephemeral key only if he has access to either the ephemeral private key of the sender or the static private key of the receiver.
 However, those private keys must be kept secret.
@@ -162,9 +162,9 @@ Bob must be able to detect this fraud because the log he received was not encryp
 This section argues why the designed protocol can detect this attack.
 
 The construction introduced to defend against this attack is the shared log.
-It is a \emph{JWS} token that is signed by the creator of the log.
+It is a JWS token that is signed by the creator of the log.
 For details see the visualization in figure~\ref{fig:nested-jws}.
-A shared log contains the log as a nested \emph{JWS} token.
+A shared log contains the log as a nested JWS token.
 Moreover, it contains the identity of the creator and the identities of the intended receivers.
 Whenever a user successfully decrypted a log, it must verify that the shared log is a valid data structure.
 This requires the following checks:

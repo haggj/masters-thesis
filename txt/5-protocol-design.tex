@@ -97,7 +97,7 @@ In this section, general design considerations for the protocol are discussed.
 Section~\ref{sec:sign-and-encrypt} evaluates the secure combination of encryption and authentication mechanisms.
 To design a practical and efficient protocol, intermediate servers are dependent on metadata.
 This is elaborated in section~\ref{sec:metadata}.
-Finally, section~\ref{sec:jose-protocol} illustrates how the \emph{JOSE} standard can be used to practically implement the protocol.
+Finally, section~\ref{sec:jose-protocol} illustrates how the JOSE standard can be used to practically implement the protocol.
 
 \subsection{Secure application of encryption and authentication}
 \label{sec:sign-and-encrypt}
@@ -173,22 +173,22 @@ This construction, however, implies that the data sent over the insecure network
 \label{sec:jose-protocol}
 
 A log within the current inverse transparency toolchain is represented by a JSON object.
-This motivates the usage of the \emph{JSON Object Signing and Encryption} standard (\emph{JOSE})~\cite{Barnes2014}.
+This motivates the usage of the \emph{JSON Object Signing and Encryption} standard (JOSE)~\cite{Barnes2014}.
 Details about it can be found in section~\ref{sec:jose}.
-The \emph{JOSE} standard can be used to cryptographically sign (\emph{JWS}) and encrypt (\emph{JWE}) JSON data.
+The JOSE standard can be used to cryptographically sign (JWS) and encrypt (JWE) JSON data.
 It defines multiple algorithms which can be used.
-Specifically, \emph{JWE} tokens can be computed using hybrid encryption algorithms.
-Since \emph{JWS} and \emph{JWE} tokens can also be nested into each other, \emph{JOSE} cab be used to realize the desired protocol by the following means:
+Specifically, JWE tokens can be computed using hybrid encryption algorithms.
+Since JWS and JWE tokens can also be nested into each other, JOSE cab be used to realize the desired protocol by the following means:
 \begin{enumerate}
     \item 
-    A log is a \emph{JWS} token signed by the monitor.
+    A log is a JWS token signed by the monitor.
     \item 
-    To encrypt a log, the creator computes a \emph{JWS} token which contains the log as a nested token.
+    To encrypt a log, the creator computes a JWS token which contains the log as a nested token.
     The token additionally contains the set of intended recipients.
-    This outer \emph{JWS} token is called a shared log in the context of this protocol.
+    This outer JWS token is called a shared log in the context of this protocol.
     See figure~\ref{fig:nested-jws} for a visualization of the nested tokens.
     \item
-    The shared log is finally encrypted to obtain a \emph{JWE} token.
+    The shared log is finally encrypted to obtain a JWE token.
     This token also contains the unencrypted metadata within its protected header.
     The metadata, however, is still integrity protected.
 \end{enumerate}
@@ -197,7 +197,7 @@ Since \emph{JWS} and \emph{JWE} tokens can also be nested into each other, \emph
 \begin{figure}[h!]
     \includegraphics[width=4cm]{../img/05/nested_jws.jpg}
     \centering
-    \caption[Nested JWS tokens]{A log is a \emph{JWS} token signed by the monitor. A shared log is a \emph{JWS} token that contains a nested log. It is signed by the entity encrypting the log.}
+    \caption[Nested JWS tokens]{A log is a JWS token signed by the monitor. A shared log is a JWS token that contains a nested log. It is signed by the entity encrypting the log.}
     \label{fig:nested-jws}
 \end{figure}
 
@@ -206,10 +206,10 @@ Since \emph{JWS} and \emph{JWE} tokens can also be nested into each other, \emph
 
 \section{Creating logs}
 \label{sec:signing}
-A log is represented by a \emph{JWS} token.
+A log is represented by a JWS token.
 It contains the identity of the owner, the identity of the monitor and further information which are relevant to identify the data access (see figure~\ref{fig:nested-jws}).
 To avoid malicious data owners manipulating or creating new logs, each log needs to be signed by the monitor specified within the log.
-To create a \emph{JWS} token, the monitor requires access to its private signing key.
+To create a JWS token, the monitor requires access to its private signing key.
 A log is signed with the algorithm \verb|ES256| which relies on \verb|ECDSA| and \verb|SHA-256|.
 It is defined by the JSON Web Algorithm specification~\cite{Jones2015}.
 The log is later used as input for the encryption algorithm.
@@ -225,9 +225,9 @@ More specifically, the set of authorized users must only contain the data owner 
 The data owner of the log might decide to share or revoke access to a log for users later on.
 This requires the re-encryption of the log.
 The data owner must always include its own identity into the set of authorized users.
-The encryption algorithm outputs a \emph{JWE} token which can be decrypted by the specified users.
+The encryption algorithm outputs a JWE token which can be decrypted by the specified users.
 
-Internally, the encryption algorithm creates another \emph{JWS} token.
+Internally, the encryption algorithm creates another JWS token.
 This token is signed with the private signing key of the user encrypting the log (e.g. the creator).
 It is called a shared log because it contains a nested log plus the set of recipients plus the identity of the creator (see figure~\ref{fig:nested-jws}).
 The latter allows a decrypting user to download the public key of the creator which is used to verify the shared log.
@@ -235,10 +235,10 @@ The set of recipients is included to mitigate surreptitious forwarding.
 This construction is intended to resolve security requirement S2.
 It allows the verification if the data owner has intended to share the log with respective receiver.
  
-Once the  shared log is created, it is used to compute the final \emph{JWE} token.
+Once the  shared log is created, it is used to compute the final JWE token.
 This follows the \emph{sign-then-encrypt} approach elaborated in section~\ref{sec:sign-and-encrypt}.
-The final token is computed by passing the encoded shared log as plaintext into the \emph{JWE} encryption algorithm.
-The identities of recipients and the identity of the owner are passed as metadata into the protected header of the \emph{JWE} token.
+The final token is computed by passing the encoded shared log as plaintext into the JWE encryption algorithm.
+The identities of recipients and the identity of the owner are passed as metadata into the protected header of the JWE token.
 The choice of used algorithms to encrypt the data implies hybrid encryption:
 The plaintext is encrypted with the authenticated encryption algorithm \verb|A256GCM| (symmetric encryption via 256-bit AES in Galois/Counter Mode).
 The applied key-wrapping algorithm is \verb|ECDH-ES+A256KW|.
@@ -248,34 +248,34 @@ This algorithm establishes a Diffie-Hellman secret between the creator and recip
 This DH-secret is finally used to encrypt the symmetric key using AES.
 Details about this approach can be found in \cite[100]{Barker2017}.
 Both algorithms are specified by the JSON Web Algorithm specification~\cite{Jones2015}.
-The resulting \emph{JWE} token contains the symmetrically encrypted log, all encrypted keys, and the protected header.
+The resulting JWE token contains the symmetrically encrypted log, all encrypted keys, and the protected header.
 It can only be decrypted by the specified recipients because they are the only users who can restore the symmetric encryption key.
 This is intended to resolve security requirement S1 because it effectively end-to-end encrypts a log.
 The whole encryption process is depicted in detail in the appendix~\ref{app:encryption}.
 
 \section{Decrypting logs}\label{sec:decrypting}
 
-The decryption algorithm takes a \emph{JWE} token and a private decryption key as input.
-To verify the \emph{JWS} tokens encoded within the \emph{JWE} token, this algorithm needs to be able to dynamically resolve the identities of users to their public keys.
+The decryption algorithm takes a JWE token and a private decryption key as input.
+To verify the JWS tokens encoded within the JWE token, this algorithm needs to be able to dynamically resolve the identities of users to their public keys.
 
-First of all, the \emph{JWE} token is parsed into its ciphertext, header and encrypted keys.
-The \emph{JWE} decryption algorithm is then applied to the cipher.
+First of all, the JWE token is parsed into its ciphertext, header and encrypted keys.
+The JWE decryption algorithm is then applied to the cipher.
 This decrypts the ciphertext using the passed private decryption key.
-To be more precise, it tries to decrypt any of the encrypted keys provided by the \emph{JWE} token.
+To be more precise, it tries to decrypt any of the encrypted keys provided by the JWE token.
 If this succeeds, the symmetric encryption key is accessible.
 This allows the decryption of the symmetric ciphertext which restores the shared log.
-No decryption is necessary to access the metadata because is stored in the protected header of the \emph{JWE}.
+No decryption is necessary to access the metadata because is stored in the protected header of the JWE.
 
 If the decryption is successful, the decrypting user has access to the shared log and the metadata.
 Multiple validations are necessary to ensure that the protocol is used correctly.
 If any of them fails the decryption must be aborted.
 \begin{enumerate}
     \item 
-    The signature of the obtained shared log (outer \emph{JWS} token) must be validated.
+    The signature of the obtained shared log (outer JWS token) must be validated.
     To do so, the decrypting user needs to download the public key of the creator specified in the shared log.
     If the verification of the signatures succeeds, the decrypting user can be sure that the claimed creator indeed signed the shared log.
     \item
-    The signature of the nested log (inner \emph{JWS} token) must be validated.
+    The signature of the nested log (inner JWS token) must be validated.
     Again, the public key of the specified monitor needs to be downloaded.
     The PKI must ensure that this public key belongs to a valid and trusted monitor component.
     If the verification of the signatures succeeds, the decrypting user can be sure that the claimed monitor indeed signed the log.

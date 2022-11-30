@@ -8,36 +8,34 @@
 \label{chap:requirements}
 
 This chapter identifies the requirements of the protocol which needs to be implemented in the context of this thesis.
-Overall, there are three major goals which need to be achieved. 
+Overall, three major goals must to be achieved. 
 
 \begin{enumerate}[label=\Roman*.]
-    \item Data owners need to be able to share (and revoke) their log data with other users in the system.
-	\item Log data needs to be confidential by means of end-to-end encryption.
-    \item Data owners should not be allowed to forge log data at any time.
+    \item Data owners can share (and revoke) their log data with other users in the system.
+	\item Log data must be confidential by means of end-to-end encryption.
+    \item Data owners cannot forge log data at any time.
 \end{enumerate}
 
-
-Traditional requirements engineering methods usually differentiate between functional and non-functional requirements based on the views of different stakeholders~\todo{sources}.
+Traditional requirements engineering methods usually differentiate between functional and non-functional requirements based on the views of different stakeholders~\cite{Rehman2013}.
 Since this thesis operates within the security domain, the traditional requirements engineering process needs to be adapted: 
 Precise assumptions about what to protect and against whom to protect are mandatory for a successful implementation and evaluation.
 Thus, this chapter closely follows the terms and methodology proposed by~\citeauthor{Fabian2010}~\cite{Fabian2010}.
-
-The authors fundamentally differentiate between functional, non-functional and security requirements, which are extracted from functional, non-functional and security goals.
+The authors fundamentally differentiate between functional, non-functional, and security requirements, which are extracted from the respective security goals.
 Goals are rather abstract and vague formulations of what the system should achieve. 
-They are refined into more detailed requirements for two reasons.
-First, verifiable requirements allow us to compare different approaches and to finally choose one solution from the solution space. 
-Second, they also help to verify and evaluate if the implemented solution satisfies the overall expectations.~\cite{Fabian2010}
+They are refined into more detailed requirements for two reasons~\cite{Fabian2010}.
+First, verifiable requirements allow comparing different approaches which leads to a reasonable choice from the potential solution space.
+Second, they allow the evaluation of the implemented solution.
 
-While the overall goal I will be treated as a functional goal (subsection \ref{functional-requriements}), the goals II and III are understood as security goals (subsection \ref{security-requriements}).
-Further non-functional goals will be identified in subsection \ref{non-functional-requriements}.
-Within each subsection the identified goals will be refined into requirements.
-This finally results in a list of verifiable and consistent system requirements for this thesis (subsection \ref{system-requriements}).
+While the overall goal I will be treated as a functional goal (\cref{functional-requriements}), goals II and III are understood as security goals (\cref{security-requriements}).
+Further non-functional goals will be identified in \cref{non-functional-requriements}.
+Within each subsection, the identified goals will be refined into requirements.
+This results in a list of verifiable and consistent system requirements for this thesis which is provided in \cref{system-requriements}.
 
 
 \section{System requirements}\label{system-requriements}
 This section summarizes all identified requirements elaborated in this chapter.
 They were derived from the major goals above.
-For details and the rationales of each requirement please have a look the corresponding subsections below.
+For details and the rationales of each requirement please have a look at the corresponding subsections below.
 
 \subsubsection{Functional requirements}
 \begin{itemize}
@@ -63,9 +61,9 @@ For details and the rationales of each requirement please have a look the corres
 
 \section{Functional requirements}\label{functional-requriements}
 Functional requirements describe \enquote{what the system does}~\cite[11]{Mylopoulos1992}.
-They describe the accessability of logs in the inverse transparency toolchain.
-Having access to a log effectively means that a user is able to decrypt the encrypted log.
-In the context of this thesis, the following functional requirements are identified:
+In the context of this thesis, they define the accessibility of logs in the inverse transparency toolchain.
+Having access to a log effectively means that a user can decrypt the encrypted log.
+The following functional requirements were identified:
 \begin{itemize}
     \item Data owners can always access logs concerning them.
     \item Data owners can share their logs with other users in the system.
@@ -81,8 +79,8 @@ Based on the major goals specified above and the identified functional requireme
     \item The users receiving a shared log can verify that the log was created by a valid monitor.
 \end{itemize}
 
-These security goals can be refined into security requirements by annotating them with additional information, a counter-stakeholder and specific circumstances~\cite{Fabian2010}.
-Following this approach, each security requirement is specified by providing theses details.
+These security goals can be refined into security requirements by annotating them with additional information, a counter-stakeholder, and specific circumstances~\cite{Fabian2010}.
+Following this approach, each security requirement is specified by providing these details.
 The counter-stakeholder is an adversary attacking the system.
 Satisfying a security requirement should effectively defend against this adversary.
 The specified circumstances elaborate additional conditions which affect the security goal.
@@ -90,16 +88,19 @@ The following elaboration is intended to refine the security goals into concrete
 
 \subsubsection{Only the data owner and those explicitly given access to the logs can access them.}
 In the context of the inverse transparency toolchain, the intended end-to-end encryption should ensure that only authorized users can access logs.
-As specified in the functional requirements, the data owner can always decrypt the log.
+The passed log must be encrypted and only authorized users can decrypt it.
+Thus, this requirement demands confidentiality and receiver authenticity (details in ~\cref{sec:end-to-end}).
+As specified by the functional requirements, the data owner can always decrypt the log.
 The data owner can also share the log with other users which are then able to decrypt.
-Authorized users are the data owner of the log plus all users the data owner has given access.
+Authorized users are the data owner of the log plus all users the data owner permitted access.
 From the perspective of E2EE, all other entities are untrusted.
 Untrusted entities must not be able to decrypt logs.
 The untrusted network includes the whole infrastructure of the toolchain, except the application a user interacts with.
-This implies, that all front-end applications must trusted (e.g. the \emph{Clotilde UI} and all integrated \emph{Monitor} components).
+This implies, that all front-end applications must be trusted (e.g. the \emph{Display} component).
+The reliability of the created logs also depends on the integrated \emph{Monitor} components which also must be trusted.
 
 The following example attack motivates this requirement.
-Consider an attacker Eve who is the database admin of the Overseer server.
+Consider an attacker Eve who is the database admin of the \emph{Safekeeper} server.
 Eve wants to know which monitor accesses which data frequently.
 Thus, he logs into the server and tries to extract this information from the database.
 If the stored logs are not encrypted, Eve can learn anything about the logs he might be interested in.
@@ -108,18 +109,19 @@ The attacker is passive because Eve does not participate in the protocol.
 He simply observes the stored data.
 The implemented protocol should defend against this attacker.
 
+
 \subsubsection{The users receiving a shared log can verify that the data owner has intended to share the log with them.}
 
 The functional requirements require, that only the data owner of a log is allowed to share a log.
 No other user should be able to share the log in the name of the data owner.
-Whenever a user receives an encrypted log it needs to be sure that the originator of the cipher is the data owner of the encrypted log.
-Moreover, the receiver also needs to be sure that the data owner actually has intended to share the log with him or her.
+Whenever a user receives an encrypted log it needs to be sure that the originator of the cipher is the data owner of the encrypted log (sender authenticity).
+Moreover, the receiver also needs to be sure that the data owner intended to share the log with him or her.
 
 The following exemplary attack motivates this requirement.
 Assume Alice to be a data owner and Eve to be a malicious user.
-Further assume that Alice shares a access log with Eve.
-Eve now has valid access to the log and can decrypt the encrypted log.
-Eve could itself apply the encryption algorithm and could specify Bob as receiver.
+Further, assume that Alice shares an access log with Eve.
+Eve has valid access to the log and can decrypt the encrypted log.
+Eve could apply the encryption algorithm and could specify Bob as the receiver.
 If the exchanged message does not contain information about the sender and the intended recipients, there is no way for Bob to know who actually sent the message and if the log was intentionally shared with him.
 Bob might assume that Alice sent the message because she is the data owner of the received log.
 Moreover, Bob could implicitly assume that he is a valid receiver because he can decrypt the message.
@@ -134,7 +136,7 @@ The implemented protocol must defend against this attack.
 A data owner can share logs with others within the system.
 However, this introduces the risk that a malicious data owner shares forged logs with other users by manipulating existing logs or creating arbitrary new logs.
 The manipulation of logs can be detected by integrity protection mechanisms.
-Unfortunately, this does not prevent a data owner from create new logs with a valid integrity checksum.
+Unfortunately, this does not prevent a data owner from creating new logs with a valid integrity checksum.
 A stronger defense is necessary here because any user who receives a log needs to verify who the creator of this log is.
 Only a log of a trusted and valid creator should be accepted.
 
@@ -142,12 +144,11 @@ The following example motivates this requirement.
 Assume Eve to be a malicious data owner.
 Thus, he has access to all logs concerning him.
 Eve wants to harm a specific data consumer.
-To do so, Eve modifies an existing log or he creates a new log.
-This log indicates an illegal behavior of a targeted data consumer.
+To do so, Eve modifies an existing log or creates a new log indicating an illegal behavior of the targeted data consumer.
 Eve applies the encryption algorithm and shares the forged log with other users.
-Without further protection the receiving users can not verify the creator of the log.
+Without further protection, the receiving users can not verify the creator of the log.
 There is no way to detect this fraud.
-This example demonstrates how a malicious data owner could insert forged log into the system.
+This example demonstrates how a malicious data owner could insert forged logs into the system.
 The implemented protocol must defend against this attack.
 
 \section{Non-functional requirements}\label{non-functional-requriements}
@@ -156,42 +157,42 @@ In contrast to the functional and security requirements, the non-functional requ
 Thus, they are not strictly mandatory.
 At the same time, however, they add additional value to potential solutions.
 Consider two solutions $A$ and $B$, which both satisfy all functional and security requirements.
-The solution $A$ should be preferred over a solution $B$, if $A$ resolves more non-functional requirements than $B$.
+Solution $A$ should be preferred over solution $B$ if $A$ resolves more non-functional requirements than $B$.
 
 During multiple iterations of elaborating potential solutions, the list of non-functional goals has grown to the following stable collection:
 
 \subsubsection{Minimal number of trusted entities}
 By definition, trusted entities are not part of the untrusted network. 
-Thus, the proposed E2EE (detail in section \ref{security-requriements}) does not defend against them.
+Thus, the proposed E2EE does not defend against them.
 This implies that a compromised trusted server undermines the security of the whole toolchain.
 To reduce the risk and attack surface, the toolchain should rely on a minimal number of trusted entities.
 
 \subsubsection{Standardized cryptographic algorithms}
-The current implemented front-end of the inverse transparency toolchain runs within the browser. 
+The currently implemented front-end of the inverse transparency toolchain runs as a web application. 
 The Web Cryptographic API~\cite{WebCryptoApi2017} defines an interface to perform cryptographic operations within browsers. 
 It \enquote{exposes already existing and often heavily verified cryptographic functionality to Web application developers through a standardized interface}~\cite[959]{Halpin2014}.
 This enables secure and performant cryptography within the browser~\cite{Halpin2014}.
 However, it is limited to specific primitives. 
-Advanced encryption schemes are not yet defined and available in the API yet.
-Specifically, advanced encryption schemes which are currently under research are not integrated.
-To ensure portability of the inverse transparency toolchain, the implementation of this thesis should thus only rely on primitives defined by the Web Cryptographic API.
-This is specifically important because the Clotilde front-end is a web application.
+Advanced encryption schemes are not defined and available in the API yet.
+This implies that schemes which are currently under research are not integrated.
+To ensure the portability of the inverse transparency toolchain, the implementation of this thesis should thus only rely on primitives defined by the Web Cryptographic API.
+This is specifically necessary because the \emph{Display} component is realized as web application.
 
 \subsubsection{Usability}
-Usually a trade-off between Security and Usability needs to be resolved during system design~\todo{quelle}.
-In the context of this thesis, however, the complexity of security is a key-driver to improve usability. 
-By integrating the error-prone cryptography tasks (e.g. encryption or integrity checks) into the application, we can increase the usability and thus the acceptance of the toolchain.
-At the same time, the security is improved because these tasks are performed within the toolchain and can be heavily tested.
-However, this comes with the cost of increased design and implementation effort.
-This approach is motivated by the principle of least effort, which states that humans will spent the least amount of work to get a task done~\cite{Levenson2018}.
-As a result, an optimal solution should integrate all cryptographic tasks into the toolchain.
-It should not demand users to perform them themselves.
+A trade-off between security and usability usually needs to be resolved during system design~\cite{Braz2007}.
+In the context of this thesis, however, the complex security is a key driver to improving usability.
+This is motivated by the principle of least effort, which states that humans will spend the least amount of work to get a task done~\cite{Levenson2018}.
+If the user is asked to perform certain security tasks he therefore tends to neglect them.
+By integrating the error-prone cryptography tasks (e.g. encryption or integrity checks) into the application, the usability can be improved because it simplifies the process for users.
+This also strengthens the security because integrated mechanisms can be well tested.
+An optimal solution should integrate all cryptographic tasks into the toolchain.
+However, it comes with the cost of increased design and implementation efforts.
 
 \subsubsection{Minimal resource utilization}
 This is a performance criterion.
 The implemented solution should avoid resource overhead in terms of storage and computation.
 While this is directly related to the non-functional requirement N2, more aspects need to be considered here.
 Duplicated storage of data should be avoided.
-Specifically, an optimal solution does not store the same data encrypted with different keys in the database to prevent redundancy.
+Specifically, an optimal solution does not store the same data encrypted with different keys in the database to avoid redundancy.
 
 \end{document}

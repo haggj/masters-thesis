@@ -40,11 +40,11 @@ Moreover, all libraries employ the same folder structure.
 This aims to improve the maintainability of the source code.
 As a result, all three libraries expose the same interface to users.
 This interface is highly related to the algorithms described in chapter~\ref{chap:design}.
-The designed protocol relies on the \emph{JOSE} standard.
-Thus, each library depends on a third-party package implementing \emph{JOSE}.
-Ts-it-crypto depends on the Typescript package \emph{jose}\footnote{\url{https://www.npmjs.com/package/jose}}.
+The designed protocol relies on the JOSE standard.
+Thus, each library depends on a third-party package implementing JOSE.
+Ts-it-crypto depends on the Typescript package JOSE\footnote{\url{https://www.npmjs.com/package/jose}}.
 Py-it-crypto depends on the Python package \emph{jwcrypto}\footnote{\url{https://pypi.org/project/jwcrypto/}}.
-Go-it-crypto depends on the Go package \emph{jose}\footnote{\url{https://pkg.go.dev/gopkg.in/square/go-jose.v2}}.
+Go-it-crypto depends on the Go package JOSE\footnote{\url{https://pkg.go.dev/gopkg.in/square/go-jose.v2}}.
 
 \subsection{General usage}
 
@@ -129,7 +129,7 @@ This method relies on the private signing key of the logged-in user.
         \multicolumn{2}{|l|}{Input parameters}    \\ \hline
         \verb|accessData|              & This is a data structure containing the raw log data. In particular, this raw data must be encodable as JSON data. It contains all relevant information to log the observed data access.           \\ \hline
         \multicolumn{2}{|l|}{Output}   \\ \hline
-        \multicolumn{2}{|p{13cm}|}{The method returns a \emph{JWS} token encoded as string. It is signed by the logged-in user and it contains the JSON-encoded accessLog as payload.} \\ \hline
+        \multicolumn{2}{|p{13cm}|}{The method returns a JWS token encoded as string. It is signed by the logged-in user and it contains the JSON-encoded accessLog as payload.} \\ \hline
     \end{tabular} 
     \caption[Signature of signLog]{Input parameters and output of the signLog method.}
 \end{table}
@@ -148,7 +148,7 @@ This method relies on the private signing key of the logged-in user.
         \verb|log|              & This is the log that needs to be encrypted. It must be signed by a monitor. The output of \verb|signLog| can be directly used here.           \\
         \verb|recipients|       & This is a list of \verb|RemoteUser| objects containing the identity and public encryption key for each recipient. This set defines which users can decrypt the created cipher.           \\ \hline
         \multicolumn{2}{|l|}{Output}   \\ \hline
-        \multicolumn{2}{|p{13cm}|}{The method returns a \emph{JWE} token encoded as string. It contains the provided signed log and can only be decrypted by the specified recipients. The token specifies the logged-in user as creator of the token. It also contains the set of recipients and the identity of the data owner as metadata.} \\ \hline
+        \multicolumn{2}{|p{13cm}|}{The method returns a JWE token encoded as string. It contains the provided signed log and can only be decrypted by the specified recipients. The token specifies the logged-in user as creator of the token. It also contains the set of recipients and the identity of the data owner as metadata.} \\ \hline
     \end{tabular}
     \caption[Signature of encryptLog]{Input parameters and output of the encryptLog method.}
 \end{table}
@@ -157,14 +157,14 @@ The method \verb|decryptLog| decrypts a given encrypted data.
 A user can only decrypt this log if it was included as a recipient during encryption.
 It might be called by any user that received an encrypted log.
 The method performs multiple validations to detect any misusage of the protocol.
-In particular, it verifies all signatures of the encoded \emph{JWS} tokens.
+In particular, it verifies all signatures of the encoded JWS tokens.
 This function relies on the private decryption key of the logged-in user.
 \begin{table}[ht]
     \centering
     \begin{tabular}{|p{3cm}p{10cm}|}
         \hline
         \multicolumn{2}{|l|}{Input parameters}    \\ \hline
-        \verb|jwe|              & This is a \emph{JWE} token that represents an encrypted log. This token is the result of \verb|encryptLog|. \\ \hline
+        \verb|jwe|              & This is a JWE token that represents an encrypted log. This token is the result of \verb|encryptLog|. \\ \hline
             \multicolumn{2}{|l|}{Output}   \\ \hline
         \multicolumn{2}{|p{13cm}|}{The method returns a log. This is the same object that was passed to the encryption function. Therefore it is still signed by a monitor. The signature, however, was already verified during decryption. This construction allows a data owner to easily re-encrypt the log.} \\ \hline
     \end{tabular}
