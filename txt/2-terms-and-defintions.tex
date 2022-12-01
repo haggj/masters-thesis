@@ -14,7 +14,7 @@ Besides symmetric and asymmetric encryption it details the theoretical motivatio
 Modern end-to-end encrypted protocol demand authenticity of the encrypted data~\cite{Mallory2022}.
 Thus, the concept of authenticated encryption is introduced.
 
-\subsection{Symmetric encryption}
+\subsubsection{Symmetric encryption}
 Symmetric encryption is characterized by the fact that the same key is used during encryption and decryption.
 This key is referred to as the symmetric encryption key.
 It must be transported securely from the sender to the receiver.
@@ -22,7 +22,7 @@ Hence, symmetric encryption relies on a secure channel between the communicating
 Symmetric encryption algorithms can be implemented very efficiently in hardware.
 For this reason, they are of great practical importance.~\cite[300]{Eckert2018}
 
-\subsection{Asymmetric encryption}
+\subsubsection{Asymmetric encryption}
 In contrast to symmetric encryption, asymmetric schemes do not use the same key for encryption and decryption.
 Each communicating partner is assigned a key pair which consists of a public key and a private key.
 While the private key must be kept secret, the public key must be known by other users and is thus publicly available.
@@ -33,7 +33,7 @@ Hence, encrypting and decrypting big amounts of data via asymmetric schemes is n
 However, no secure channel is necessary between the communicating entities.~\cite[331]{Eckert2018}
 
 
-\subsection{Hybrid encryption}
+\subsubsection{Hybrid encryption}
 \label{sec:hybrid}
 Hybrid encryption schemes combine symmetric and asymmetric schemes to overcome their limitations.
 Symmetric schemes are used to encrypt the application data efficiently.
@@ -43,7 +43,7 @@ A recipient can restore the symmetric key because he can decrypt the encrypted k
 Finally, he can decrypt the application data using the symmetric key.
 This construction neither requires a secure channel nor suffers from the computational overhead of asymmetric schemes.~\cite{Wolf2007}
 
-\subsection{Authenticated encryption}
+\subsubsection{Authenticated encryption}
 \label{sec:aead}
 Classical symmetrical or asymmetrical encryption algorithms protect the confidentiality of data.
 However, integrity and authenticity are not guaranteed.
@@ -80,9 +80,9 @@ Further, a JSON Web Token (JWT) is a compact representation of JSON data~\cite{J
 It is passed as the payload to the construction of JWS and JWE tokens.
 A JWT token contains the JSON-encoded application data which must be protected.
 The protocol designed by this thesis relies on JWS and JWE tokens.
-The following sections provide details about their internal structure.
+The following explanations provide details about their internal structure.
 
-\subsection{JSON Web Signature}
+\subsubsection{JSON Web Signature}
 A JWS token contains integrity-protected data~\cite{JWS2015}.
 It supports both, symmetric integrity protection (via message authentication codes) and asymmetric integrity protection (via digital signatures).
 It consists of a header, a payload, and a signature.
@@ -93,7 +93,7 @@ The header itself is split up into a protected header (which is integrity protec
 As the name suggests, the signature does not protect the unprotected header.
 The header contains information about the algorithm used to secure the application data.
 
-\subsection{JSON Web Encryption}
+\subsubsection{JSON Web Encryption}
 JWE tokens represent encrypted data~\cite{JWE2015}.
 Multiple encryption algorithms can be used to encrypt the application data.
 They are defined in the JSON Web Algorithm (JWA) specification~\cite{JWA2015}.

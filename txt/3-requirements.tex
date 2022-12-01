@@ -46,17 +46,17 @@ For details and the rationales of each requirement please have a look at the cor
 
 \subsubsection{Security requirements}
 \begin{itemize}
-    \item [S1.] Only the data owner and those explicitly given access to the logs can access them.
-    \item [S2.] The users receiving a shared log can verify that the data owner has intended to share the log with them.
-    \item [S3.] The users receiving a shared log can verify that the log was created by a valid monitor.
+    \item [S1.] Logs can only be decrypted by authorized users.
+    \item [S2.] Logs can not be forwarded to unintended receivers.
+    \item [S3.] Logs can not be forged.
 \end{itemize}
 
 \subsubsection{Non-functional requirements}
 \begin{itemize}
-    \item [N1.] Minimal number of trusted entities
-    \item [N2.] Standardized cryptographic algorithms
-    \item [N3.] Usability
-    \item [N4.] Minimal resource utilization
+    \item [N1.] The protocol relies on a minimal number of trusted entities.
+    \item [N2.] The protocol utilizes standardized cryptographic algorithms.
+    \item [N3.] The protocol ensures the usability of the toolchain.
+    \item [N4.] The protocol utilizes a minimal amount of Minimal resources.
 \end{itemize}
 
 \section{Functional requirements}\label{functional-requriements}
@@ -74,10 +74,10 @@ The following functional requirements were identified:
 As proposed by~\citeauthor{Fabian2010}~\cite{Fabian2010}, this section determines the security goals of this thesis and refines them into security requirements.
 Based on the major goals specified above and the identified functional requirements the following security goals have been identified:
 \begin{itemize}
-    \item Only the data owner and those explicitly given access to the logs can access them.
-    \item The users receiving a shared log can verify that the data owner has intended to share the log with them.
-    \item The users receiving a shared log can verify that the log was created by a valid monitor.
-\end{itemize}
+    \item Logs can only be decrypted by authorized users.
+    \item Logs can not be forwarded to unintended receivers.
+    \item Logs can not be forged.
+  \end{itemize}
 
 These security goals can be refined into security requirements by annotating them with additional information, a counter-stakeholder, and specific circumstances~\cite{Fabian2010}.
 Following this approach, each security requirement is specified by providing these details.
@@ -86,7 +86,7 @@ Satisfying a security requirement should effectively defend against this adversa
 The specified circumstances elaborate additional conditions which affect the security goal.
 The following elaboration is intended to refine the security goals into concrete security requirements.
 
-\subsubsection{Only the data owner and those explicitly given access to the logs can access them.}
+\subsubsection{Logs can only be decrypted by authorized users}
 In the context of the \emph{Inverse Transparency} toolchain, the intended end-to-end encryption should ensure that only authorized users can access logs.
 The passed log must be encrypted and only authorized users can decrypt it.
 Thus, this requirement demands confidentiality and receiver authenticity (details in ~\cref{sec:end-to-end}).
@@ -109,8 +109,7 @@ The attacker is passive because Eve does not participate in the protocol.
 He simply observes the stored data.
 The implemented protocol should defend against this attacker.
 
-
-\subsubsection{The users receiving a shared log can verify that the data owner has intended to share the log with them.}
+\subsubsection{Logs can not be forwarded to unintended receivers}
 
 The functional requirements require, that only the data owner of a log is allowed to share a log.
 No other user should be able to share the log in the name of the data owner.
@@ -131,14 +130,11 @@ This attack demonstrates how an active attacker could share logs with unintended
 The attacker forwards a valid log to an arbitrary user in the system.
 The implemented protocol must defend against this attack.
 
-\subsubsection{The users receiving a shared log can verify that the log was created by a valid monitor.}
+\subsubsection{Logs can not be forged}
 
 A data owner can share logs with others within the system.
 However, this introduces the risk that a malicious data owner shares forged logs with other users by manipulating existing logs or creating arbitrary new logs.
-The manipulation of logs can be detected by integrity protection mechanisms.
-Unfortunately, this does not prevent a data owner from creating new logs with a valid integrity checksum.
-A stronger defense is necessary here because any user who receives a log needs to verify who the creator of this log is.
-Only a log of a trusted and valid creator should be accepted.
+Only a log of a trusted and valid \emph{Monitor} component should be accepted.
 
 The following example motivates this requirement.
 Assume Eve to be a malicious data owner.
@@ -158,7 +154,6 @@ Thus, they are not strictly mandatory.
 At the same time, however, they add additional value to potential solutions.
 Consider two solutions $A$ and $B$, which both satisfy all functional and security requirements.
 Solution $A$ should be preferred over solution $B$ if $A$ resolves more non-functional requirements than $B$.
-
 During multiple iterations of elaborating potential solutions, the list of non-functional goals has grown to the following stable collection:
 
 \subsubsection{Minimal number of trusted entities}
