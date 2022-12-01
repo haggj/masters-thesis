@@ -214,6 +214,7 @@ A log is signed with the algorithm \verb|ES256| which relies on \verb|ECDSA| and
 It is defined by the JSON Web Algorithm specification~\cite{JWA2015}.
 The log is later used as input for the encryption algorithm.
 This construction is intended to resolve security requirement S3 because it allows decrypting users to verify if the provided log was indeed created by the claimed monitor.
+This resists attacks of malicious data owners trying to forge logs.
 
 \section{Encrypting logs}\label{sec:encrypting}
 
@@ -234,7 +235,8 @@ The latter allows a decrypting user to download the public key of the creator wh
 The set of recipients is included to mitigate surreptitious forwarding.
 This construction is intended to resolve security requirement S2.
 It allows to verify if the data owner has intended to share the log with a respective receiver.
- 
+This resists surreptitious forwarding attacks~\cite{Davis2001}.
+
 Once the  shared log is created, it is used to compute the final JWE token.
 This follows the \emph{sign-then-encrypt} approach elaborated in \cref{sec:sign-and-encrypt}.
 The final token is computed by passing the encoded shared log as plaintext into the JWE encryption algorithm.
@@ -251,6 +253,7 @@ Both algorithms are specified by the JSON Web Algorithm specification~\cite{JWA2
 The resulting JWE token contains the symmetrically encrypted log, all encrypted keys, and the protected header.
 It can only be decrypted by the specified recipients because they are the only users who can restore the symmetric encryption key.
 This is intended to resolve security requirement S1 because it effectively end-to-end encrypts a log.
+Only explicitly authorized users can decrypt the log.
 The whole encryption process is depicted in detail in \cref{app:encryption}.
 
 \section{Decrypting logs}\label{sec:decrypting}

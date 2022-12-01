@@ -118,6 +118,8 @@ It aims to provide a documentation for developers who integrate the library into
 In particular, the methods \verb|signLog|, \verb|encryptLog|, and \verb|decryptLog| are detailed.
 As described in \cref{chap:design}, those methods can be used to provide the full functionality of the intended protocol.
 
+\subsubsection{Signing logs}
+
 The method \verb|signLog| cryptographically signs the given log data.
 Monitors must call this encryption function to initially sign an instantiated log.
 The protocol does not allow any raw logs in the system.
@@ -134,6 +136,8 @@ This method relies on the private signing key of the logged-in user.
     \end{tabular} 
     \caption[Signature of signLog]{Input parameters and output of the signLog method.}
 \end{table}
+
+\subsubsection{Encrypting logs}
 
 The method \verb|encryptLog| encrypts a given log for a given set of recipients.
 Monitors must call this function to initially encrypt the log for the data owner.
@@ -153,6 +157,8 @@ This method relies on the private signing key of the logged-in user.
     \end{tabular}
     \caption[Signature of encryptLog]{Input parameters and output of the encryptLog method.}
 \end{table}
+
+\subsubsection{Decrypting logs}
 
 The method \verb|decryptLog| decrypts a given encrypted data.
 A user can only decrypt this log if it was included as a recipient during encryption.
