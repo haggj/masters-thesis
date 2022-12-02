@@ -11,7 +11,7 @@ It makes it possible for data owners to share and revoke access to their logs wh
 The protocol was created to resist three types of attackers: 
 A curious server (e.g. the \emph{Safekeeper} component) can not access the logs because all logs are encrypted.
 Surreptitious forwarding attacks are detected since the user sharing a log cryptographically signs the log along with the indented receivers.
-A malicious data owner can not forge logs because each log is cryptographically signed by a trusted monitor component.
+A malicious data owner can not forge logs because each log must be cryptographically signed by a trusted monitor component.
 
 The protocol was implemented in the programming languages Go, Python and Typescript.
 For each of those, a library was developed which can be used to sign, encrypt and decrypt logs.
@@ -24,9 +24,28 @@ A proof-of-concept environment demonstrates how an established PKI may be used t
 This verifies that the protocol can be used in practice to share encrypted logs among users.
 From the perspective of a user, access to a log can be shared and revoked.
 The implemented UI fully abstracts from any underlying protocol details such as digital signatures, encryption, and decryption algorithms.
-The evaluation of the protocol shows that it is functional and secure.
-Moreover, the implemented algorithms are usable in practice because data can be encrypted for up to 170 users without any noticeable delay.
+The implemented algorithms are usable in practice because data can be encrypted for up to 170 users without any noticeable delay.
 
+\subsubsection{Limitations and future work}
+This thesis is designed to defend against three types of attacks which were derived from potentially malicious users participating in the sharing process of encrypted logs.
+This, however, is not an exhaustive list.
+The performed security analysis and evaluation does not guarantee the general security of the protocol.
+In particular, a third party analysis of the applied techniques could further verify their security.
+This could also include sophistacted mathematical proofs of the protocol as introduced by~\cite{Katz2020}.   
+The security evaluation applied in this thesis at least indicates that the protocol can resist against the assumed attackers if the respective assumptions are true.
+Further analysis might reveal more attack vectors.
+Their identification and mitigation could be subject to future work.
 
+The protocol tries to encrypt the logs because it might contain sensitive information.
+However, the encrypted logs also reveal metadata to ensure that the encrypted data can be associated with users by intermediate servers.
+This metadata could be subject to metadata analysis attacks which might yield interesting information for an attacker.
+Future work could investigate if this is a realistic threat.
+
+This thesis assumes a secure PKI meaning that nobody has knowledge about the private keys of the users.
+If the company deploying the toolchain establishes a PKI in such a way that a trusted entity knows the private key of any user, the strict interpretation of E2EE is broken.
+This is because in this case not only the authorized users can decrypt the logs.
+The knowledge of the private keys allows the trusted entity to decrypt and sign arbitrary data.
+This, however, depends on the technical setup of how the underlying PKI.
+The protocol might be improved in future for scenarios where the assumption of a secure PKI does not hold.
 
 \end{document}
