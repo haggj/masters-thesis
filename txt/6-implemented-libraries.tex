@@ -222,34 +222,31 @@ The development environment of the toolchain is a proof-of-concept that shows ho
 There are two scripts used to load pre-configured users into the development environment.
 Both were updated to establish an exemplary PKI:
 
-\begin{itemize}
-    \item 
-    The script \verb|prebuild.sh| is responsible for creating a key pair for the \emph{Revolori} server.
-    It is used to sign access tokens.
-    The public key is passed to the \emph{Overseer} because it needs to verify if a provided token was signed by the \emph{Revolori} single-sign-on-server.
-    
-    The script was adopted to create a key pair for an exemplary certificate authority.
-    Moreover, the script expects a file \verb|users.json| which contains the pre-configured user data.
-    Two key pairs for each user are generated.
-    The public keys of all users are signed by the public key of the certificate authority.
-    This effectively creates certificates binding the identities of the users to their public keys.
-    Finally, the script updates the provided \verb|users.json| to contain the generated cryptographic keys of each user.
-    \item 
-    The script \verb|setup.sh| is responsible for creating users in a running \emph{Revolori} instance.
-    It is also used to create exemplary data accesses for each user.
-    Thus, the script had to be adopted to support encrypted logs.
-    First of all, the script expects the file \verb|users.json| which contains user information along with their cryptographic keys.
-    It then parses the user information and creates the respective users in the \emph{Revolori} server.
-    In particular, this includes the certificates of the user's public keys.
-    To pre-compute encrypted logs, the command-line interface of the \emph{ts-it-crypto} library needs to be installed.
-    It allows to encrypt log data in the name of a user.
-    The encrypted logs are then uploaded to the \emph{Overseer}.
-\end{itemize}
+The script \verb|prebuild.sh| is responsible for creating a key pair for the \emph{Revolori} server.
+It is used to sign access tokens.
+The public key is passed to the \emph{Overseer} because it needs to verify if a provided token was signed by the \emph{Revolori} single-sign-on-server.
+The script was adopted to create a key pair for an exemplary certificate authority.
+Moreover, the script expects a file \verb|users.json| that contains the pre-configured user data.
+Two key pairs are generated for each user.
+One is used to encrypt data and the other is used to digitally sign data.
+The public keys of all users are signed by the public key of the certificate authority.
+This effectively creates certificates binding the identities of the users to their public keys.
+Finally, the script updates the provided \verb|users.json| to contain the generated cryptographic keys of each user.
+
+The script \verb|setup.sh| is responsible for creating users in a running \emph{Revolori} instance.
+It is also used to create exemplary data accesses for each user.
+Thus, the script had to be adopted to support encrypted logs.
+First of all, the script expects the file \verb|users.json| which contains user information along with their cryptographic keys.
+It then parses the user information and creates the respective users in the \emph{Revolori} server.
+In particular, this includes the certificates of the user's public keys.
+To pre-compute encrypted logs, the command-line interface of the \emph{ts-it-crypto} library needs to be installed.
+It allows to encrypt log data in the name of a user.
+The encrypted logs are then uploaded to the \emph{Overseer}.
 
 This setup allows to fetch the public keys for a given user from the \emph{Revolori} server.
 The development environment also provides the private keys for a user upon login.
-This is realized by passing the \verb|users.json| file to the \emph{Clotilde} process.
-Please note that this implies that the front-end has unrestricted access to all private keys.
+It is realized by passing the \verb|users.json| file to the \emph{Clotilde} process.
+This implies that the front-end has unrestricted access to all private keys.
 Thus, this setup can only be used in the development environment.
 In productive systems, the \emph{Clotilde} front-end must securely import the private keys from the user (e.g. via hardware token).
 If a user logs in to the system, the front-end instantiates an \verb|ItCrypto| object using the provided key material.
@@ -269,7 +266,7 @@ To perform the necessary cryptographic actions, it integrates the \emph{ts-it-cr
 \cref{app:screenshots} contains screenshots of the realized UI.
 
 \subsection{Safekeeper component}
-\labe{sec:implemenation-safekeeper}
+\label{sec:implemenation-safekeeper}
 The \emph{Safekeeper} component is responsible to store logs.
 It was adopted to handle encrypted data.
 As described in \cref{sec:metadata}, an encrypted log contains metadata to support intermediate servers.

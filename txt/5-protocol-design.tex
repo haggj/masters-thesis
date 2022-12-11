@@ -42,33 +42,30 @@ They allow the E2EE of logs and they can be used to share and revoke access to l
 The following description delivers a high-level overview of how the protocol functions.
 This is additionally visualized in \cref{fig:protocol-overview}.
 
-\begin{enumerate}
-    \item
-    Whenever a monitor component observes a data access it is required to create an access log.
-    A log must always be a signed data structure.
-    Thus, the protocol requires the monitor to perform two tasks.
-    First, the raw log data needs to be cryptographically signed by the monitor.
-    Second, the log needs to be encrypted for the data owner (only the data owner is allowed to access the log upon creation).
-    The encrypted log is finally sent to the \emph{Safekeeper}.
-    This allows the data owner to request and decrypt the log.
-    The decryption process also involves validity checks of the received data.
-    This ensures that the protocol was applied correctly.
-    \item 
-    The data owner can share or revoke access to a log for users.
-    First, the data owner needs to download and decrypt the log from the server.
-    To share or revoke access the data owner then needs to apply the encryption algorithm with a set of desired users.
-    Please note that the decrypted log stores information about the users who are currently allowed to access the log.
-    Access can be shared by adding additional users during encryption.
-    Access can be revoked by omitting users during encryption.
-    It is crucial to the protocol that the data owner always specifies itself within the set of authorized users.
-    Otherwise, the data owner can not decrypt the log anymore.
-    Finally, the user uploads the log to the server.
-    \item
-    Users who are specified during a sharing process can download and decrypt the corresponding log.
-    They can request the server for those logs and apply their private decryption key to restore the plain log.
-    Again, validity checks of the received data ensure that the defined security requirements are respected.
-    
-\end{enumerate}
+Whenever a monitor component observes a data access it is required to create an access log.
+A log must always be a signed data structure.
+Thus, the protocol requires the monitor to perform two tasks.
+First, the raw log data needs to be cryptographically signed by the monitor.
+Second, the log needs to be encrypted for the data owner (only the data owner is allowed to access the log upon creation).
+The encrypted log is finally sent to the \emph{Safekeeper}.
+This allows the data owner to request and decrypt the log.
+The decryption process also involves validity checks of the received data.
+This ensures that the protocol was applied correctly.
+
+The data owner can share or revoke access to a log for users.
+The data owner needs to download and decrypt the log from the server first.
+To share or revoke access the data owner then needs to apply the encryption algorithm with a set of desired users.
+Please note that the decrypted log stores information about the users who are currently allowed to access the log.
+Access can be shared by adding additional users during encryption.
+Access can be revoked by omitting users during encryption.
+It is crucial to the protocol that the data owner always specifies itself within the set of authorized users.
+Otherwise, the data owner can not decrypt the log anymore.
+Finally, the user uploads the log to the server.
+
+Users who are specified during a sharing process can download and decrypt the corresponding log.
+They can request the server for those logs and apply their private decryption key to restore the plain log.
+Again, validity checks of the received data ensure that the defined security requirements are respected.
+
 
 Please note that the encryption algorithm can be applied by the monitor and the owner of the log.
 Although only data owners are allowed to share and revoke access to logs, the log must be initially made available for the data owner.
@@ -119,20 +116,16 @@ They only know that the log was signed by the data owner.
 This flaw can be mitigated by explicitly signing the intended recipients.
 This allows a recipient to ensure that the data was intentionally encrypted for him by the claimed creator.~\cite{Davis2001}
 
-For the protocol designed in the context of this thesis, those considerations have the following implications:
-\begin{enumerate}
-    \item 
-    An encrypted log is signed by the creator along with the set of recipients.
-    Please note that the log itself is also a signed data structure.
-    The log must always be signed by the monitor specified within the log to avoid the forgery of logs (security requirement~S3).
-    The signature of the creator ensures that unauthorized sharing operations can be detected (security requirement~S2).
-    This construction nests singed data structures into each other.
-    Details can be found in \cref{sec:encrypting}.
-    \item 
-    The signed data is then encrypted for the specified recipients.
-    This produces the ciphertext which can only be decrypted by those recipients (security requirement~S1).
-\end{enumerate}
-
+For the protocol designed in the context of this thesis, those considerations have two implications.
+First, a log must be signed by the creator whenever it is shared.
+The creator must additionally sign the set of intended recipients.
+Please note that the log itself is also a signed data structure.
+The log must always be signed by the monitor specified within the log to avoid the forgery of logs (security requirement~S3).
+The signature of the creator ensures that unauthorized sharing operations can be detected (security requirement~S2).
+This construction nests singed data structures into each other.
+Details can be found in \cref{sec:encrypting}.
+Second, the signed data is then encrypted for the specified recipients.
+This produces the ciphertext which can only be decrypted by those recipients (security requirement~S1).
 
 \subsection{Metadata}
 \label{sec:metadata}
@@ -141,26 +134,26 @@ This affects the performance of the toolchain.
 From the perspective of intermediate servers, an encrypted log does not provide any meaningful information.
 Specifically, they do not know which users have access to a log.
 Hence, the server can not associate a log with the authorized users.
-This introduces the following practical problems:
-\begin{enumerate}
-    \item 
-    Consider that Alice requests the logs concerning her.
-    If the server can not associate logs with users, it must reply with all logs stored in the system.
-    As a consequence, Alice receives many logs that she can not decrypt.
-    Since the raw cipher does not tell her which logs are intended for her, Alice must try to decrypt all logs to find the logs encrypted under her public key.
-    This is very inefficient and requires a lot of computational power.
-    To avoid this, the set of recipients can be attached as metadata to the encrypted log.
-    \item 
-    Consider Alice to be a data owner.
-    Alice wants to share her log with Bob.
-    Before the sharing process starts, the encrypted log is stored on the server.
-    Alice re-encrypts the log under the public key of Bob.
-    She authenticates against the server and tries to update the stored log.
-    The server, however, does not know if Alice is the legitimate owner of the stored log (because it can not associate users with a log).
-    Thus, the server does not allow Alice to update her log.
-    To avoid this, the server must know the identity of the data owner for all logs.
-    This can be realized by attaching the identity of the owner as metadata to the encrypted log.
-\end{enumerate}
+This introduces two practical problems.
+
+The first problem occurs when Alice tries to request logs concerning her.
+If the server can not associate logs with users, it must reply with all logs stored in the system.
+As a consequence, Alice receives many logs that she can not decrypt.
+Since the raw cipher does not tell her which logs are intended for her, Alice must try to decrypt all logs to find the logs encrypted under her public key.
+This is very inefficient and requires a lot of computational power.
+To avoid this, the set of recipients can be attached as metadata to the encrypted log.
+
+The second problems occurs when Alice tries to share access to her log.
+Consider Alice to be a data owner.
+Alice wants to share her log with Bob.
+Before the sharing process starts, the encrypted log is stored on the server.
+Alice re-encrypts the log under the public key of Bob.
+She authenticates against the server and tries to update the stored log.
+The server, however, does not know if Alice is the legitimate owner of the stored log (because it can not associate users with a log).
+Thus, the server does not allow Alice to update her log.
+To avoid this, the server must know the identity of the data owner for all logs.
+This can be realized by attaching the identity of the owner as metadata to the encrypted log.
+
 To mitigate these limitations, the set of receivers and the identity of the data owner must be accessible without decryption.
 This information can be interpreted as routing information and must be attached as metadata to the encrypted logs.
 It allows the server to filter logs concerning a particular user.
@@ -244,7 +237,7 @@ The final token is computed by passing the encoded shared log as plaintext into 
 The identities of recipients and the identity of the owner are passed as metadata into the protected header of the JWE token.
 The choice of used algorithms to encrypt the data implies hybrid encryption.
 The plaintext is encrypted with the authenticated encryption algorithm \verb|A256GCM|.
-This is an symmetric encryption algorithm based on 256-bit AES using the galois counter mode~\todo{Zitat}.
+This is an symmetric encryption algorithm based on 256-bit AES using the Galois/Counter-Mode~\cite{JWA2015}.
 The used symmetric key must then be encrypted for each intended recipient.
 This allows the distribution of the key to all recipients.
 It is realized using the key-wrapping algorithm \verb|ECDH-ES+A256KW|.

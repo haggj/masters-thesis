@@ -8,7 +8,7 @@ It provides short explanations of the concepts addressed in this work.
 Further, it aims to clarify the understanding of the terms used throughout the thesis.
 
 
-\section{Cryptographic concepts}
+\section{Cryptography}
 This section covers the cryptographic concepts the thesis relies on.
 Besides symmetric and asymmetric encryption it details the theoretical motivation for hybrid encryption schemes.
 Modern end-to-end encrypted protocol demand authenticity of the encrypted data~\cite{Mallory2022}.
@@ -65,8 +65,8 @@ Thus, combining public key encryption with digital signatures can also ensure th
 
 \section{JSON Object Signing and Encryption}
 \label{sec:jose}
-JSON Object Signing and Encryption (JOSE) is a collection of standards defined by IETF~\cite{Barnes2014}.
-It was created because traditional channel-based encryption layers (such as IPsec~\cite{IPSEC2011} or TLS~\cite{TLS2018}) only protect data between intermediate servers.
+"JSON Object Signing and Encryption" (JOSE) is a collection of standards defined by IETF~\cite{Barnes2014}.
+It was created because traditional channel-based encryption layers, such as IPsec~\cite{IPSEC2011} or TLS~\cite{TLS2018}, only protect data between intermediate servers.
 However, those layers of encryption do not protect the data from the intermediate servers itself.
 JOSE aims to provide security on the application layer, meaning that application data is embedded into secure objects.
 This protects the data from intermediate servers enabling the construction of end-to-end encrypted protocols.
@@ -103,17 +103,23 @@ Two algorithms are required to construct them:
 First, the application data is encrypted using an authenticated symmetric encryption algorithm.
 The key used for this algorithm is then encrypted with a dedicated key-wrapping algorithm.
 The receiver of the token must first apply the key-wrapping algorithm to restore the symmetric key which then allows the decryption of the application data.
-Thus, a JWE token consist of the following parts~\cite{JWE2015}:
-\begin{itemize}
-    \item JOSE Header:
-    It contains information about the used algorithms.
-    \item JWE Encrypted Key:
-    This contains the encrypted key which was used to encrypt the application data.
-    \item JWE Initialization Vector: This part stores initialization vectors of the used encryption algorithms.
-    \item JWE Additional Authenticated Data: This field might contain data which must be authenticated and integrity protected but not encrypted.
-    \item JWE Ciphertext: This stores the encrypted application data.
-    \item JWE Authentication Tag: This field contains the authentication tag which allows the receiver to validate the authenticity and integrity of a received token.
-\end{itemize}
+Thus, a JWE token consist of the components listed in \cref{tab:jwe}~\cite{JWE2015}:
+
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{l p{9cm}}
+        \hline
+    \textbf{Field}                             & \textbf{Description}                                                                                                            \\ \hline
+    Header                       & Contains information about the used algorithms.                                                                        \\ 
+    Encrypted Key                 & Stores the encrypted key that was used to encrypt the application data.                                                \\ 
+    Initialization Vector         & Contains initialization vectors of the used encryption algorithms.                                                     \\ 
+    Additional Authenticated Data & Contains data which must be authenticated and integrity protected but not encrypted.                                   \\ 
+    Ciphertext                    & Stores the encrypted application data.                                                                                 \\ 
+    Authentication Tag            & Stores the authentication tag that allows the receiver to validate the authenticity and integrity of a received token. \\ \hline
+    \end{tabular}
+    \caption[Structure of a JWE token]{Components of a JWE token.}
+    \label{tab:jwe}
+\end{table}
 
 
 \section{Key escrow}

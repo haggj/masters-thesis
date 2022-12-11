@@ -57,26 +57,20 @@ They argue why the established security mechanisms resist them.
 \subsection{Assumptions}
 
 The security of the protocol relies on three fundamental assumptions.
-If one of those assumptions is violated the protocol must be considered to be insecure.
+If one of those assumptions is violated the protocol is considered insecure.
 
-\begin{enumerate}
-    \item 
-    The protocol has access to a secure PKI.
-    The PKI assigns the identities of users to their public keys via certificates.
-    Each user requires two key pairs (one for encrypting data and one for signing data).
-    The user must have exclusive access to his private keys.
-    The public keys are distributed via certificates signed by a trusted certificate authority.
-    If any private key (either of a user or the certificate authority) is compromised the intended E2EE is broken.
-    A private key is assumed to be compromised if any entity besides the owner of the private key has access to it.
-    
-    \item 
-    The JOSE standard provides secure encryption and signing algorithms.
-    Specifically, \verb|A256GCM| and \verb|ECDH-ES+A256KW| must be secure encryption algorithms and \verb|ES256| must be a secure signing algorithm.
-    This implies that it is computationally infeasible to break those algorithms without knowing the respective keys~\cite{Katz2020}.
-    \item 
-    The libraries implemented in this thesis rely on language-specific JOSE implementations (details in \cref{sec:implemented-libraries}).
-    It is crucial for the security of the protocol that those libraries follow the specifications and definitions of the JOSE protocol.
-\end{enumerate}
+First, it its assumed that the protocol has access to a secure PKI.
+The PKI assigns the identities of users to their public keys via certificates.
+Each user requires two key pairs (one for encrypting data and one for signing data).
+The user must have exclusive access to his private keys.
+The public keys are distributed via certificates signed by a trusted certificate authority.
+If any private key (either of a user or the certificate authority) is compromised the intended E2EE is broken.
+A private key is assumed to be compromised if any entity besides the owner of the private key has access to it.
+Second, it is assumed that the JOSE standard provides secure encryption and signing algorithms.
+Specifically, \verb|A256GCM| and \verb|ECDH-ES+A256KW| must be secure encryption algorithms and \verb|ES256| must be a secure signing algorithm.
+This implies that it is computationally infeasible to break those algorithms without knowing the respective keys~\cite{Katz2020}.
+Third, the libraries implemented in this thesis rely on language-specific JOSE implementations (details in \cref{sec:implemented-libraries}).
+It is assumed that those libraries follow the specifications and definitions of the JOSE protocol.
 
 \subsection{Curious server}
 A curious server is a passive attacker which tries to access the logs within the toolchain.
@@ -133,50 +127,42 @@ For details see the visualization in \cref{fig:nested-jws}.
 A shared log contains the log as a nested JWS token.
 Moreover, it contains the identity of the creator and the identities of the intended receivers.
 Whenever a user successfully decrypted a log, it must verify that the shared log is a valid data structure.
-This requires the following checks:
-\begin{enumerate}
-\item 
+This requires the following three checks.
+
 First of all, the receiver needs to verify if the shared log was signed by the claimed creator.
 It fetches the public key of the claimed creator and verifies the cryptographic signature.
 If the signature is valid the receiver can be sure that the log was signed by the private signing key of the creator.
-\item 
-The receiver then needs to check if the creator is the data owner. 
+Second, the receiver then needs to check if the creator is the data owner. 
 This is achieved by checking if the identity of the creator (shared log) is equal to the identity of the data owner in the nested log.
 If this holds and if the log was indeed signed by a valid monitor the receiver can be sure that the data owner created and signed the shared log.
 This, however, does not prevent surreptitious forwarding.
-\item 
-In a third step, the receiver must verify if his identity is specified in the list of intended receivers (shared log).
+In a third check, the receiver must verify if his identity is specified in the list of intended receivers (shared log).
 If this is true the receiver knows that the data owner intentionally shared the log with him or her.
 This follows from two observations:
 First, the receiver can be sure that the shared log was indeed created by the data owner.
 Second, the receiver knows that the data owner included his identity in the set of intended receivers.
 This gives the receiver confidentiality that no malicious entity re-encrypted the log for him or her.
-\end{enumerate}
 
-The following consequence can be observed from this validation:
+The following consequence is observed from this validation:
 The creator specified in the shared log must have signed the shared log.
 The creator specified in the shared log must be equal to the data owner.
 Thus, the shared log is only valid if the data owner has shared the signed log.
 Eve has two options to forward an encrypted log to the unintended receiver Bob. 
-\begin{itemize}
-    \item 
-    He could manipulate the identity of the data owner.
-    If he manages to change the identity of the data owner to its own identity he could correctly sign the shared log.
-    This modification, however, makes his attack pointless.
-    Eve does not want to introduce faked logs.
-    He wants to forward existing logs to unintended receivers.
-    Please also note that this requires Eve to be a valid monitor because only they are allowed to sign logs.
-    \item 
-    He could try to forge a signature of the data owner Alice.
-    This does not require him to modify the log.
-    Rather, Eve keeps the existing log and creates a shared log that includes Bob as a valid receiver.
-    He also specifies Alice as the creator of the shared log.
-    This approach requires Eve to create a signature in the name of Alice because Bob will check if the claimed creator signed the shared log.
-    However, this contradicts the assumptions:
-    To successfully forge a signature Bob either has access to the private signing key of the data owner or he breaks the signing algorithm.
-    The former breaks the security of the assumed PKI.
-    The latter breaks the security of the chosen signing algorithm.
-\end{itemize}
+First, Eve could manipulate the identity of the data owner.
+If he manages to change the identity of the data owner to its own identity, he could correctly sign the shared log.
+This modification, however, makes his attack pointless.
+Eve does not want to introduce faked logs.
+He wants to forward existing logs to unintended receivers.
+Moreover, this requires Eve to be a valid monitor because only they are allowed to sign logs.
+Second, Eve could try to forge a signature of the data owner Alice.
+This does not require him to modify the log.
+Rather, Eve keeps the existing log and creates a shared log that includes Bob as a valid receiver.
+He also specifies Alice as the creator of the shared log.
+This approach requires Eve to create a signature in the name of Alice because Bob will check if the claimed creator signed the shared log.
+However, this contradicts the assumptions:
+To successfully forge a signature Bob either has access to the private signing key of the data owner or he breaks the signing algorithm.
+The former breaks the security of the assumed PKI.
+The latter breaks the security of the chosen signing algorithm.
 
 This analysis shows that there is no way for Eve to forward a received log to unintended recipients if those recipients validate the shared log correctly.
 
@@ -190,17 +176,13 @@ This section elaborates on how recipients of shared logs can detect this fraud.
 The designed protocol defines a log as a cryptographically signed data structure.
 Each log must be signed by a valid monitor.
 The protocol also requires the validation of this signature during decryption.
-In particular, a receiving user must perform the following tasks to ensure the validity of the log:
-\begin{enumerate}
-    \item 
-    The monitor specified within the log must have signed the log.
-    This requires the receiver to download the public verification key of the claimed monitor.
-    The receiver can be sure that the log was signed by the private key of the monitor if the verification succeeds.
-    \item 
-    The receiving user must also validate that the claimed monitor is allowed to create logs.
-    Otherwise, arbitrary users could sign logs.
-    This requires the installed PKI to deliver this information, e.g. by encoding it into the certificates of the monitor components.
-\end{enumerate}
+In particular, a receiving user must perform two checks to ensure the validity of the log.
+First, the monitor specified within the log must have signed the log.
+This requires the receiver to download the public verification key of the claimed monitor.
+The receiver can be sure that the log was signed by the private key of the monitor if the verification succeeds.
+Second, the receiving user must also validate that the claimed monitor is allowed to create logs.
+Otherwise, arbitrary users could sign logs.
+This requires the installed PKI to deliver this information, e.g. by encoding it into the certificates of the monitor components.
 
 Consider Eve to be a malicious data owner trying to share a forged log.
 First of all, Eve creates his malicious log data.
