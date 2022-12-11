@@ -2,7 +2,7 @@
 
 \begin{document}
 
-\chapter{Technical background}
+\chapter{Background}
 This chapter covers the technical and theoretical background of the thesis.
 It provides short explanations of the concepts addressed in this work.
 Further, it aims to clarify the understanding of the terms used throughout the thesis.
@@ -14,7 +14,7 @@ Besides symmetric and asymmetric encryption it details the theoretical motivatio
 Modern end-to-end encrypted protocol demand authenticity of the encrypted data~\cite{Mallory2022}.
 Thus, the concept of authenticated encryption is introduced.
 
-\subsubsection{Symmetric encryption}
+\subsection{Symmetric encryption}
 Symmetric encryption is characterized by the fact that the same key is used during encryption and decryption.
 This key is referred to as the symmetric encryption key.
 It must be transported securely from the sender to the receiver.
@@ -22,7 +22,7 @@ Hence, symmetric encryption relies on a secure channel between the communicating
 Symmetric encryption algorithms can be implemented very efficiently in hardware.
 For this reason, they are of great practical importance.~\cite[300]{Eckert2018}
 
-\subsubsection{Asymmetric encryption}
+\subsection{Asymmetric encryption}
 In contrast to symmetric encryption, asymmetric schemes do not use the same key for encryption and decryption.
 Each communicating partner is assigned a key pair which consists of a public key and a private key.
 While the private key must be kept secret, the public key must be known by other users and is thus publicly available.
@@ -33,7 +33,7 @@ Hence, encrypting and decrypting big amounts of data via asymmetric schemes is n
 However, no secure channel is necessary between the communicating entities.~\cite[331]{Eckert2018}
 
 
-\subsubsection{Hybrid encryption}
+\subsection{Hybrid encryption}
 \label{sec:hybrid}
 Hybrid encryption schemes combine symmetric and asymmetric schemes to overcome their limitations.
 Symmetric schemes are used to encrypt the application data efficiently.
@@ -43,7 +43,7 @@ A recipient can restore the symmetric key because he can decrypt the encrypted k
 Finally, he can decrypt the application data using the symmetric key.
 This construction neither requires a secure channel nor suffers from the computational overhead of asymmetric schemes.~\cite{Wolf2007}
 
-\subsubsection{Authenticated encryption}
+\subsection{Authenticated encryption}
 \label{sec:aead}
 Classical symmetrical or asymmetrical encryption algorithms protect the confidentiality of data.
 However, integrity and authenticity are not guaranteed.
@@ -82,7 +82,7 @@ A JWT token contains the JSON-encoded application data which must be protected.
 The protocol designed by this thesis relies on JWS and JWE tokens.
 The following explanations provide details about their internal structure.
 
-\subsubsection{JSON Web Signature}
+\subsection{JSON Web Signature}
 A JWS token contains integrity-protected data~\cite{JWS2015}.
 It supports both, symmetric integrity protection (via message authentication codes) and asymmetric integrity protection (via digital signatures).
 It consists of a header, a payload, and a signature.
@@ -93,7 +93,7 @@ The header itself is split up into a protected header (which is integrity protec
 As the name suggests, the signature does not protect the unprotected header.
 The header contains information about the algorithm used to secure the application data.
 
-\subsubsection{JSON Web Encryption}
+\subsection{JSON Web Encryption}
 JWE tokens represent encrypted data~\cite{JWE2015}.
 Multiple encryption algorithms can be used to encrypt the application data.
 They are defined in the JSON Web Algorithm (JWA) specification~\cite{JWA2015}.
@@ -193,29 +193,28 @@ While this is technically true, it does not meet the common understanding of end
 This section details the understanding of E2EE in the context of this thesis based on the above considerations.
 Following the argumentation of~\citeauthor{Hale2022}~\cite{Hale2022}, E2EE is understood as a defense against an active adversary.
 The attacker not only observes the data, but also tries to modify existing data or inserts forged data.
-Any defense against this attacker requires both confidentiality and mutual authenticity:
-\begin{enumerate}
-    \item Confidentiality: 
-    The exchanged data needs to be encrypted. 
-    Otherwise, each untrusted entity can access the exchanged data and E2EE is broken.
-    \item Receiver authenticity:
-    The sender needs to be sure that only the intended receiver can decrypt the data.
+Any defense against this attacker requires both, confidentiality and mutual authenticity.
+\paragraph{Confidentiality}
+The exchanged data needs to be encrypted. 
+Otherwise, each untrusted entity can access the exchanged data and E2EE is broken.
+\paragraph{Receiver authenticity}
+    The sender needs to be sure that only the intended receivers can decrypt the data.
     Specifically, no unauthorized entity must be able to decrypt the cipher.
     This requires special attention in the context of symmetric cryptography.
     Assume a group of users sharing a symmetric key.
-    Data that is encrypted under this key can be decrypted by all members of the group.
+    Data that is encrypted under this shared key can be decrypted by all members of the group.
     Thus, the set of encryption endpoints is equal to the group of users.
     When symmetric cryptography is used to construct E2EE-based protocols, messages between a single sender and a single receiver always require an exclusively exchanged symmetric key to ensure receiver authenticity.
     When operating with asymmetric cryptography, a key pair per receiver is required.
     If a receiver keeps the private key confidential, it can be ensured that only the receiver can decrypt data enabling receiver authenticity.
-    \item Sender authenticity: 
+\paragraph{Sender authenticity} 
     The receiver needs to be sure that the message was indeed sent by the assumed sender.
     Specifically, the receiver must ensure that the message was not created from a unknown entity.
     This requirement is crucial to defend against man-in-the-middle attackers.
     If a receiver can not validate the origin of the message, an attacker could simply impersonate the sender and encrypt fake data under the public key of the receiver.
     Digitally signed messages ensure that a message was indeed sent by the claimed sender.
     Due to the risk of surreptitious forwarding, this requires additional security mechanisms besides a plain digital signature~\cite{Davis2001}.
-\end{enumerate}
+
 
 
 

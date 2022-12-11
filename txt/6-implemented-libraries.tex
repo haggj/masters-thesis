@@ -269,12 +269,14 @@ To perform the necessary cryptographic actions, it integrates the \emph{ts-it-cr
 \cref{app:screenshots} contains screenshots of the realized UI.
 
 \subsection{Safekeeper component}
+\labe{sec:implemenation-safekeeper}
 The \emph{Safekeeper} component is responsible to store logs.
 It was adopted to handle encrypted data.
 As described in \cref{sec:metadata}, an encrypted log contains metadata to support intermediate servers.
 This metadata contains the set of recipients (e.g. the users that can decrypt the log) and the identity of the data owner.
 Once a log is sent to the server, thus, this metadata must be parsed.
 It is stored along with the encrypted log in the database.
+\todo{database setup}
 This allows the \emph{Safekeeper} to associate a log with users.
 A new endpoint was implemented that allows users to request its encrypted logs.
 Based on the provided metadata, the server can filter all logs concerning this particular user.

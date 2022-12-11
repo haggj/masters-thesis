@@ -42,10 +42,10 @@ This metadata could be subject to metadata analysis attacks which might yield in
 Future work could investigate if this is a realistic threat.
 
 This thesis assumes a secure PKI meaning that nobody has knowledge about the private keys of the users.
-If the company deploying the toolchain establishes a PKI in such a way that a trusted entity knows the private key of any user, the strict interpretation of E2EE is broken.
+This is a strong assumption.
+If the PKI is established by a trusted entity knowing the private keys of the users, the strict interpretation of E2EE is broken.
 This is because in this case not only the authorized users can decrypt the logs.
 The knowledge of the private keys allows the trusted entity to decrypt and sign arbitrary data.
-This, however, depends on the technical setup of how the underlying PKI.
-The protocol might be improved in future for scenarios where the assumption of a secure PKI does not hold.
+The protocol might be improved in future for scenarios where the assumption of a secure PKI is too strong and does not hold.
 
 \end{document}

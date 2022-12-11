@@ -35,6 +35,8 @@ It also allows data owners to define policies restricting access to their data.
     \label{fig:toolchain}
 \end{figure}
 
+\subsubsection{Problem statement}
+
 It is crucial to the concept of \emph{Inverse Transparency} that all data accesses are tracked.
 The illegal processing of data does not become legal, however, simply because the data owner is informed transparently about the processing~\cite{Boes2022}.
 The harmful usage must therefore be legally prosecuted.
@@ -56,11 +58,16 @@ This generic approach enables great flexibility.
 Given the fact that most companies rely on cloud computing~\cite{Weber2021}, however, this introduces the problem that the data might be stored on untrusted third-party servers.
 To avoid unintended access to the stored logs the data passing those servers should be encrypted.
 
+\subsubsection{Contribution}
+
 This thesis contributes to the toolchain by designing and implementing an end-to-end encrypted protocol that allows data owners to share and revoke access to their logs.
 Specifically, the thesis 
 (1)~designs a protocol based on a survey of multi-party encryption techniques
 (2)~implements the designed protocol and publishes it for the programming languages Typescript, Go, and Python
 (3)~integrates the implemented protocol into the existing toolchain, and 
 (4)~evaluates the implemented protocol in terms of functionality, security and performance.
+
+\subsubsection{Outline}
+\todo{Outline}
 
 \end{document}
