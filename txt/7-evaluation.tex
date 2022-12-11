@@ -93,42 +93,7 @@ This is an authenticated\footnote{Please note that this authentication does not 
 Secondly, this symmetric key $k$ is encrypted for each receiver using \verb|ECDH-ES+A256KW|~\cite{JWA2015}.
 This key-wrapping algorithm establishes an ephemeral key between two users.
 This ephemeral key is finally used to encrypt the symmetric key $k$.
-The specification of \verb|ECDH-ES+A256KW| requires the following steps to establish this ephemeral key between a sender and receiver~\cite[100]{Barker2017}.
-This is also illustrated in \cref{fig:key_wrapping}.
-
-\begin{figure}[ht]
-    \includegraphics[scale=0.2]{../img/07/key_wrapping.jpg}
-    \centering
-    \caption[Key-wrapping ECDH-ES+A256KW]{
-        Key-wrapping of the symmetric key k using ECDH-ES+A256KW.
-        Based on the exchanged public keys the sender and receiver can both compute the same shared secret.
-        The derived ephemeral key is finally used to decrypt the symmetric encryption key k.}
-    \label{fig:key_wrapping}
-\end{figure}
-
-\begin{enumerate}
-    \item 
-    The sender must know the static public key of the receiver. 
-    In our case, this is the public encryption key.
-    The receiver must have exclusive access to its static private key.
-    In our case, this is the private decryption key.
-    \item 
-    The sender creates a new ephemeral key pair. 
-    This key pair must be used only once.
-    \item 
-    The sender sends the ephemeral public key to the receiver.
-    In our case, the key is encoded into the JWE token.
-    The ephemeral private key must be kept secret.
-    \item 
-    The sender knows the static public key of the receiver and the ephemeral private key of the sender.
-    The receiver knows the ephemeral public key of the sender and the static private key of the receiver.
-    Thus, the Diffie-Hellman key agreement protocol can be used to compute a shared secret between the sender and the receiver~\cite[438]{Eckert2018}.
-    The computation of the shared secret requires either the ephemeral private key or the static private key.
-    If both are kept secret it is assumed to be computationally infeasible to compute the shared secret~\cite[438]{Eckert2018}.
-    \item 
-    The shared secret (which is the result of the Diffie-Hellman key agreement protocol) is finally used as input for a key derivation function.
-    This function finally computes the ephemeral key between the sender and the receiver.
-\end{enumerate}
+Details about this algorithm can be found in \cref{sec:encrypting}.
 
 To access a decrypted log the attacker Eve needs to have access to the symmetric key $k$.
 This requires him to decrypt any of the encrypted keys attached to the JWE token.

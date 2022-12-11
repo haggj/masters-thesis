@@ -238,19 +238,59 @@ It allows to verify if the data owner has intended to share the log with a respe
 This resists surreptitious forwarding attacks~\cite{Davis2001}.
 
 Once the  shared log is created, it is used to compute the final JWE token.
-This follows the \emph{sign-then-encrypt} approach elaborated in \cref{sec:sign-and-encrypt}.
+Details about JWE tokens can be found in \cref{sec:jwe}.
+This computation follows the \emph{sign-then-encrypt} approach elaborated in \cref{sec:sign-and-encrypt}.
 The final token is computed by passing the encoded shared log as plaintext into the JWE encryption algorithm.
 The identities of recipients and the identity of the owner are passed as metadata into the protected header of the JWE token.
-The choice of used algorithms to encrypt the data implies hybrid encryption:
-The plaintext is encrypted with the authenticated encryption algorithm \verb|A256GCM| (symmetric encryption via 256-bit AES in Galois/Counter Mode).
-The applied key-wrapping algorithm is \verb|ECDH-ES+A256KW|.
-It is responsible for computing encrypted keys.
-For each user specified as a valid recipient, the symmetric key is encrypted under the public encryption key of the user (asymmetric encryption).
-This algorithm establishes a Diffie-Hellman secret between the creator and recipient.
-This DH-secret is finally used to encrypt the symmetric key using AES.
-Details about this approach can be found in \cref{sec:evaluation-sec}.
-Both algorithms are specified by the JSON Web Algorithm specification~\cite{JWA2015}.
-The resulting JWE token contains the symmetrically encrypted log, all encrypted keys, and the protected header.
+The choice of used algorithms to encrypt the data implies hybrid encryption.
+The plaintext is encrypted with the authenticated encryption algorithm \verb|A256GCM|.
+This is an symmetric encryption algorithm based on 256-bit AES using the galois counter mode~\todo{Zitat}.
+The used symmetric key must then be encrypted for each intended recipient.
+This allows the distribution of the key to all recipients.
+It is realized using the key-wrapping algorithm \verb|ECDH-ES+A256KW|.
+The algorithm returns a cipher which can be decrypted by the receiver.
+It must be executed once for each receiver.
+The specification of \verb|ECDH-ES+A256KW| requires the following steps to encrypt the symmetric key $k$ for a single receiver~\cite[100]{Barker2017}.
+This is also illustrated in \cref{fig:key_wrapping}.
+\begin{figure}[ht]
+    \includegraphics[scale=0.2]{../img/07/key_wrapping.jpg}
+    \centering
+    \caption[Key-wrapping ECDH-ES+A256KW]{
+        Key-wrapping of the symmetric key k using ECDH-ES+A256KW.
+        Based on the exchanged public keys the sender and receiver can both compute the same shared secret.
+        The derived ephemeral key is finally used to decrypt the symmetric encryption key k.}
+    \label{fig:key_wrapping}
+\end{figure}
+
+\begin{enumerate}
+    \item 
+    The sender must know the static public key of the receiver. 
+    In our case, this is the public encryption key.
+    The receiver must have exclusive access to its static private key.
+    In our case, this is the private decryption key.
+    \item 
+    The sender creates a new ephemeral key pair. 
+    This key pair must be used only once.
+    \item 
+    The sender sends the ephemeral public key to the receiver.
+    In our case, the key is encoded into the JWE token.
+    The ephemeral private key must be kept secret.
+    \item 
+    The sender knows the static public key of the receiver and the ephemeral private key of the sender.
+    The receiver knows the ephemeral public key of the sender and the static private key of the receiver.
+    Thus, the Diffie-Hellman key agreement protocol can be used to compute a shared secret between the sender and the receiver~\cite[438]{Eckert2018}.
+    The computation of the shared secret requires either the ephemeral private key or the static private key.
+    If both are kept secret it is assumed to be computationally infeasible to compute the shared secret~\cite[438]{Eckert2018}.
+    \item 
+    The shared secret, which is the result of the Diffie-Hellman key agreement protocol, is used as input for a key derivation function.
+    This function computes the ephemeral key between the sender and the receiver.
+    \item 
+    Finally, this ephemeral key is used as key to encrypt the symmetric key $k$ for the receiver.
+    This encryption uses the symmetric scheme AES.
+\end{enumerate}
+
+
+The resulting JWE token contains the symmetrically encrypted log, the encrypted keys for all recipients, and the protected header.
 It can only be decrypted by the specified recipients because they are the only users who can restore the symmetric encryption key.
 This is intended to resolve security requirement S1 because it effectively end-to-end encrypts a log.
 Only explicitly authorized users can decrypt the log.
@@ -264,9 +304,10 @@ To verify the JWS tokens encoded within the JWE token, this algorithm needs to b
 First of all, the JWE token is parsed into its ciphertext, header, and encrypted keys.
 The JWE decryption algorithm is then applied to the cipher.
 This decrypts the ciphertext using the passed private decryption key.
-To be more precise, it tries to decrypt any of the encrypted keys provided by the JWE token.
+First, it tries to decrypt any of the encrypted keys provided in the JWE token using \verb|ECDH-ES+A256KW|.
 If this succeeds, the symmetric encryption key is accessible.
-This allows the decryption of the symmetric ciphertext which restores the shared log.
+This allows the decryption of the symmetric ciphertext using \verb|A256GCM|.
+This effectively restores the shared log for the receiver.
 No decryption is necessary to access the metadata because is stored in the protected header of the JWE.
 If the decryption is successful, the decrypting user has access to the shared log and the metadata.
 Multiple validations are necessary to ensure that the protocol is used correctly.
@@ -304,7 +345,7 @@ If any of them fails the decryption must be aborted.
     This implies that the owner shared the log with other users.
     In this case, the set of recipients can be arbitrary.
 \end{enumerate}
-If all those validations succeed the log can be trusted.
+If all those validations succeed the received log can be trusted.
 A visualization of the decryption process can be found in \cref{app:decryption}
 
 \end{document}
