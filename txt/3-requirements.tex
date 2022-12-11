@@ -7,11 +7,11 @@
 \chapter{Protocol requirements}
 \label{chap:requirements}
 
-This chapter identifies the requirements of the protocol which needs to be implemented in the context of this thesis.
-Overall, three major goals must to be achieved:
+This chapter identifies the requirements of the protocol implemented in the context of this thesis.
+Overall, three major goals must be achieved:
 
 \begin{enumerate}[label=\Roman*.]
-    \item Data owners can share (and revoke) their log data with other users in the system.
+    \item Data owners can share and revoke access to their logs with other users in the system.
 	\item Log data must be confidential by means of end-to-end encryption.
     \item Data owners cannot forge log data at any time.
 \end{enumerate}
@@ -23,13 +23,14 @@ Thus, this chapter closely follows the terms and methodology proposed by~\citeau
 The authors fundamentally differentiate between functional, non-functional, and security requirements, which are extracted from the respective security goals.
 Goals are rather abstract and vague formulations of what the system should achieve. 
 They are refined into more detailed requirements for two reasons~\cite{Fabian2010}.
-First, verifiable requirements allow comparing different approaches which leads to a reasonable choice from the potential solution space.
+First, verifiable requirements allow comparing different approaches.
+This leads to a reasonable choice from the solution space.
 Second, they allow the evaluation of the implemented solution.
 
-While the overall goal I will be treated as a functional goal (\cref{functional-requriements}), goals II and III are understood as security goals (\cref{security-requriements}).
+While the overall goal I will be treated as a functional goal (see \cref{functional-requriements}), goals II and III are understood as security goals (see \cref{security-requriements}).
 Further non-functional goals will be identified in \cref{non-functional-requriements}.
 Within each subsection, the identified goals will be refined into requirements.
-This results in a list of verifiable and consistent system requirements for this thesis which is provided in \cref{system-requriements}.
+This results in a list of verifiable and consistent system requirements for this thesis (see \cref{system-requriements}).
 
 
 \section{System requirements}\label{system-requriements}
@@ -47,8 +48,8 @@ For details and the rationales of each requirement please have a look at the cor
 \paragraph{Security requirements}
 \begin{itemize}
     \item [S1.] Logs can only be decrypted by authorized users.
-    \item [S2.] Logs can not be forwarded to unintended receivers.
-    \item [S3.] Logs can not be forged.
+    \item [S2.] Logs cannot be forwarded to unintended receivers.
+    \item [S3.] Logs cannot be forged.
 \end{itemize}
 
 \paragraph{Non-functional requirements}
@@ -78,15 +79,15 @@ Based on the major goals specified above and the identified functional requireme
 They are motivated by malicious users that potentially participate in the process of sharing encrypted logs:
 \begin{itemize}
     \item Logs can only be decrypted by authorized users.
-    \item Logs can not be forwarded to unintended receivers.
-    \item Logs can not be forged.
+    \item Logs cannot be forwarded to unintended receivers.
+    \item Logs cannot be forged.
   \end{itemize}
 
 These security goals can be refined into security requirements by annotating them with additional information, a counter-stakeholder, and specific circumstances~\cite{Fabian2010}.
 Following this approach, each security requirement is specified by providing these details.
 The counter-stakeholder is an adversary attacking the system.
 Satisfying a security requirement should effectively defend against this adversary.
-The specified circumstances elaborate additional conditions which affect the security goal.
+The specified circumstances elaborate additional conditions that affect the security goal.
 The following elaboration is intended to refine the security goals into concrete security requirements.
 
 \subsection{Logs can only be decrypted by authorized users}
@@ -94,13 +95,14 @@ In the context of the \emph{Inverse Transparency} toolchain, the intended end-to
 The passed log must be encrypted and only authorized users can decrypt it.
 Thus, this requirement demands confidentiality and receiver authenticity (details in ~\cref{sec:end-to-end}).
 As specified by the functional requirements, the data owner can always decrypt the log.
-The data owner can also share the log with other users which are then able to decrypt.
+The data owner can also share the log with other users, which are then able to decrypt.
 Authorized users are the data owner of the log plus all users the data owner permitted access.
 From the perspective of E2EE, all other entities are untrusted.
 Untrusted entities must not be able to decrypt logs.
 The untrusted network includes the whole infrastructure of the toolchain, except the application a user interacts with.
-This implies, that all front-end applications must be trusted (e.g. the \emph{Display} component).
-The reliability of the created logs also depends on the integrated \emph{Monitor} components which also must be trusted.
+This implies that all front-end applications must be trusted, e.g. the \emph{Display} component.
+The reliability of the created logs also depends on the integrated \emph{Monitor} components.
+They must also be trusted.
 
 The requirement is motivated by the risk of a curious server within the system~\cite{Nabeel2017}.
 Consider an attacker Eve who is the database admin of the \emph{Safekeeper} server.
@@ -112,7 +114,7 @@ The attacker is passive because Eve does not participate in the protocol.
 He simply observes the stored data.
 The implemented protocol should defend against curious servers.
 
-\subsection{Logs can not be forwarded to unintended receivers}
+\subsection{Logs cannot be forwarded to unintended receivers}
 
 The functional requirements require, that only the data owner of a log is allowed to share a log.
 No other user should be able to share the log in the name of the data owner.
@@ -121,7 +123,7 @@ Moreover, the receiver also needs to be sure that the data owner intended to sha
 
 The following surreptitious forwarding attack motivates this requirement~\cite{Davis2001}.
 Assume Alice to be a data owner and Eve to be a malicious user.
-Further, assume that Alice shares an access log with Eve.
+Furthermore, assume that Alice shares an access log with Eve.
 Eve has valid access to the log and can decrypt the encrypted log.
 Eve could apply the encryption algorithm and could specify Bob as the receiver.
 If the exchanged message does not contain information about the sender and the intended recipients, there is no way for Bob to know who actually sent the message and if the log was intentionally shared with him.
@@ -133,7 +135,7 @@ This attack demonstrates how an active attacker could share logs with unintended
 The attacker forwards a valid log to an arbitrary user in the system.
 The implemented protocol must defend against surreptitious forwarding attacks.
 
-\subsection{Logs can not be forged}
+\subsection{Logs cannot be forged}
 
 A data owner can share logs with others within the system.
 However, this introduces the risk that a malicious data owner shares forged logs with other users by manipulating existing logs or creating arbitrary new logs.
@@ -145,7 +147,7 @@ Thus, he has access to all logs concerning him.
 Eve wants to harm a specific data consumer.
 To do so, Eve modifies an existing log or creates a new log indicating an illegal behavior of the targeted data consumer.
 Eve applies the encryption algorithm and shares the forged log with other users.
-Without further protection, the receiving users can not verify the creator of the log.
+Without further protection, the receiving users cannot verify the creator of the log.
 There is no way to detect this fraud.
 This example demonstrates how a malicious data owner could insert forged logs into the system.
 The implemented protocol must defend against malicious data owners.
@@ -170,9 +172,8 @@ The currently implemented front-end of the \emph{Inverse Transparency} toolchain
 The Web Cryptographic API~\cite{WebCryptoApi2017} defines an interface to perform cryptographic operations within browsers. 
 It \enquote{exposes already existing and often heavily verified cryptographic functionality to Web application developers through a standardized interface}~\cite[959]{Halpin2014}.
 This enables secure and performant cryptography within the browser~\cite{Halpin2014}.
-However, it is limited to specific primitives. 
-Advanced encryption schemes are not defined and available in the API yet.
-This implies that schemes which are currently under research are not integrated.
+Unfortunately, it is limited to specific primitives. 
+Advanced encryption schemes, which are currently under research, are not defined and available in the API yet.
 To ensure the portability of the \emph{Inverse Transparency} toolchain, the implementation of this thesis should thus only rely on primitives defined by the Web Cryptographic API.
 This is specifically necessary because the \emph{Display} component is realized as web application.
 
@@ -180,8 +181,8 @@ This is specifically necessary because the \emph{Display} component is realized 
 A trade-off between security and usability usually needs to be resolved during system design~\cite{Braz2007}.
 In the context of this thesis, however, the complex security is a key driver to improving usability.
 This is motivated by the principle of least effort, which states that humans will spend the least amount of work to get a task done~\cite{Levenson2018}.
-If the user is asked to perform certain security tasks he therefore tends to neglect them.
-By integrating the error-prone cryptography tasks (e.g. encryption or integrity checks) into the application, the usability can be improved because it simplifies the process for users.
+If the user is asked to perform certain security tasks, he therefore tends to neglect them.
+By integrating the error-prone cryptography tasks into the application, the usability can be improved because it simplifies the process for users.
 This also strengthens the security because integrated mechanisms can be well tested.
 An optimal solution should integrate all cryptographic tasks into the toolchain.
 However, it comes with the cost of increased design and implementation efforts.

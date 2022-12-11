@@ -24,12 +24,12 @@ In their work, they implemented a proof-of-concept toolchain.
 \cref{fig:toolchain} is taken from their publication and shows the major components of the approach.
 It consists of two actors: The data owner and the data consumer.
 The latter aims to access some sensitive data of the former.
-Each data access is tracked by a monitor component (\emph{Monitor}) which sends the log to a dedicated server (\emph{Safekeeper}).
+Each data access is tracked by a monitor component (\emph{Monitor}), which sends the log to a dedicated server (\emph{Safekeeper}).
 A front-end application (\emph{Display}) makes all data accesses transparent to a user by visualizing the captured logs.
 It also allows data owners to define policies restricting access to their data.
 
 \begin{figure}[ht]
-    \includegraphics[scale=0.15]{../img/01/toolchain.jpg}
+    \includegraphics[scale=0.16]{../img/01/toolchain.png}
     \centering
     \caption[Existing toolchain]{The structure of the technical framework as proposed by \citeauthor{Zieglmeier2021}~\cite{Zieglmeier2021}.}
     \label{fig:toolchain}
@@ -41,7 +41,7 @@ It is crucial to the concept of \emph{Inverse Transparency} that all data access
 The illegal processing of data does not become legal, however, simply because the data owner is informed transparently about the processing~\cite{Boes2022}.
 The harmful usage must therefore be legally prosecuted.
 This motivates the idea that tracked data accesses can be shared in the system.
-If a data owner assumes that a given data access does not adhere to the data privacy regulations the log can be forwarded to the legal department.
+If a data owner assumes that a given data access does not adhere to the data privacy regulations, the log can be forwarded to the legal department.
 Consequently, a data owner should be able to specify certain users in the system who additionally can access the respective log.
 A revoking mechanism could further provide the possibility to withdraw access to a log (e.g. because the legal department has finished processing or because the log was shared accidentally).
 This ensures that the data owner has full control over the recorded logs.

@@ -6,15 +6,15 @@
 
 This thesis designs, implements, and evaluates an end-to-end encrypted protocol that allows sharing logs in the \emph{Inverse Transparency} toolchain~\cite{Zieglmeier2021}.
 The survey of encryption technologies shows that hybrid encryption meets the identified protocol requirements best.
-Therefore, the designed protocol relies on hybrid encryption which enables efficient multi-party E2EE.
+Therefore, the designed protocol relies on hybrid encryption, which enables efficient multi-party E2EE.
 It makes it possible for data owners to share and revoke access to their logs while the data stays encrypted.
 The protocol was created to resist three types of attackers: 
-A curious server (e.g. the \emph{Safekeeper} component) can not access the logs because all logs are encrypted.
+A curious server cannot access the logs because all logs are encrypted.
 Surreptitious forwarding attacks are detected since the user sharing a log cryptographically signs the log along with the indented receivers.
-A malicious data owner can not forge logs because each log must be cryptographically signed by a trusted monitor component.
+A malicious data owner cannot forge logs because each log must be cryptographically signed by a trusted monitor component.
 
 The protocol was implemented in the programming languages Go, Python and Typescript.
-For each of those, a library was developed which can be used to sign, encrypt and decrypt logs.
+For each of those, a library was developed, which can be used to sign, encrypt and decrypt logs.
 These libraries enable the intended functionality of a multi-party E2EE protocol.
 Moreover, each library is tested, documented, and was published to the respective package indexes.
 
@@ -27,7 +27,8 @@ The implemented UI fully abstracts from any underlying protocol details such as 
 The implemented algorithms are usable in practice because data can be encrypted for up to 170 users without any noticeable delay.
 
 \section{Limitations and future work}
-This thesis is designed to defend against three types of attacks which were derived from potentially malicious users participating in the sharing process of encrypted logs.
+This thesis is designed to defend against three types of attacks.
+They were derived from potentially malicious users participating in the sharing process of encrypted logs.
 This, however, is not an exhaustive list.
 The performed security analysis and evaluation does not guarantee the general security of the protocol.
 In particular, a third party analysis of the applied techniques could further verify their security.
@@ -38,7 +39,7 @@ Their identification and mitigation could be subject to future work.
 
 The protocol tries to encrypt the logs because it might contain sensitive information.
 However, the encrypted logs also reveal metadata to ensure that the encrypted data can be associated with users by intermediate servers.
-This metadata could be subject to metadata analysis attacks which might yield interesting information for an attacker.
+This metadata could be subject to metadata analysis attacks, which might yield interesting information for an attacker.
 Future work could investigate if this is a realistic threat.
 
 This thesis assumes a secure PKI meaning that nobody has knowledge about the private keys of the users.

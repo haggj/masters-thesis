@@ -35,7 +35,8 @@ The acronym \emph{it-crypto} stands for \emph{Inverse Transparency} cryptography
 
 All three libraries are fully tested and compatible with each other.
 Data that was encrypted in one library can be decrypted by all libraries.
-It was taken care that classes, functions, constants, and variables are named similarly (identical names are not possible because of the different naming conventions in Go, Python, and Typescript).
+It was taken care that classes, functions, constants, and variables are named similarly.
+Identical names are not possible because of the different naming conventions in Go, Python, and Typescript.
 Moreover, all libraries employ the same folder structure.
 This aims to improve the maintainability of the source code.
 As a result, all three libraries expose the same interface to users.
@@ -51,16 +52,16 @@ Ts-it-crypto depends on the Typescript package JOSE\footnote{\url{https://www.np
 
 This section describes the usage of the implemented libraries in general.
 Please also refer to the pseudocode depicted in \cref{lst:pseudocode}.
-If you are interested in the concrete realization in a specific language have a look at the corresponding GitHub repositories.
+If you are interested in the concrete realization in a specific language, have a look at the corresponding GitHub repositories.
 
 To make use of the library an instance of type \verb|ItCrypto| must be instantiated.
 This instantiation requires the function \verb|fetchUser|.
-It resolves an identity of a user (which is a \verb|string|) to an instance of type \verb|RemoteUser|.
+It resolves an identity of a user, which is a \verb|string|, to an instance of type \verb|RemoteUser|.
 The function usually requests a server to resolve the identity of a user to its public keys.
 It needs to implement the following signature: \verb|RemoteUser fetchUser(string)|.
 A \verb|RemoteUser| object stores the public keys of the user along with its identity and the information if the user is a trusted monitor.
 This information is mainly used during decryption to verify if the signed data is valid.
-Please note that a \verb|RemoteUser| object should never be constructed directly.
+A \verb|RemoteUser| object should never be constructed directly.
 Rather, the \verb|importRemoteUser| function must be called.
 This function expects a trusted certificate as a parameter.
 This trusted certificate is assumed to contain the public key of a root certificate authority within the PKI.
@@ -181,7 +182,8 @@ This function relies on the private decryption key of the logged-in user.
 \subsection{Cryptographic keys}
 The libraries require cryptographic keys to create, encrypt, and decrypt logs.
 As described in \cref{sec:overview}, the protocol assumes an externally established PKI.
-Each user is assigned two key pairs (one for signing and one for encrypting data).
+Each user is assigned two key pairs: 
+One for signing and one for encrypting data.
 The private keys are assumed to be PEM-encoded.
 Public keys are assumed to be PEM-encoded certificates that are signed by a trusted certificate authority.
 Whenever a user is imported, the certificates of the user are assumed to be signed by this certificate authority.
@@ -205,7 +207,7 @@ They provide details about the implemented changes.
 
 
 \begin{figure}[h!]
-    \includegraphics[width=8cm]{../img/06/encrypted_toolchain.jpg}
+    \includegraphics[scale=0.16]{../img/06/encrypted_toolchain.png}
     \centering
     \caption[Toolchain encrypted data flow]{The general data flow in the toolchain has not changed. The passed data, however, is end-to-end encrypted.}
     \label{fig:encrypted-toolchain}
@@ -213,10 +215,10 @@ They provide details about the implemented changes.
 
 \subsection{User management}
 The toolchain relies on a single-sign-on server responsible for authenticating users.
-The development environment provides the \emph{Revolori} server which is an implementation of this service.
+The development environment provides the \emph{Revolori} server, which is an implementation of this service.
 Besides the user information it now additionally stores certificates containing the public keys of the users and the information if a user is an authorized monitor.
 This additional information is used by the front-end to encrypt and decrypt logs.
-Therefore, a new endpoint was introduced which resolves the identity of a user to this data.
+Therefore, a new endpoint was introduced that resolves the identity of a user to this data.
 
 The development environment of the toolchain is a proof-of-concept that shows how an external PKI can be connected.
 There are two scripts used to load pre-configured users into the development environment.
@@ -236,7 +238,7 @@ Finally, the script updates the provided \verb|users.json| to contain the genera
 The script \verb|setup.sh| is responsible for creating users in a running \emph{Revolori} instance.
 It is also used to create exemplary data accesses for each user.
 Thus, the script had to be adopted to support encrypted logs.
-First of all, the script expects the file \verb|users.json| which contains user information along with their cryptographic keys.
+First of all, the script expects the file \verb|users.json| containing user information along with their cryptographic keys.
 It then parses the user information and creates the respective users in the \emph{Revolori} server.
 In particular, this includes the certificates of the user's public keys.
 To pre-compute encrypted logs, the command-line interface of the \emph{ts-it-crypto} library needs to be installed.
@@ -248,7 +250,7 @@ The development environment also provides the private keys for a user upon login
 It is realized by passing the \verb|users.json| file to the \emph{Clotilde} process.
 This implies that the front-end has unrestricted access to all private keys.
 Thus, this setup can only be used in the development environment.
-In productive systems, the \emph{Clotilde} front-end must securely import the private keys from the user (e.g. via hardware token).
+In productive systems, the \emph{Clotilde} front-end must securely import the private keys from the user, e.g. via hardware token.
 If a user logs in to the system, the front-end instantiates an \verb|ItCrypto| object using the provided key material.
 This finally enables all cryptographic tasks for a user.
 
@@ -270,7 +272,7 @@ To perform the necessary cryptographic actions, it integrates the \emph{ts-it-cr
 The \emph{Safekeeper} component is responsible to store logs.
 It was adopted to handle encrypted data.
 As described in \cref{sec:metadata}, an encrypted log contains metadata to support intermediate servers.
-This metadata contains the set of recipients (e.g. the users that can decrypt the log) and the identity of the data owner.
+This metadata contains the set of recipients and the identity of the data owner.
 Once a log is sent to the server, thus, this metadata must be parsed.
 It is stored along with the encrypted log in the database.
 \todo{database setup}
@@ -280,12 +282,12 @@ Based on the provided metadata, the server can filter all logs concerning this p
 Moreover, the data owner of a log can update a log to share or revoke access.
 Thus, a second endpoint was created that allows data owners to modify stored logs.
 
-Since all logs are end-to-end encrypted it can not access any content of the stored data.
-This implies that it can not verify if a performed access was permitted by the data owner.
+Since all logs are end-to-end encrypted it cannot access any content of the stored data.
+This implies that it cannot verify if a performed access was permitted by the data owner.
 However, those endpoints still exist.
 This allows data owners to provide detailed policies about who can access what data.
 A monitor tracking data usage and creating corresponding logs can check if the observed access is allowed by calling those endpoints.
-Since the \emph{Safekeeper} can not validate the compliance of these policies, this validation is outsourced to the monitor.
+Since the \emph{Safekeeper} cannot validate the compliance of these policies, this validation is outsourced to the monitor.
 
 
 
