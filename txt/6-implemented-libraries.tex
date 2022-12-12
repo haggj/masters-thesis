@@ -11,7 +11,7 @@ They are available in the programming languages Python, Go, and Typescript.
 This ensures that software components in different environments can handle logs as specified by the protocol.
 Details about this practical realization of the libraries can be found in \cref{sec:implemented-libraries}.
 Moreover, the chosen approach heavily influences the existing toolchain.
-The existing source code of the toolchain was therefore refactored and adjusted to handle encrypted logs.
+The existing source code of the toolchain was refactored and adjusted to handle encrypted logs.
 This is described in \cref{sec:toolchain-modifications}.
 
 \section{Implemented Libraries}
@@ -174,7 +174,7 @@ This function relies on the private decryption key of the logged-in user.
         \multicolumn{2}{|l|}{Input parameters}    \\ \hline
         \verb|jwe|              & This is a JWE token that represents an encrypted log. This token is the result of \verb|encryptLog|. \\ \hline
             \multicolumn{2}{|l|}{Output}   \\ \hline
-        \multicolumn{2}{|p{13cm}|}{The method returns a log. This is the same object that was passed to the encryption function. Therefore it is still signed by a monitor. The signature, however, was already verified during decryption. This construction allows a data owner to easily re-encrypt the log.} \\ \hline
+        \multicolumn{2}{|p{13cm}|}{The method returns a log. This is the same object that was passed to the encryption function. Therefore, it is still signed by a monitor. The signature, however, was already verified during decryption. This construction allows a data owner to easily re-encrypt the log.} \\ \hline
     \end{tabular}
     \caption[Signature of decryptLog]{Input parameters and output of the decryptLog method.}
 \end{table}
@@ -198,7 +198,7 @@ It additionally visualizes the end-to-end-encrypted data flow in the toolchain.
 In particular, a monitor encrypts the log for the data owner.
 A user that is logged-in to the display component can decrypt its logs.
 Moreover, access to the logs can be shared and revoked.
-This functionality requires changes in the \emph{Monitor}, \emph{Safekeeper} and \emph{Display} components.
+This functionality requires changes in the \emph{Monitor}, \emph{Safekeeper}, and \emph{Display} components.
 Those changes were implemented in the context of this thesis.
 The development environment of the toolchain is a proof-of-concept.
 It shows how a PKI infrastructure can be used to integrate encrypted logs.
@@ -290,7 +290,7 @@ Since all logs are end-to-end encrypted, the \emph{Safekeeper} cannot access the
 This implies that it cannot verify if a performed access was permitted by the data owner.
 However, the endpoints to maintain access policies still exist.
 They allow data owners to provide detailed policies about who can access what data.
-A monitor that tracks data usages and therefore creates logs can check if the observed access is allowed by calling those endpoints.
+A monitor that tracks data usages and creates logs can check if the observed access is allowed by calling those endpoints.
 Since the \emph{Safekeeper} cannot validate the compliance of these policies, this validation must be outsourced to the monitor.
 
 

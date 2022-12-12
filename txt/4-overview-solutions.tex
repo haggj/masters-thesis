@@ -64,9 +64,9 @@ This allows the data owner to encrypt a log for each user separately.
 The core idea is similar to the approach presented for external encryption (\cref{sec:external-encryption}).
 However, this approach integrates the encryption and decryption of logs into the toolchain.
 This is detailed by the following example.
-Assume that a monitor component accesses data of Alice and therefore creates a log.
+Assume that a monitor component accesses data about Alice and creates a log.
 Since Alice needs to be able to access the log, the monitor encrypts the log under her public key and sends it to the server.
-If Alice keeps her private key secret, she is the only entity who can decrypt the log.
+If Alice keeps her private key secret, she is the only entity that can decrypt the log.
 She can download the log, decrypt it, and also share it with Bob by re-encrypting it under his public key.
 The re-encrypted data is then sent to the server where it is stored.
 Bob can finally download and decrypt the log.
@@ -115,7 +115,7 @@ Similar to external encryption, the whole log needs to be encrypted $n$ times if
 Much more problematic, however, is the application of asymmetric cryptography to application data.
 Public-key cryptography relies on intense mathematical computations and should not be used to encrypt large amounts of data directly~\cite[340]{Eckert2018}.
 Eckert justifies this with the fact that asymmetric encryption algorithms are muss less performant than symmetric algorithms.
-Following her argumentation, asymmetric cryptography is therefore usually used to encrypt a symmetric key, which finally encrypts the larger payload with a symmetric scheme.
+Following her argumentation, asymmetric cryptography is usually used to encrypt a symmetric key, which finally encrypts the larger payload with a symmetric scheme.
 Thus, the implemented protocol should avoid the encryption of log data with asymmetric algorithms.
 
 \section{Hybrid encryption}
@@ -193,7 +193,7 @@ If she wants to share the log with Bob, there is no need to re-encrypt any data 
 Rather, she needs to tell the key server that Bob is allowed to access this key.
 Alice can also revoke access to the file by telling the key server that a particular user is not allowed to access the key anymore.
 However, if a malicious user stored the key on his local machine, the revocation does not have any effect.
-The encrypted log in the server should therefore be re-encrypted with a freshly generated key.
+Hence, the encrypted log in the server should be re-encrypted with a freshly generated key.
 This new key is then also uploaded to the key server.
 
 This example shows that all functional requirements can be satisfied when utilizing a key server.
@@ -273,7 +273,7 @@ First of all, the IBBE scheme needs to be instantiated.
 The trust center computes the private keys on behalf of Alice and Bob, based on their email addresses.
 It also distributes the private keys and public system parameters to both users.
 Alice wants to send confidential data to Bob.
-She therefore applies the encryption algorithm, which requires a set of public keys as input.
+She applies the encryption algorithm, which requires a set of public keys as input.
 Then she uploads the cipher to the server.
 This allows Bob to download and decrypt it using his private key.
 To revoke a user, Alice must re-encrypt the data and upload it again to the server.
@@ -357,7 +357,7 @@ This conflicts with the non-functional requirement N3.
 Many modern applications rely on E2EE. 
 This section exemplarily investigates the implemented protocols of Zoom, CloudSeal, and the messaging services Whatsapp and Signal.
 The goal of this section is to demonstrate which E2EE techniques are practically used in modern applications.
-Moreover, those approaches are discussed in the context of the this thesis.
+Moreover, those approaches are discussed in the context of this thesis.
 All the following techniques have in common that they do not rely on a PKI.
 This restriction, however, does not hold in the context of this thesis because the \emph{transparency toolchain} is intended to be realized in enterprises~\cite{Zieglmeier2021}.
 It is assumed that most of them have an established PKI, which simplifies the design of the final protocol.
@@ -386,7 +386,7 @@ Their E2EE relies on proxy re-encryption-based encryption (see \cref{sec:broadca
 CloudSeal can currently not be provided as a web application because it relies on advanced cryptographic algorithms, which are not included in the Web Cryptographic API.
 Thus, their clients are required to run on native operating systems.~\cite{Xiong2012}
 
-As highlighted in \cref{sec:broadcast-proxy}, the construction of proxy re-encryption-based schemes violates the identified requirements of this thesis.
+As highlighted in \cref{sec:broadcast-proxy}, proxy re-encryption-based schemes violate the identified requirements of this thesis.
 CloudSeal is exemplarily listed here because it shows that broadcast encryption schemes are practically implemented to achieve E2EE.
 It is not an option for this thesis because of the limited algorithms provided in the Web Cryptographic API.
 
@@ -402,18 +402,17 @@ The shared secret is used in the Double Ratchet protocol to exchange encrypted m
 The architecture of the Signal protocol establishes sessions between users.
 Encrypted data can be exchanged within those sessions.
 Encryption and decryption algorithms always require the initially established shared secret.
-This shared secret is therefore a long-term key.
-If a hardware device is available, e.g. a smartphone with a secure storage element, the shared secret can be stored securely. 
+The shared secret is a long-term key, which is usually stored in a secure hardware storage.
 When encrypting data for a set of users the plaintext is encrypted for each user separately.~\cite{Marlinspike2014}
 
 Unfortunately, the concept of sessions relying on an initially exchanged private key does not fit the architecture of the toolchain.
-The \emph{Display} component allows users to login to a web application.
+The \emph{Display} component allows users to log in to a web application.
 Within this application, the encrypted data is downloaded and decrypted.
 The sessions used by the Signal protocol require, however, that the exchanged shared key is available for the user during decryption.
 Since the user can log in from arbitrary devices and browsers, the long-term session key needs to be transported among those devices.
 Either the user handles this manually, which conflicts with usability, or a trusted server stores the session key, which conflicts with the notion of E2EE.
 In both cases, the requirements of this thesis cannot be met.
-This can be fixed by implementing the front-end as mobile application.
+This can be fixed by implementing the front-end as a mobile application.
 This way, a secure session could be established among users and the shared secret could be securely stored in dedicated secure hardware storages.
 
 \section{Summary and evaluation}
@@ -450,7 +449,7 @@ Since hybrid encryption relies on standardized and well-researched algorithms, i
 A third option is the implementation based on a key server.
 The log is encrypted with a symmetric scheme and access to the decryption key is maintained by a key server.
 This approach only relies on well-researched symmetric encryption techniques.
-It can therefore be implemented in different programming languages and environments.
+It can be implemented in different programming languages and environments.
 A key server, however, introduces key escrow harming the intended E2EE.
 This is a major drawback compared to hybrid encryption.
 

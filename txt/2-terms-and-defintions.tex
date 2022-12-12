@@ -68,7 +68,7 @@ Thus, combining public key encryption with digital signatures can also ensure th
 \label{sec:jose}
 "JSON Object Signing and Encryption" (JOSE) is a collection of standards defined by IETF~\cite{Barnes2014}.
 It was created because traditional channel-based encryption layers such as IPsec~\cite{IPSEC2011} or TLS~\cite{TLS2018} only protect data between intermediate servers.
-However, those layers of encryption do not protect the data from the intermediate servers itself.
+However, those layers of encryption do not protect the data from the intermediate servers themselves.
 JOSE aims to provide security on the application layer, meaning that application data is embedded into secure objects.
 This protects the data from intermediate servers and enables the construction of end-to-end encrypted protocols.
 The JOSE specifications define three fundamental representations to serve this purpose~\cite{Barnes2014}:
@@ -105,7 +105,7 @@ Two algorithms are required to construct them:
 First, the application data is encrypted using an authenticated symmetric encryption algorithm.
 The key used for this algorithm is then encrypted with a dedicated key-wrapping algorithm.
 The receiver of the token must first apply the key-wrapping algorithm to restore the symmetric key, which then allows the decryption of the application data.
-A JWE token consist of the components listed in \cref{tab:jwe}~\cite{JWE2015}:
+A JWE token consists of the components listed in \cref{tab:jwe}~\cite{JWE2015}:
 
 \begin{table}[ht]
     \centering
@@ -126,7 +126,7 @@ A JWE token consist of the components listed in \cref{tab:jwe}~\cite{JWE2015}:
 
 \section{Key escrow}
 \label{sec:key-escrow}
-Key escrow refers to the scenario in which cryptographic keys of users are known by a server in the system~\cite{Gentry2003}.
+Key escrow refers to the scenario in which the cryptographic keys of users are known by a server in the system~\cite{Gentry2003}.
 Some cryptographic schemes rely on a trusted key generation center that computes and distributes keys for all participants~\cite{Sakai2007, Bethencourt2007}.
 This allows the center to access the private keys of all users meaning it can decrypt and sign arbitrary data.
 Key escrow can be beneficial in certain scenarios, e.g. to provide access to personal keys during vacation substitutions~\cite{Hagg2022}.
@@ -153,7 +153,7 @@ The difference between the classical and current understanding of E2EE can be de
 \subsection{Adversary models}
 This section details the security guarantees E2EE can provide by considering different adversaries.
 This differentiation shows that E2EE can be motivated by different attackers.
-It lays the foundation for the attacker models employed in this thesis because it clarifies which attackers end-to-end encrypted systems can defend against.
+It lays the foundation for the attacker models employed in this thesis because it clarifies which attacker's end-to-end encrypted systems can defend against.
 
 The above NIST definition states that E2EE protects data passing an untrusted network.
 Within the network, the communicating entities do not have any control over their data.
@@ -204,7 +204,7 @@ While this is technically true, it does not meet the common understanding of end
 \subsection{E2EE in this work}
 This section details the understanding of E2EE in the context of this thesis based on the above considerations.
 Following the argumentation of~\citeauthor{Hale2022}~\cite{Hale2022}, E2EE is understood as a defense against an active adversary.
-The attacker not only observes the data, but also tries to modify existing data or inserts forged data.
+The attacker not only observes the data but also tries to modify existing data or inserts forged data.
 Any defense against this attacker requires both, confidentiality and mutual authenticity.
 \paragraph{Confidentiality}
 The exchanged data needs to be encrypted. 
@@ -222,7 +222,7 @@ Otherwise, each untrusted entity can access the exchanged data and E2EE is broke
     This enables receiver authenticity.
 \paragraph{Sender authenticity} 
     The receiver needs to be sure that the message was indeed sent by the assumed sender.
-    Specifically, the receiver must ensure that the message was not created from a unknown entity.
+    Specifically, the receiver must ensure that the message was not created by an unknown entity.
     This requirement is crucial to defend against man-in-the-middle attackers.
     If a receiver cannot validate the origin of the message, an attacker could simply impersonate the sender and encrypt fake data under the public key of the receiver.
     Digitally signed messages ensure that a message was indeed sent by the claimed sender.

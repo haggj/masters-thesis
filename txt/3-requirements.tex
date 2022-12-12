@@ -23,7 +23,7 @@ Thus, this chapter closely follows the terms and methodologies proposed by~\cite
 The authors fundamentally differentiate between functional, non-functional, and security requirements, which are extracted from the respective security goals.
 Goals are rather abstract and vague formulations of what the system should achieve. 
 They are refined into more detailed requirements for two reasons~\cite{Fabian2010}.
-First, verifiable requirements allow comparing different approaches.
+First, verifiable requirements make it possible to compare different approaches.
 This leads to a reasonable choice from the solution space.
 Second, they allow the evaluation of the implemented solution.
 
@@ -116,13 +116,13 @@ The implemented protocol should defend against curious servers.
 
 \subsection{Logs cannot be forwarded to unintended receivers}
 
-The functional requirements demands that only the data owner of a log is allowed to share the log.
+The functional requirements demand that only the data owner of a log is allowed to share the log.
 No other user should be able to share the log in the name of the data owner.
 Whenever a user receives an encrypted log it needs to be sure that the originator of the cipher is the data owner of the encrypted log (sender authenticity).
 Moreover, the receiver also needs to be sure that the data owner intended to share the log with him or her.
 
 The following attack motivates this requirement.
-In literature it is referred to as surreptitious forwarding attack~\cite{Davis2001}.
+In literature, it is referred to as surreptitious forwarding attack~\cite{Davis2001}.
 Assume Alice to be a data owner and Eve to be a malicious user.
 Furthermore, assume that Alice shares a log with Eve.
 Eve has valid access to the log and can decrypt the encrypted log.
@@ -176,15 +176,15 @@ This enables secure and performant cryptography within the browser~\cite{Halpin2
 Unfortunately, it is limited to specific primitives. 
 Advanced encryption schemes, which are currently under research, are not defined and available in the API yet.
 To ensure the portability of the toolchain, the implementation of this thesis should thus only rely on primitives defined by the Web Cryptographic API.
-This is specifically necessary because the \emph{Display} component is realized as web application.
+This is specifically necessary because the \emph{Display} component is realized as a web application.
 
 \subsection{Usability}
 A trade-off between security and usability usually needs to be resolved during system design~\cite{Braz2007}.
 In the context of this thesis, however, the complex security is a key driver to improving usability.
 This is motivated by the principle of least effort, which states that humans will spend the least amount of work to get a task done~\cite{Levenson2018}.
-If the user is asked to perform complex security tasks, he therefore tends to neglect them.
-By integrating the error-prone cryptographic tasks into the application, the usability can be improved because it simplifies the process for users.
-This also strengthens the security because integrated mechanisms can be well tested.
+If the user is asked to perform complex security tasks, he tends to neglect them.
+By integrating error-prone cryptographic tasks into the application, the usability can be improved because it simplifies the process for users.
+This also strengthens security because integrated mechanisms can be tested well.
 An optimal solution should integrate all cryptographic tasks into the toolchain.
 However, it comes with the cost of increased design and implementation efforts.
 

@@ -19,7 +19,7 @@ Please see \cref{functional-requriements} for details about those functional req
 
 To ensure that data owners can always access their logs, the protocol relies on three mechanisms:
 First, the monitor must encrypt a new log only for the data owner.
-A log is therefore accessible for the data owner upon creation.
+Hence, a log is accessible for the data owner upon creation.
 Second, whenever the data owner shares or revokes access to a log, it must include its own identity in the set of authorized users.
 Finally, the server must ensure that no other user besides the data owner can modify encrypted logs.
 This guarantees that the data owner is always able to download and decrypt its logs.
@@ -59,7 +59,7 @@ They argue why the established security mechanisms resist them.
 The security of the protocol relies on three fundamental assumptions.
 If one of those assumptions is violated, the protocol is considered insecure.
 
-First, it its assumed that the protocol has access to a secure PKI.
+First, it is assumed that the protocol has access to a secure PKI.
 The PKI assigns the identities of users to their public keys via certificates.
 The user must have exclusive access to his private keys.
 The public keys are distributed via certificates, which are signed by a trusted certificate authority.
@@ -84,7 +84,7 @@ Both, the monitor creating a log and the data owner sharing a log must encrypt t
 The server only has access to the JWE token created by the encryption algorithm.
 This JWE token relies on hybrid encryption:
 First, a symmetric key $k$ is randomly generated and the data is encrypted via \verb|A256GCM|.
-This is an authenticated\footnote{Note that this authentication does not guarantee the authenticity of the sending user. This is because in a symmetric encryption scheme the authenticity is always bound the knowledge of the symmetric key. Since multiple receivers might have access to the symmetric key, this authentication only ensures that any of those users generated the cipher. To ensure the authenticity of the sending user, the protocol must include a digital signature.~\cite[315]{Eckert2018}} symmetric encryption algorithm based on AES~\cite{JWA2015}.
+This is an authenticated\footnote{Note that this authentication does not guarantee the authenticity of the sending user. This is because in a symmetric encryption scheme the authenticity is always bound to the knowledge of the symmetric key. Since multiple receivers might have access to the symmetric key, this authentication only ensures that any of those users generated the cipher. To ensure the authenticity of the sending user, the protocol must include a digital signature.~\cite[315]{Eckert2018}} symmetric encryption algorithm based on AES~\cite{JWA2015}.
 Secondly, this symmetric key $k$ is encrypted for each receiver using \verb|ECDH-ES+A256KW|~\cite{JWA2015}.
 This key-wrapping algorithm establishes an ephemeral key between two users.
 This ephemeral key is finally used to encrypt the symmetric key $k$.
@@ -97,18 +97,18 @@ Eve can compute an ephemeral key only if he has access to either the ephemeral p
 However, those private keys must be kept secret.
 If Eve wants to decrypt the log, he must either break the encryption algorithms or access a private key.
 This, however, contradicts the assumptions.
-If Eve can break the encryption, the used encryption algorithm it is not secure.
+If Eve can break the encryption, the used encryption algorithm is not secure.
 If Eve can access a private key of a user, the PKI is not secure.
 This leads to the conclusion that the malicious database admin Eve cannot access decrypted logs.
 Only if he was explicitly authorized, he can restore the symmetric key $k$, which allows the decryption of a log.
 
 Note that a curious server has access to the metadata of an encrypted log.
 This metadata consists of the identity of the data owner, which ensures only authorized users can update the stored log, and the identities of the recipients, which ensures that the \emph{Safekeeper} can distribute the logs to the correct users.
-Although intermediate servers cannot access the log data itself anymore, the metadata yields the information which users have access to which log.
+Although intermediate servers cannot access the log data itself anymore, the metadata yields the information on which users have access to which log.
 This information could be subject to a metadata analysis attack~\cite{Greschbach2012,Mayer2016}.
 If the underlying single-sign-on server supports pseudonyms for users, however, this attack could be made significantly more difficult.
 Pseudonyms could be assigned to the users participating in the system.
-Instead of providing an unique identity within the metadata, a random pseudonym of the user could be chosen.
+Instead of providing a unique identity within the metadata, a random pseudonym of the user could be chosen.
 Assuming that the intermediate server cannot link pseudonyms back to users, this would make the metadata analysis pointless.
 
 \subsection{Surreptitious forwarding}
@@ -144,7 +144,7 @@ This modification, however, makes his attack pointless.
 Eve does not want to introduce faked logs.
 He wants to forward existing logs to unintended receivers.
 Moreover, this requires Eve to be a valid monitor because only they are allowed to sign logs.
-Second, Eve could try to forge a signature of the data owner Alice.
+Second, Eve could try to forge the signature of the data owner Alice.
 This does not require him to modify the log.
 Rather, Eve keeps the existing log and creates a \emph{shared log} that includes Bob as a valid receiver.
 He also specifies Alice as the creator of the \emph{shared log}.
@@ -197,7 +197,7 @@ This section contains performance evaluations of the provided implementations.
 \subsection{Encryption}
 \label{sec:evaluation-perf-enc}
 As elaborated in the previous chapters, the designed and implemented protocol is based on hybrid encryption.
-Logs can therefore  be encrypted for multiple recipients.
+Hence, Logs can be encrypted for multiple recipients.
 The symmetric key $k$, which encrypts the log, must be encrypted for each receiver.
 This implies that if a log is shared with $n$ users, the key $k$ must be encrypted $n$ times.
 Hence, the encryption duration is assumed to increase linearly with the number of recipients.
@@ -260,7 +260,7 @@ This shows that a data owner can share his logs with up to 170 users without not
 \subsection{Toolchain}
 \label{sec:evaluation-perf-toolchain}
 The \emph{transparency toolchain} was adopted to support encrypted logs.
-Once a user logs in to the \emph{Display} component, all encrypted logs of this particular user are fetched from the \emph{Safekeeper}, decrypted and visualized.
+Once a user logs in to the \emph{Display} component, all encrypted logs of this particular user are fetched from the \emph{Safekeeper}, decrypted, and visualized.
 Compared to the legacy solution, this implementation introduces an additional encryption layer.
 It is assumed that this degrades the performance of fetching and visualizing logs.
 This section provides measurements of 
@@ -273,15 +273,15 @@ Those measurements illustrate the performance differences of the toolchain when 
 
 The measurements were conducted within the \emph{Display} and the \emph{Safekeeper} component.
 They reflect the passed time from starting an API call to fetch logs until those logs are ready for visualization.
-This time can be divided into three sections: Database queries, server computation time and client computation time.
+This time can be divided into three sections: Database queries, server computation time, and client computation time.
 First, the database queries reflect the time the server needs to extract the logs and other information from the database.
 Second, the server computation time is the time the server needs to resolve the API call besides the time for querying the database.
-For example, the legacy toolchain computes some metadata data over the returned logs and includes this data into the response.
+For example, the legacy toolchain computes some metadata data over the returned logs and includes this data in the response.
 Third, the client computation time is the time needed by the client to process the fetched data until it is available for visualization.
-For example, the overview data must be computed by the front-end in the context encrypted logs.
+For example, the overview data must be computed by the front-end in the context of encrypted logs.
 This is because this metadata can only be calculated once the logs are decrypted.
 Moreover, the client computation time includes all tasks that are performed once the API call has finished.
-The time for decrypting logs is therefore also part of the client computation time.
+The time for decrypting logs is also part of the client computation time.
 
 The database queries are measured directly within the \emph{Safekeeper} component.
 The \emph{Display} component measures the time needed for the entire API call.
@@ -290,17 +290,17 @@ The client computation time is measured directly within the \emph{Display} compo
 
 To provide resilient measurements, the database always contains $1000$ logs for the logged-in user.
 The number of fetched and visualized logs changes during different tests.
-The test are run for $1$, $10$ and $100$ logs.
-For a fixed number of logs a test is repeated $100$ times.
+The tests run for $1$, $10$, and $100$ logs.
+For a fixed number of logs, a test is repeated $100$ times.
 The presented numbers are the averages over all runs.
-Each test is run against the legacy toolchain and against the updated toolchain.
-The tests were executed within the development environment, which was started using \verb|docker compose|.
+Each test is run against the legacy toolchain and the updated toolchain.
+The tests were executed within the development environment, which was started using \verb|docker-compose|.
 They were executed on a machine running \emph{macOS Monterey} with an \emph{Apple M1} ARM64 CPU and 16 GB RAM.
 
 
 \subsubsection{Results}
 \cref{fig:perf-unencrypted} shows the results of the legacy toolchain.
-Overall, the toolchain requires on average $142ms$ to fetch a single log, $148ms$ to fetch ten logs and $243ms$ to fetch one hundred logs.
+Overall, the toolchain requires on average $142ms$ to fetch a single log, $148ms$ to fetch ten logs, and $243ms$ to fetch one hundred logs.
 The server computation time increases when multiple logs are fetched.
 This is expected because the server computation time includes the transmission delay over the network.
 Furthermore, one can observe that the client computation time is very fast.
@@ -323,8 +323,8 @@ This is expected since the database must resolve more data if more logs are requ
 \end{figure}
 
 \cref{fig:perf-encrypted} shows the results of the updated toolchain including the encryption layer.
-Overall, the updated toolchain requires on average $77ms$ to fetch a single log, $106ms$ to fetch ten logs and $298ms$ to fetch one hundred logs.
-Those results are not expected because for a single log and for ten logs the encrypted toolchain is faster than the legacy toolchain.
+Overall, the updated toolchain requires on average $77ms$ to fetch a single log, $106ms$ to fetch ten logs, and $298ms$ to fetch one hundred logs.
+Those results are not expected because for a single log and ten logs the encrypted toolchain is faster than the legacy toolchain.
 The reason for this lies in the pre-computation performed by the legacy toolchain, which depends on multiple database queries.
 Moreover, the updated toolchain employs a simplified database design consisting of a single table that stores the encrypted logs.
 As described in ~\cref{sec:implemenation-safekeeper}, this table contains two JSON fields.
@@ -333,7 +333,7 @@ Querying the logs from this table is more efficient than querying logs in the ol
 Thus, the aggregated duration of all database queries is smaller in the updated toolchain compared to the legacy version.
 \cref{fig:perf-encrypted} illustrates that server computation times increase if multiple logs are fetched.
 Again, this is expected because it contains the transmission delay of the data sent over the network.
-The more data is transferred, the longer is the transmission delay.
+The more data is transferred, the longer the transmission delay.
 Compared to the legacy toolchain, the server computation time has increased.
 The size of an encrypted log is about $1600$ bytes.
 The size of an unencrypted log is $700$ bytes on average.
@@ -345,15 +345,15 @@ Compared to the very short processing times in the legacy version, this is a sig
 There are two reasons for this.
 First, the received logs must be decrypted.
 Second, the decrypted logs are analyzed to provide metadata for the visualization in the front-end.
-In the legacy version this was computed by the server.
+In the legacy version, this was computed by the server.
 Since the log data must be decrypted to compute this metadata, however, this computation was shifted to the client.
-The decryption of logs and their processing is therefore considered to be the bottleneck of the updated toolchain.
+Hence, the decryption of logs and their processing is considered to be the bottleneck of the updated toolchain.
 If $100$ logs are fetched from the server, the updated toolchain is $55ms$ slower than the legacy toolchain.
 This is a relative difference of $20\%$.
 
 This analysis delivers two major findings.
 First, the updated toolchain enables faster database queries due to the simplified database scheme.
-This implies that the legacy version is even slower if a small amount of logs are requested.
+This implies that the legacy version is even slower if a small number of logs are requested.
 Second, the handling of encrypted logs introduces a significant overhead on the client side if many logs are fetched.
 This bottleneck should be avoided by not fetching more than $100$ logs at once.
 Note that the front-end makes use of pagination.

@@ -24,10 +24,10 @@ A malicious data owner cannot forge logs because each log must be cryptographica
 The protocol was implemented in the programming languages Go, Python and Typescript.
 For each of those, a library was developed, which can be used to sign, encrypt and decrypt logs.
 These libraries enable the intended functionality of a multi-party E2EE protocol.
-Moreover, each library is tested, documented, and was published to the respective package indexes.
+Moreover, each library is tested, documented, and published to the respective package indexes.
 
 The existing toolchain was adapted to enable the functionality of sharing encrypted logs.
-The implemented protocol was therefore included in the toolchain.
+The implemented protocol was included in the toolchain.
 A proof-of-concept environment demonstrates how an established PKI may be used to instantiate the protocol.
 This verifies that the protocol can be used in practice to share encrypted logs among users.
 From the perspective of a user, access to a log can be shared and revoked.
@@ -37,7 +37,7 @@ The evaluation of the designed protocol verifies that the functional requirement
 Furthermore, the security evaluation shows that the protocol can be considered secure under two assumptions.
 First, a secure PKI must be available.
 Second, the JOSE standard must describe secure algorithms.
-The performance evaluation shows that protocol introduces overhead due to the added encryption layer.
+The performance evaluation shows that the protocol introduces overhead due to the added encryption layer.
 The performed measurements verify that data can be encrypted for up to 170 users without any human-noticeable delay.
 If the front-end restricts the page size of the fetched logs to 100 logs, the introduced overhead for decrypting and processing the data is $55ms$.
 This refers to a relative difference of $20\%$.
@@ -54,22 +54,22 @@ This supports data owners aiming to legacy prosecute illegal data accesses.
 This thesis is designed to defend against three types of attacks.
 They were derived from potentially malicious users participating in the sharing process of encrypted logs.
 This, however, is not an exhaustive list.
-The performed security analysis and evaluation does not guarantee the general security of the protocol.
-In particular, a third party analysis of the applied techniques could further verify their security.
+The performed security analysis does not guarantee the general security of the protocol.
+In particular, a third-party analysis of the applied techniques could further verify their security.
 This could also include sophisticated mathematical proofs of the protocol as introduced by~\cite{Katz2020}.   
-The security evaluation applied in this thesis at least indicates that the protocol can resist against the assumed attackers if the respective assumptions are true.
+The security evaluation applied in this thesis at least indicates that the protocol can resist the assumed attackers if the respective assumptions are true.
 
-The protocol tries to encrypt the logs because it might contain sensitive information.
+The protocol tries to encrypt the logs because they might contain sensitive information.
 However, the encrypted logs also reveal metadata to ensure that the encrypted data can be associated with users by intermediate servers.
 This metadata could be subject to metadata analysis attacks, which might yield interesting information for an attacker.
-Future work could investigate if this is a realistic threat.
+Future work could investigate if this is a real threat.
 The approach of encrypting logs still improves the current situation because it keeps the content of logs confidential.
 
-This thesis assumes a secure PKI meaning that nobody has knowledge about the private keys of the users.
+This thesis assumes a secure PKI meaning that nobody knows the private keys of the users.
 This is a strong assumption.
 If the PKI is established by a trusted entity knowing the private keys of the users, the strict interpretation of E2EE is broken.
 This is because in such a case not only the authorized users can decrypt the logs.
 The knowledge of the private keys allows the trusted entity to decrypt and sign arbitrary data.
-The protocol might be improved in future for scenarios where the assumption of a secure PKI does not hold.
+The protocol might be improved in the future for scenarios where the assumption of a secure PKI does not hold.
 
 \end{document}

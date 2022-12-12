@@ -80,7 +80,7 @@ To ensure that the monitor does not specify other unintended users, validation c
         Alice downloads and decrypts the log.
         Alice decides to share the log with Bob.
         Therefore, Alice re-encrypts the log and updates it in the \emph{Safekeeper} component.
-        Revoking Bob's access requires Alice to re-encrypt the log while omitting Bob in the set of recipients.
+        Revoking Bob's access requires Alice to re-encrypt the log while omitting Bob from the set of recipients.
     }
     \label{fig:protocol-overview}
 \end{figure}
@@ -142,7 +142,7 @@ Since the raw cipher does not tell her which logs are intended for her, Alice mu
 This is very inefficient and requires a lot of computational power.
 To avoid this, the set of recipients can be attached as metadata to the encrypted log.
 
-The second problems occurs when Alice tries to share access to her log.
+The second problem occurs when Alice tries to share access to her log.
 Consider Alice to be a data owner.
 Alice wants to share her log with Bob.
 Before the sharing process starts, the encrypted log is stored on the server.
@@ -205,7 +205,7 @@ A log is signed with the algorithm ES256, which relies on ECDSA and SHA-256.
 It is defined by the "JSON Web Algorithm" specification~\cite{JWA2015}.
 The log is later used as input for the encryption algorithm.
 This construction is intended to resolve security requirement S3 because it allows decrypting users to verify if the provided log was indeed created by the claimed monitor.
-This resists the attack of a malicious data owners trying to forge logs.
+This resists the attack of a malicious data owner trying to forge logs.
 
 \section{Encrypting logs}\label{sec:encrypting}
 
@@ -235,7 +235,7 @@ The final token is computed by passing the encoded shared log as plaintext into 
 The identities of recipients and the identity of the owner are additionally passed as metadata into the protected header of the JWE token.
 The choice of used algorithms to encrypt the data implies hybrid encryption.
 The plaintext is encrypted with the authenticated encryption algorithm \verb|A256GCM|.
-This is an symmetric encryption algorithm based on 256-bit AES using the Galois/Counter-Mode~\cite{JWA2015}.
+This is a symmetric encryption algorithm based on 256-bit AES using the Galois/Counter-Mode~\cite{JWA2015}.
 The used symmetric key must then be encrypted for each intended recipient.
 This allows the distribution of the key to all recipients.
 It is realized using the key-wrapping algorithm \verb|ECDH-ES+A256KW|.
@@ -274,7 +274,7 @@ This is also illustrated in \cref{fig:key_wrapping}.
     If both are kept secret, it is assumed to be computationally infeasible to compute the shared secret~\cite[438]{Eckert2018}.
     \item 
     The shared secret, which is the result of the Diffie-Hellman key agreement protocol, is used as input for a key derivation function.
-    This function computes a ephemeral key between the sender and the receiver.
+    This function computes an ephemeral key between the sender and the receiver.
     \item 
     Finally, this ephemeral key is used as key to encrypt the symmetric key $k$ for the receiver.
     This encryption uses the symmetric scheme AES.
