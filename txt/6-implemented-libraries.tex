@@ -69,7 +69,7 @@ The public keys of all users are assumed to be signed by this certificate author
 The function \verb|importRemoteUser| verifies if the provided public keys are signed accordingly.
 
 Once the \verb|ItCrypto| object is instantiated, a user needs to log in.
-A logged-in in user is represented by an \verb|AuthenticatedUser| object.
+A logged-in user is represented by an \verb|AuthenticatedUser| object.
 It extends the \verb|RemoteUser| object because it additionally provides the private keys of the user.
 This allows the logged-in user to sign and decrypt data.
 A login is realized by calling the \verb|login| method on the \verb|ItCrypto| object.
