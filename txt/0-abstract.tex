@@ -5,9 +5,9 @@
 \chapter*{\myAbstractTitle}
 
 The concept of \emph{Inverse Transparency} aims to ensure data sovereignty while allowing the sensible usage of sensitive data.
-The \emph{transaprency toolchain} supports this approach and provides a technical framework.
+The \emph{transparency toolchain} supports this approach and provides a technical framework.
 It ensures that all data accesses are transparently logged.
-This thesis contributes to the toolchain by designing and implementing an end-to-end encrypted protocol which allows users share and revoke access to their logs.
+This thesis contributes to the toolchain by designing and implementing an end-to-end encrypted protocol which allows users share and revoke access to their encrypted logs.
 A survey of potential encryption techniques turns out that the elaborated requirements are fulfilled best when relying on hybrid encryption.
 The designed protocol was implemented as a cryptographic library which is available in Go, Python and Typescript.
 It assumes that a secure PKI is available and relies on the "JSON Web Encryption and Signing" standard.
@@ -15,7 +15,7 @@ It assumes that a secure PKI is available and relies on the "JSON Web Encryption
 The toolchain was adopted to handle encrypted logs.
 The performance evaluation shows that the encryption layer introduces an acceptable overhead in the toolchain.
 Logs can be shared for up to 170 users without noticing a computation delay.
-If 100 encrypted logs are fetched from the server the introduced overhead is $55ms$.
-This shows that the designed protocol can be used in practice to share encrypted logs within the \emph{transaprency toolchain}.
+If 100 encrypted logs are fetched from the server, the introduced overhead is $55ms$.
+This shows that the designed protocol can be used in practice to share encrypted logs within the \emph{transparency toolchain}.
 
 \end{document}

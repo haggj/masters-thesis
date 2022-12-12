@@ -26,7 +26,7 @@ For each of those, a library was developed, which can be used to sign, encrypt a
 These libraries enable the intended functionality of a multi-party E2EE protocol.
 Moreover, each library is tested, documented, and was published to the respective package indexes.
 
-The existing toolchain was adopted to enable the functionality of sharing encrypted logs.
+The existing toolchain was adapted to enable the functionality of sharing encrypted logs.
 The implemented protocol was therefore included in the toolchain.
 A proof-of-concept environment demonstrates how an established PKI may be used to instantiate the protocol.
 This verifies that the protocol can be used in practice to share encrypted logs among users.
@@ -37,14 +37,16 @@ The evaluation of the designed protocol verifies that the functional requirement
 Furthermore, the security evaluation shows that the protocol can be considered secure under two assumptions.
 First, a secure PKI must be available.
 Second, the JOSE standard must describe secure algorithms.
-The performance evaluation verifies that protocol introduces overhead to the toolchain because it adds an encryption layer.
-The measurements show that data can be encrypted for up to 170 users without any noticeable delay.
+The performance evaluation shows that protocol introduces overhead due to the added encryption layer.
+The performed measurements verify that data can be encrypted for up to 170 users without any human-noticeable delay.
 If the front-end restricts the page size of the fetched logs to 100 logs, the introduced overhead for decrypting and processing the data is $55ms$.
 This refers to a relative difference of $20\%$.
-This shows that the introduced overhead is kept within reasonable limits and can be handled in practice.
+This indicates that the introduced overhead is kept within reasonable limits and can be handled in practice.
 
-In conclusion, the designed and implemented protocol introduces end-to-end encrypted logs within the toolchain while data owners can share and revoke access to their encrypted logs.
-This aims to overcome the limitations of the current toolchain by protecting the confidentiality of logs and supporting data owners to legally prosecute illegal data accesses.
+In conclusion, the designed and implemented protocol maintains end-to-end encrypted logs with acceptable performance overheads.
+This protects the confidentiality of the stored logging data.
+The protocol also allows to share and revoke access to logs.
+This supports data owners aiming to legacy prosecute illegal data accesses.
 
 
 \section{Limitations and future work}
@@ -61,13 +63,13 @@ The protocol tries to encrypt the logs because it might contain sensitive inform
 However, the encrypted logs also reveal metadata to ensure that the encrypted data can be associated with users by intermediate servers.
 This metadata could be subject to metadata analysis attacks, which might yield interesting information for an attacker.
 Future work could investigate if this is a realistic threat.
-The approach of encrypting the logs still improves the current situation because it keeps the content of each log confidential.
+The approach of encrypting logs still improves the current situation because it keeps the content of logs confidential.
 
 This thesis assumes a secure PKI meaning that nobody has knowledge about the private keys of the users.
 This is a strong assumption.
 If the PKI is established by a trusted entity knowing the private keys of the users, the strict interpretation of E2EE is broken.
 This is because in such a case not only the authorized users can decrypt the logs.
 The knowledge of the private keys allows the trusted entity to decrypt and sign arbitrary data.
-The protocol might be improved in future for scenarios where the assumption of a secure PKI is too strong and does not hold.
+The protocol might be improved in future for scenarios where the assumption of a secure PKI does not hold.
 
 \end{document}

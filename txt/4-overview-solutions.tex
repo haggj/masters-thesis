@@ -155,7 +155,7 @@ To make the key available to Bob and Charlie, the key is encrypted for both usin
 Alice can also revoke access to the log by re-encrypting it and updating it on the server. 
 
 \begin{figure}[ht]
-    \includegraphics[scale=0.21]{../img/04/hybrid_encryption.png}
+    \includegraphics[scale=0.23]{../img/04/hybrid_encryption.png}
     \centering
     \caption[Structure encrypted log]{Structure of an encrypted log using hybrid encryption. The cipher contains the encrypted log and an encrypted key for each recipient.}
     \label{fig:hybrid_encryption}
@@ -394,10 +394,10 @@ It is not an option for this thesis because of the limited algorithms provided i
 Whatsapp\footnote{\url{https://whatsapp.com/}} and Signal\footnote{\url{https://signal.org/}} are two popular instant messaging services.
 They claim to implement E2EE.
 Both services rely on the Signal protocol.
-The Signal protocol is a combination of the X3DH protocol~\cite{Marlinspike2016} and the Double Ratched protocol~\cite{Perrin2016}.
+The Signal protocol is a combination of the X3DH protocol~\cite{Marlinspike2016} and the Double Ratchet protocol~\cite{Perrin2016}.
 The X3DH protocol establishes a shared secret between two authenticated users.
 This effectively allows the initialization of a secure channel between the users.
-The shared secret is used in the Double Ratched protocol to exchange encrypted messages.~\cite{Marlinspike2016, Perrin2016}
+The shared secret is used in the Double Ratchet protocol to exchange encrypted messages.~\cite{Marlinspike2016, Perrin2016}
 
 The architecture of the Signal protocol establishes sessions between users.
 Encrypted data can be exchanged within those sessions.
