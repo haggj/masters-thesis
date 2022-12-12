@@ -62,7 +62,7 @@ For details and the rationales of each requirement please have a look at the cor
 
 \section{Functional requirements}\label{functional-requriements}
 Functional requirements describe \enquote{what the system does}~\cite[11]{Mylopoulos1992}.
-In the context of this thesis, they define the accessibility of logs in the \emph{Inverse Transparency} toolchain.
+In the context of this thesis, they define the accessibility of logs in the \emph{transparency toolchain}.
 Having access to a log effectively means that a user can decrypt the encrypted log.
 The following functional requirements were identified:
 \begin{itemize}
@@ -91,7 +91,7 @@ The specified circumstances elaborate additional conditions that affect the secu
 The following elaboration is intended to refine the security goals into concrete security requirements.
 
 \subsection{Logs can only be decrypted by authorized users}
-In the context of the \emph{Inverse Transparency} toolchain, the intended end-to-end encryption should ensure that only authorized users can access logs.
+In the context of the \emph{transparency toolchain}, the intended end-to-end encryption should ensure that only authorized users can access logs.
 The passed log must be encrypted and only authorized users can decrypt it.
 Thus, this requirement demands confidentiality and receiver authenticity (details in ~\cref{sec:end-to-end}).
 As specified by the functional requirements, the data owner can always decrypt the log.
@@ -168,13 +168,13 @@ This implies that a compromised trusted server undermines the security of the wh
 To reduce the risk and attack surface, the toolchain should rely on a minimal number of trusted entities.
 
 \subsection{Standardized cryptographic algorithms}
-The currently implemented front-end of the \emph{Inverse Transparency} toolchain runs as a web application~\cite{Zieglmeier2021}. 
+The currently implemented front-end of the \emph{transparency toolchain} runs as a web application~\cite{Zieglmeier2021}. 
 The Web Cryptographic API~\cite{WebCryptoApi2017} defines an interface to perform cryptographic operations within browsers. 
 It \enquote{exposes already existing and often heavily verified cryptographic functionality to Web application developers through a standardized interface}~\cite[959]{Halpin2014}.
 This enables secure and performant cryptography within the browser~\cite{Halpin2014}.
 Unfortunately, it is limited to specific primitives. 
 Advanced encryption schemes, which are currently under research, are not defined and available in the API yet.
-To ensure the portability of the \emph{Inverse Transparency} toolchain, the implementation of this thesis should thus only rely on primitives defined by the Web Cryptographic API.
+To ensure the portability of the toolchain, the implementation of this thesis should thus only rely on primitives defined by the Web Cryptographic API.
 This is specifically necessary because the \emph{Display} component is realized as web application.
 
 \subsection{Usability}

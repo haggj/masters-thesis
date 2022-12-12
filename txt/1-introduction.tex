@@ -20,8 +20,8 @@ Only explicitly allowed data accesses are valid and succeed.
 This enables true data sovereignty because any harmful data usage can be discovered and may therefore be legally prosecuted.
 
 \citeauthor{Zieglmeier2021}~\cite{Zieglmeier2021} proposed a technical framework supporting this concept.
-In their work, they implemented a proof-of-concept toolchain.
-\cref{fig:toolchain} is taken from their publication and shows the major components of the approach.
+In their work, they implemented a proof-of-concept \emph{transparency toolchain}.
+\cref{fig:toolchain} is taken from their publication and shows the major components of their toolchain.
 It consists of two actors: The data owner and the data consumer.
 The latter aims to access some sensitive data of the former.
 Each data access is tracked by a monitor component (\emph{Monitor}), which sends the log to a dedicated server (\emph{Safekeeper}).
@@ -61,6 +61,7 @@ To avoid unintended access to the stored logs the data passing those servers sho
 \section{Contribution}
 
 This thesis contributes to the toolchain by designing and implementing an end-to-end encrypted protocol that allows data owners to share and revoke access to their logs.
+
 Specifically, the thesis 
 (1)~designs a protocol based on a survey of multi-party encryption techniques
 (2)~implements the designed protocol and publishes it for the programming languages Typescript, Go, and Python
@@ -68,6 +69,20 @@ Specifically, the thesis
 (4)~evaluates the implemented protocol in terms of functionality, security and performance.
 
 \section{Outline}
-\todo{Outline}
+This initial chapter motivates the thesis.
+\cref{chap:background} covers the theoretical and technical background this thesis is based on.
+It includes fundamental cryptographic concepts and specifies the understanding of end-to-end encryption.
+The requirements of the intended protocol are investigated in \cref{chap:requirements}.
+Functional and non-functional requirements are supplemented by security requirements, which introduce three attackers the protocol must defend against.
+\cref{chap:overview} discusses different encryption techniques that can be used to implement those requirements.
+It also investigates modern end-to-end encrypted protocols and relates them to the concept proposed by this thesis.
+The theoretical design of the protocol is detailed in \cref{chap:design}.
+It specifies how logs are signed, encrypted, and decrypted by the protocol to fullfil the given requirements.
+\cref{chap:implementation} describes the cryptographic libraries implemented to realize the designed protocol.
+It also elaborates on the changes made in the existing toolchain to support encrypted logs.
+Given the requirements and the implementation, \cref{chap:evaluation} evaluates the protocol in terms of functionality, security and performance.
+Finally, \cref{chap:conclusion} summarizes the major results of the thesis and concludes the thesis. 
+It also discusses its limitations.
+
 
 \end{document}

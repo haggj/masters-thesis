@@ -30,7 +30,7 @@ The acronym \emph{it-crypto} stands for \emph{Inverse Transparency} cryptography
     Py-it-crypto & Python               & \href{https://github.com/haggj/py-it-crypto}{haggj/py-it-crypto} & \href{https://pypi.org/project/py-it-crypto/}{PyPI}          \\ \hline
     Ts-it-crypto & Typescript           & \href{https://github.com/haggj/ts-it-crypto}{haggj/ts-it-crypto} & \href{https://www.npmjs.com/package/ts-it-crypto}{NPM}       \\ \hline
     \end{tabular}
-    \caption[Overview implemented libraries]{Overview and links of the implemented libraries to handle encrypted logs.}
+    \caption[Implemented libraries]{Overview and links of the implemented cryptographic libraries.}
 \end{table}
 
 All three libraries are fully tested and compatible with each other.
@@ -78,7 +78,7 @@ the \verb|ItCrypto| object becomes fully functional if a user is logged-in.
 This allows the user to create, encrypt, and decrypt logs using the provided keys.
 
 \definecolor{codegreen}{rgb}{0,0.6,0}
-\begin{lstlisting}[basicstyle=\small, label=lst:pseudocode,float,floatplacement=tbp, language=Java, caption={[Pseudocode library usage]Pseudocode of creating, encrypting, and decrypting logs using the provided libraries.}, morekeywords={RemoteUser, var, assert}, commentstyle=\color{codegreen}]
+\begin{lstlisting}[basicstyle=\small, label=lst:pseudocode,float,floatplacement=tbp, language=Java, caption={[Library usage]Pseudocode of creating, encrypting, and decrypting logs using the provided libraries.}, morekeywords={RemoteUser, var, assert}, commentstyle=\color{codegreen}]
 RemoteUser fetchUser(string identity){
     /*
     Fetch keys from the server and check if a user 
@@ -271,24 +271,28 @@ To perform the necessary cryptographic actions, it integrates the \emph{ts-it-cr
 \label{sec:implemenation-safekeeper}
 The \emph{Safekeeper} component is responsible to store logs.
 It was adopted to handle encrypted data.
-As described in \cref{sec:metadata}, an encrypted log contains metadata to support intermediate servers.
+As described in \cref{sec:metadata}, an encrypted log contains metadata allowing intermediate servers to distribute logs efficiently.
 This metadata contains the set of recipients and the identity of the data owner.
 Once a log is sent to the server, thus, this metadata must be parsed.
 It is stored along with the encrypted log in the database.
-\todo{database setup}
+All encrypted logs are stored in a single database table . 
+It consists of three columns.
+The unique \verb|id| is the primary key of the table.
+Additionally, two SQLite JSON fields\footnote{\url{https://www.sqlite.org/json1.html}} are used to store the log data, which contains the JWE token, and the metadata, which contains the parsed headers.
+Database queries can be run efficiently against those JSON fields to filter logs~\cite{Shang2021}.
 This allows the \emph{Safekeeper} to associate a log with users.
 A new endpoint was implemented that allows users to request its encrypted logs.
-Based on the provided metadata, the server can filter all logs concerning this particular user.
+Based on the stored metadata, the server can filter all logs concerning this particular user.
+A second endpoint allows logged-in users to fetch logs which were shared with them by other users.
 Moreover, the data owner of a log can update a log to share or revoke access.
-Thus, a second endpoint was created that allows data owners to modify stored logs.
+Thus, a third endpoint allows data owners to modify stored logs.
 
-Since all logs are end-to-end encrypted it cannot access any content of the stored data.
+Since all logs are end-to-end encrypted the \emph{Safekeeper} cannot access the content of the stored data.
 This implies that it cannot verify if a performed access was permitted by the data owner.
-However, those endpoints still exist.
-This allows data owners to provide detailed policies about who can access what data.
-A monitor tracking data usage and creating corresponding logs can check if the observed access is allowed by calling those endpoints.
-Since the \emph{Safekeeper} cannot validate the compliance of these policies, this validation is outsourced to the monitor.
-
+However, the endpoints to maintain access policies still exist.
+They allow data owners to provide detailed policies about who can access what data.
+A monitor that tracks data usages and therefore creates logs can check if the observed access is allowed by calling those endpoints.
+Since the \emph{Safekeeper} cannot validate the compliance of these policies, this validation must be outsourced to the monitor.
 
 
 \end{document}

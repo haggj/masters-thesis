@@ -2,11 +2,19 @@
 
 \begin{document}
 
-\chapter{Conclusion}
+\chapter{Conclusion and Discussion}
+\label{chap:conclusion}
 
-This thesis designs, implements, and evaluates an end-to-end encrypted protocol that allows sharing logs in the \emph{Inverse Transparency} toolchain~\cite{Zieglmeier2021}.
-The survey of encryption technologies shows that hybrid encryption meets the identified protocol requirements best.
-Therefore, the designed protocol relies on hybrid encryption, which enables efficient multi-party E2EE.
+This final chapter presents the major results of the thesis in \cref{sec:result}.
+It also discusses the limitations and potential future work in \cref{sec:limitations}.
+
+\section{Results}
+\label{sec:result}
+
+This thesis designs, implements, and evaluates an end-to-end encrypted protocol that allows to share logs in the \emph{transparency toolchain}~\cite{Zieglmeier2021}.
+It identifies the requirements that must be fulfilled by such a protocol.
+The survey of encryption technologies shows that hybrid encryption meets those requirements best.
+Therefore, the designed protocol relies on hybrid encryption, which enables multi-party E2EE.
 It makes it possible for data owners to share and revoke access to their logs while the data stays encrypted.
 The protocol was created to resist three types of attackers: 
 A curious server cannot access the logs because all logs are encrypted.
@@ -24,28 +32,41 @@ A proof-of-concept environment demonstrates how an established PKI may be used t
 This verifies that the protocol can be used in practice to share encrypted logs among users.
 From the perspective of a user, access to a log can be shared and revoked.
 The implemented UI fully abstracts from any underlying protocol details such as digital signatures, encryption, and decryption algorithms.
-The implemented algorithms are usable in practice because data can be encrypted for up to 170 users without any noticeable delay.
+
+The evaluation of the designed protocol verifies that the functional requirements can be fulfilled.
+Furthermore, the security evaluation shows that the protocol can be considered secure under two assumptions.
+First, a secure PKI must be available.
+Second, the JOSE standard must describe secure algorithms.
+The performance evaluation verifies that protocol introduces overhead to the toolchain because it adds an encryption layer.
+The measurements show that data can be encrypted for up to 170 users without any noticeable delay.
+If the front-end restricts the page size of the fetched logs to 100 logs, the introduced overhead for decrypting and processing the data is $55ms$.
+This refers to a relative difference of $20\%$.
+This shows that the introduced overhead is kept within reasonable limits and can be handled in practice.
+
+In conclusion, the designed and implemented protocol introduces end-to-end encrypted logs within the toolchain while data owners can share and revoke access to their encrypted logs.
+This aims to overcome the limitations of the current toolchain by protecting the confidentiality of logs and supporting data owners to legally prosecute illegal data accesses.
+
 
 \section{Limitations and future work}
+\label{sec:limitations}
 This thesis is designed to defend against three types of attacks.
 They were derived from potentially malicious users participating in the sharing process of encrypted logs.
 This, however, is not an exhaustive list.
 The performed security analysis and evaluation does not guarantee the general security of the protocol.
 In particular, a third party analysis of the applied techniques could further verify their security.
-This could also include sophistacted mathematical proofs of the protocol as introduced by~\cite{Katz2020}.   
+This could also include sophisticated mathematical proofs of the protocol as introduced by~\cite{Katz2020}.   
 The security evaluation applied in this thesis at least indicates that the protocol can resist against the assumed attackers if the respective assumptions are true.
-Further analysis might reveal more attack vectors.
-Their identification and mitigation could be subject to future work.
 
 The protocol tries to encrypt the logs because it might contain sensitive information.
 However, the encrypted logs also reveal metadata to ensure that the encrypted data can be associated with users by intermediate servers.
 This metadata could be subject to metadata analysis attacks, which might yield interesting information for an attacker.
 Future work could investigate if this is a realistic threat.
+The approach of encrypting the logs still improves the current situation because it keeps the content of each log confidential.
 
 This thesis assumes a secure PKI meaning that nobody has knowledge about the private keys of the users.
 This is a strong assumption.
 If the PKI is established by a trusted entity knowing the private keys of the users, the strict interpretation of E2EE is broken.
-This is because in this case not only the authorized users can decrypt the logs.
+This is because in such a case not only the authorized users can decrypt the logs.
 The knowledge of the private keys allows the trusted entity to decrypt and sign arbitrary data.
 The protocol might be improved in future for scenarios where the assumption of a secure PKI is too strong and does not hold.
 

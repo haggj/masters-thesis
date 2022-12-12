@@ -264,7 +264,7 @@ Hence, the designed protocol can be used in practice.
 \end{figure}
 
 \subsection{Toolchain}
-The \emph{Inverse Transparency Toolchain} was adopted to support encrypted logs.
+The \emph{transparency toolchain} was adopted to support encrypted logs.
 Once a user logs in to the \emph{Display} component, all encrypted logs of this particular user are fetched from the \emph{Safekeeper}, decrypted and visualized.
 Compared to the legacy solution, this implementation introduces an additional encryption layer.
 It is assumed that this degrades the performance of fetching and visualizing logs.
@@ -323,7 +323,7 @@ This is expected since the database must resolve more data if more logs are requ
 \begin{figure}[ht]
     \includegraphics[scale=0.62]{../img/07/unencrypted.png}
     \centering
-    \caption[Encryption duration]{This figure visualizes the measured times to download and process the logs in the previous toolchain that maintains unencrypted logs.}
+    \caption[Measurements legacy toolchain]{This figure visualizes the measured times to download and process the logs in the previous toolchain that maintains unencrypted logs.}
     \label{fig:perf-unencrypted}
 \end{figure}
 
@@ -353,7 +353,7 @@ Second, the decrypted logs are analyzed to provide metadata for the visualizatio
 In the legacy version this was computed by the server.
 Since the log data must be decrypted to compute this metadata, however, this computation was shifted to the client.
 The decryption of logs and their processing is therefore considered to be the bottleneck of the updated toolchain.
-If $100$ logs are fetched from the server, the updated toolchain is $40ms$ slower thant the legacy toolchain.
+If $100$ logs are fetched from the server, the updated toolchain is $55ms$ slower thant the legacy toolchain.
 This is a relative difference of $20\%$.
 
 This analysis delivers two major findings.
@@ -368,7 +368,7 @@ If only 10 logs are loaded per page, the updated toolchain is even faster than t
 \begin{figure}[ht]
     \includegraphics[scale=0.63]{../img/07/encrypted.png}
     \centering
-    \caption[Encryption duration]{This figure visualizes the measured times to download and process the logs in the updated toolchain that maintains encrypted logs.}
+    \caption[Measurements updated toolchain]{This figure visualizes the measured times to download and process the logs in the updated toolchain that maintains encrypted logs.}
     \label{fig:perf-encrypted}
 \end{figure}
 

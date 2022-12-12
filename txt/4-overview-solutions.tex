@@ -6,10 +6,10 @@
 \label{chap:overview}
 
 This chapter theoretically elaborates on different approaches to implementing the requirements defined in \cref{chap:requirements}.
-Each section introduces an encryption technique and discusses its consequences to the requirement of this thesis.
+Each section introduces an encryption technique and discusses its consequences to the requirements of this thesis.
 The outcome of this chapter is a set of possible solution strategies.
-Moreover, the chapter shortly elaborates on protocols used in modern end-to-end encrypted applications. 
-Finally, a detailed justification reasons why hybrid encryption is chosen as encryption technique within this thesis.
+Moreover, the chapter shortly elaborates on modern protocols used in end-to-end encrypted applications. 
+Finally, reasons are given why hybrid encryption is chosen as encryption technique within this thesis.
 
 The following table summarizes the major results of this chapter.
 It provides an overview for the reader.
@@ -32,7 +32,7 @@ Details and justifications can be found in the corresponding sections below.
     \ref{sec:broadcast-identity}    & CBBE                      & \checkmark  & \checkmark  & \checkmark    & \checkmark    & \checkmark    & \checkmark    & \checkmark    &               & \checkmark    & \checkmark    \\ \hline
     \ref{sec:broadcast-proxy}       & PRE                       & \checkmark  & \checkmark  & \checkmark    &               & \checkmark    & \checkmark    &               &               & \checkmark    & \checkmark    \\ \hline
 \end{tabular}
-\caption[Overview encryption techniques]{Overview of the considered encryption techniques and their implications to the system requirements.}
+\caption[Potential encryption techniques]{Overview of the considered encryption techniques and their implications to the system requirements.}
 \label{tab:overview-summary}
 \end{table}
 
@@ -352,8 +352,8 @@ This section exemplarily investigates the implemented protocols of Zoom, CloudSe
 The goal of this section is to demonstrate what E2EE techniques are practically used in modern applications.
 Moreover, those approaches are discussed in the context of the this thesis.
 All the following techniques have in common that they do not rely on a PKI.
-This restriction, however, does not hold in the context of this thesis because the \emph{Inverse Transparency} toolchain is intended to be distributed in an enterprise context~\cite{Zieglmeier2021}.
-This simplifies the design of the final protocol.
+This restriction, however, does not hold in the context of this thesis because the \emph{transparency toolchain} is intended to be realized in enterprises~\cite{Zieglmeier2021}.
+It is assumed that most of them have an established PKI, which simplifies the design of the final protocol.
 
 \subsection{Zoom}
 Zoom\footnote{\url{https://zoom.us/}} is a video conference platform. 
@@ -369,7 +369,7 @@ All communication is encrypted using the meeting key with the authenticated symm
 
 The protocol of Zoom is similar to the hybrid encryption described in \cref{sec:hybrid-encryption}.
 However, it cannot be applied in the context of this thesis because all participating users must be online.
-This assumption does not hold in the context of the \emph{Inverse Transparency} toolchain.
+This assumption does not hold in the context of the \emph{transparency toolchain}.
 Specifically, a monitor needs to be able to encrypt a log for the data owner even if the data owner is offline.
 The approach of Zoom shows, however, that hybrid encryption is practically used to broadcast encrypted data to multiple receivers.
 
@@ -395,18 +395,19 @@ The shared secret is used in the Double Ratched protocol to exchange encrypted m
 The architecture of the Signal protocol establishes sessions between users.
 Encrypted data can be exchanged within those sessions.
 Encryption and decryption algorithms always require the initially established shared secret.
+This shared secret is therefore a long-term key.
 If a hardware device is available, e.g. a smartphone with a secure storage element, the shared secret can be stored securely. 
 When encrypting data for a set of users the plaintext is encrypted for each user separately.~\cite{Marlinspike2014}
 
 Unfortunately, the concept of sessions relying on an initially exchanged private key does not fit the architecture of the toolchain.
 The \emph{Display} component allows users to login to a web application.
 Within this application, the encrypted data is downloaded and decrypted.
-The sessions used by the Signal protocol require, however, that the exchange shared key is available for the user during decryption.
-Since the user can log in from arbitrary devices and browsers, the session key needs to be transported among those devices.
+The sessions used by the Signal protocol require, however, that the exchanged shared key is available for the user during decryption.
+Since the user can log in from arbitrary devices and browsers, the long-term session key needs to be transported among those devices.
 Either the user handles this manually (which conflicts with usability) or a trusted server stores the session key (which conflicts with the notion of E2EE).
 In both ways, the requirements of this thesis cannot be met.
-A possible solution to fix this is the implementation and distribution of the \emph{Inverse Transparency} front-end as an app.
-This way, a secure session could be established among users and the shared secret could be securely stored in dedicated secure hardware storages, which are not available in browsers.
+A possible solution to fix this is the implementation and distribution of the front-end as an app.
+This way, a secure session could be established among users and the shared secret could be securely stored in dedicated secure hardware storages.
 
 \section{Evaluation}
 \label{sec:justification}
