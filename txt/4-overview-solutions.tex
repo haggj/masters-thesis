@@ -43,16 +43,17 @@ Suppose that Alice wants to share a log with Bob.
 Alice could send the log to Bob with an encrypted email.
 Emails can be encrypted with standardized protocols, e.g. PGP~\cite{OpenPGP2007} or S/MIME~\cite{SMIME2009}.
 They allow Alice to confidentially share logs with others.
-This approach, however, is limited and does not satisfy the identified requirements.
-It is the responsibility of the user to correctly apply the protocol.
+This approach, however, cannot satisfy the identified requirements.
+It is the responsibility of the user to correctly apply the encryption protocol.
 This is error-prone, it could lead to unintended security issues and it is not user-friendly.
 Sharing the log with $n$ users requires Alice to send $n$ encrypted emails.
-More importantly, this approach does not end-to-end encrypt logs because the \emph{Safekeeper} storing the logs still has access to the unencrypted data.
-Since this server is not trusted, confidentiality is broken (security requirement S1).
-Once an encrypted email is sent to the receiver, there is no way for Alice to revoke any access to the log.
+More importantly, this approach does not end-to-end encrypt logs because the \emph{Safekeeper}, which stores the logs, still has access to the unencrypted data.
+Hence, the confidentiality of the logs is broken violating security requirement S1.
+Once an encrypted email is sent to the receiver, there is no way for Alice to revoke the access to the log.
 She loses control over the encrypted log because Bob's email provider stores the cipher.
 This is not in the control of the toolchain.
-Thus, Alice cannot revoke access to the log anymore (functional requirement F3).
+Thus, Alice cannot revoke access to the log anymore.
+This breaks the functional requirement F3.
 Those limitations motivate the implementation of a more sophisticated protocol.
 
 \section{Mutual encryption}
@@ -68,7 +69,7 @@ Since Alice needs to be able to access the log, the monitor encrypts the log und
 If Alice keeps her private key secret, she is the only entity who can decrypt the log.
 She can download the log, decrypt it, and also share it with Bob by re-encrypting it under his public key.
 The re-encrypted data is then sent to the server where it is stored.
-Bob can finally download and decrypt the shared log.
+Bob can finally download and decrypt the log.
 
 All functional requirements are fulfilled:
 Alice can access the log because the monitor encrypted it with her public key.
@@ -76,27 +77,28 @@ She can also share logs with others.
 The encrypted data is stored by the server.
 This allows Alice to request the deletion of the cipher from the server.
 Thus, Alice can revoke access to the log.
-As long as all users have exclusive access to their private keys, this approach also ensures the confidentiality of the log (security requirement S1).
+As long as all users have exclusive access to their private keys, this approach also ensures the confidentiality of the logs.
+This fulfills the security requirement S1.
 
 To defend against malicious data owners creating forged logs, the monitor component needs to cryptographically sign the log before encryption.
 If Alice shares the log, she does not share the plain log.
 Rather, she encrypts the signed log.
 Alice cannot modify the existing log or create a completely new log because she is not able to compute a valid signature in the name of the monitor.
-She could only succeed by knowing the private key of the monitor.
-This structure allows the receiver to verify if the log was created by a valid monitor component.
-As a consequence, a forged log can be detected during decryption (security requirement S3).
+She can only succeed by knowing the private key of the monitor.
+This structure allows the receiver to verify that the log was created by a valid monitor component.
+As a consequence, a forged log can be detected during decryption, which adheres to security requirement S3.
 
 Security requirement S2 can also be satisfied.
 To achieve this, Alice does not only encrypt the signed log directly.
 She additionally signs and includes the identity of the receiving user.
 This allows receivers to verify if the log was intentionally shared with them~\cite{Davis2001}.
-\cref{fig:mutual_encryption} shows the structure of a shared log before it is encrypted.
+\cref{fig:mutual_encryption} shows the structure of a \emph{shared log} before it is encrypted.
 The actual log data is signed by the monitor.
-The shared log is a data structure that contains the signed log.
+The \emph{shared log} is a data structure that contains the signed log.
 It additionally specifies the user with whom the log is shared.
-The shared log itself is signed by the data owner.
-The shared log is passed to the encryption algorithm.
-After successful decryption, a receiver receives this shared log.
+The \emph{shared log} itself is signed user creating it, i.e. the creator.
+The \emph{shared log} is passed to the encryption algorithm.
+After successful decryption, a receiver receives this \emph{shared log}.
 This allows him to validate if the sender intentionally shared the log.
 The receiver can also verify if the nested access log was signed by the claimed monitor.
 
@@ -108,7 +110,7 @@ The receiver can also verify if the nested access log was signed by the claimed 
 \end{figure}
 
 This approach relies on standardized asymmetric cryptography.
-While it fulfills all functional and security requirements it suffers from performance problems.
+While it fulfills all functional and security requirements, it suffers from performance problems.
 Similar to external encryption, the whole log needs to be encrypted $n$ times if it is shared with $n$ users.
 Much more problematic, however, is the application of asymmetric cryptography to application data.
 Public-key cryptography relies on intense mathematical computations and should not be used to encrypt large amounts of data directly~\cite[340]{Eckert2018}.
@@ -130,9 +132,9 @@ The larger payload is encrypted with an efficient symmetric scheme.
 
 Consider the scenario where Alice wants to share data with Bob.
 Alice initially generates a symmetric key $k$.
-She uses $k$ to encrypt the payload with a symmetric scheme (e.g. AES).
+She uses $k$ to encrypt the payload with a symmetric scheme.
 She then encrypts $k$ under the public key of Bob.
-Finally, she sends the encrypted key along with the encrypted payload.
+Finally, she sends the encrypted key along with the encrypted payload to Bob.
 To decrypt the payload, Bob first decrypts the symmetric key $k$ using his private key.
 In the final step, Bob can use $k$ to decrypt the symmetrically encrypted cipher.
 
@@ -149,7 +151,7 @@ This allows Bob to download and decrypt the log.
 Additionally, Alice can specify multiple receivers by attaching multiple encrypted keys to the encrypted log -- one for each receiver.
 This is visualized in \cref{fig:hybrid_encryption}. 
 The key $k$ is used to encrypt the log in a symmetric scheme.
-To make the key available to Bob and Charlie, the key is encrypted for both of them using asymmetric encryption.
+To make the key available to Bob and Charlie, the key is encrypted for both using asymmetric encryption.
 Alice can also revoke access to the log by re-encrypting it and updating it on the server. 
 
 \begin{figure}[ht]
@@ -161,10 +163,11 @@ Alice can also revoke access to the log by re-encrypting it and updating it on t
 
 The above description shows that hybrid encryption techniques can be used to satisfy all functional requirements.
 Moreover, only those users can decrypt who were explicitly specified during encryption.
-This ensures that only authorized users can decrypt (security requirement S1).
+This ensures that only authorized users can decrypt.
+This satisfies security requirement S1.
 To adhere to security requirements S2 and S3 the techniques introduced in \cref{sec:mutual-encryption} can be applied with a little modification.
-Instead of a single receiver, the shared log needs to contain the list of authorized users.
-The shared log is finally encrypted with the symmetric key.
+Instead of a single receiver, the \emph{shared log} needs to contain a list of authorized users.
+The \emph{shared log} is finally encrypted with the symmetric key.
 This allows receivers to validate if the log was intended for them and to verify if the actual log was modified during transit.
 Additionally, standardized algorithms exist for symmetric and asymmetric cryptography.
 This allows the construction of a secure and portable crypto library.
@@ -182,7 +185,7 @@ The creator and owner of a key can upload the key to the key server.
 If others require access to the key, the owner can modify the access policy.
 
 The concept of a key server can be applied to share encrypted logs.
-Once a monitor creates a log because it accesses sensitive data of Alice, the monitor creates a symmetric key and encrypts the log under this symmetric key.
+Once a monitor creates a log because a data consumer accesses sensitive data of Alice, the monitor creates a symmetric key and encrypts the log under this symmetric key.
 The encrypted log is sent to the server.
 To decrypt the log, Alice requires access to this symmetric key.
 Thus, the monitor needs to upload the generated key to the key server, which allows Alice to download it.
@@ -195,12 +198,13 @@ This new key is then also uploaded to the key server.
 
 This example shows that all functional requirements can be satisfied when utilizing a key server.
 It can be implemented using standardized symmetric encryption schemes (e.g. AES).
-The techniques introduced in \cref{sec:mutual-encryption} to satisfy security requirements S2 (the receiver can verify it is a valid encryption endpoint) and S3 (the data owner cannot forge logs) can be applied again.
+The techniques introduced in \cref{sec:mutual-encryption} to satisfy security requirements S2 and S3 can be applied again.
+They ensure that logs cannot be forwarded and forged.
 Security requirement S1, however, cannot be met because the system suffers from key escrow: 
 The administrator of the key server has access to all keys.
 The confidentiality of all logs is broken because this allows him to potentially decrypt all logs.
 The utilization of a key server also implies that we require an additional trusted component.
-This increases the attack surface of the system and does not adhere to the non-functional requirement N1 (minimal number of trusted entities).
+This increases the attack surface of the system and does not adhere to the non-functional requirement N1.
 
 \section{Attribute-based encryption}
 \label{sec:attribute-encryption}
@@ -209,7 +213,7 @@ Access control is usually enforced by a server.
 Whenever a user requests access to data, the server checks if the user has the required permissions.
 A compromised server, however, can cause serious harm to a system because the server has unlimited access to all data stored on the server~\cite{Hagg2022}.
 If data is not end-to-end encrypted, an attacker can access the data in plaintext.
-Attribute-based encryption (ABE) mitigates that threat.
+Attribute-based encryption~(ABE) mitigates that threat.
 It shifts the logic of access control into the domain of cryptography~\cite{Bethencourt2007}.
 Data is encrypted along with permissions.
 A user can only decrypt the data if it owns the demanded permissions.
@@ -221,7 +225,7 @@ Thus, the private key of the user contains attributes that are used to check if 
 Attributes can be used to create policies, e.g. $A \land B \land \neg C$.
 A policy is a logical expression of attributes.
 While encrypting data, the user specifies a policy that is encoded into the cipher.
-Successful decryption requires a private key that satisfies the policy.
+Successful decryption requires a private key that satisfies the encoded policy.
 
 ABE can be used directly to encrypt data for multiple receivers~\cite{Bethencourt2007}. 
 During encryption, a policy is defined. 
@@ -229,23 +233,24 @@ All users that are equipped with attributes fulfilling this policy can decrypt d
 By encoding the identities of valid receivers into the policy, the encrypting user could specify the set of users who can decrypt.
 If the access of a user needs to be revoked, the cipher is re-encrypted with a new set of receivers.
 This ensures that all required functional requirements are met.
-One can again equip the logs with cryptographic signatures (as described in \cref{sec:mutual-encryption}).
-Those techniques fulfill the security requirements S2 (the receiver can verify it is a valid encryption endpoint) and S3 (the data owner cannot forge logs).
+Again, one can equip the logs with cryptographic signatures (as described in \cref{sec:mutual-encryption}).
+Those techniques fulfill the security requirements S2 and S3.
+This ensures that the logs cannot be forwarded and that logs can not be forged.
 
 Attribute-based encryption usually relies on a trusted key generation center~\cite{Sahai2009}.
 It computes and distributes cryptographic keys.
 This implies key escrow and harms security requirement S1 because the trusted server can potentially decrypt all ciphers.
-Additionally, each trusted entity increases the attack surface of the toolchain and conflicts with the non-functional requirement N1 (minimal number of trusted entities).
+Additionally, each trusted entity increases the attack surface of the toolchain and conflicts with the non-functional requirement N1.
 Some schemes avoid a centralized trust center by employing a decentralized architecture~\cite{Vaanchig2018}.
 These systems, however, cannot be integrated into the centralized architecture of the existing toolchain.
 A lot of papers are published in the field of attribute-based encryption.
-However, no cryptographic standard exists abd it is not included in the Web Cryptographic API~\cite{WebCryptoApi2017}.
+However, no cryptographic standard exists and it is not included in the Web Cryptographic API~\cite{WebCryptoApi2017}.
 This conflicts with the non-functional requirement N2.
 
 \section{Broadcast encryption}
 \label{sec:broadcast-encryption}
 
-Broadcast encryption~(BE) is an encryption technique that allows the encrypting user to specify a set of authorized recipients~\cite{Hagg2022}.
+Broadcast encryption~(BE) is an encryption technique that allows to specify a set of authorized recipients during encryption~\cite{Hagg2022}.
 Only those users can decrypt the produced ciphertext.
 It was initially proposed by~\citeauthor{fiat1993broadcast}~\cite{fiat1993broadcast}.
 In recent years, different realizations of broadcast encryption schemes were discussed~\cite{Sakai2007, Li2018, Hagg2022, Fan2013}.
@@ -265,7 +270,7 @@ The resulting schemes are called identity-based broadcast encryption~(IBBE)~\cit
 The following example illustrates its functionality~\cite{Hagg2022}:
 Assume that Alice and Bob own unique email addresses.
 First of all, the IBBE scheme needs to be instantiated.
-The trust center computes the private keys on behalf of Alice and Bob based on their email addresses.
+The trust center computes the private keys on behalf of Alice and Bob, based on their email addresses.
 It also distributes the private keys and public system parameters to both users.
 Alice wants to send confidential data to Bob.
 She therefore applies the encryption algorithm, which requires a set of public keys as input.
@@ -275,10 +280,10 @@ To revoke a user, Alice must re-encrypt the data and upload it again to the serv
 
 The example shows that all three functional requirements can be fulfilled.
 The techniques from \cref{sec:mutual-encryption} can be applied again.
-This satisfies the security requirement S2 (the receiver can verify it is a valid encryption endpoint) and S3 (the data owner cannot forge logs).
+This satisfies the security requirement S2 and S3, which ensure that logs can not be forwarded or forged.
 IBBE schemes suffer from key escrow because a trusted party computes and distributes private keys~\cite{Hagg2022}.
-This breaks the confidentiality of the encrypted logs (security requirement S2).
-The additional trusted entity also increases the attack surface breaking non-functional requirement N1 (minimal number of trusted entities).
+This breaks the confidentiality of the encrypted logs violating security requirement S1.
+The additional trusted entity also increases the attack surface, which breaks the non-functional requirement N1.
 A lot of research is going on in the field of IBE~\cite{Hagg2022}.
 However, no cryptographic standard exists for IBE or IBBE.
 It is not included in the Web Cryptographic API~\cite{WebCryptoApi2017}.
@@ -300,7 +305,7 @@ The following observations motivated this approach~\cite{Hagg2022}:
     Traditional public key schemes can be combined with identity-based schemes by double encrypting the plaintext.
     In particular, the plaintext is encrypted once under the public key of the traditional scheme and once under the public key of the identity-based scheme.
     The result of this construction is a CBE scheme.
-    They eliminate key escrow and the certificate revocation problem.
+    They eliminate key escrow and the certificate revocation problem.~\cite{Hagg2022}
 \end{itemize}
 
 This idea was later adopted to broadcast encryption yielding a certificate-based broadcast encryption scheme~(CBBE)~\cite{Li2018}.
@@ -310,14 +315,15 @@ Only the users specified during encryption can decrypt the cipher.
 The key generation center cannot decrypt the cipher because it does not have access to any private key of the traditional scheme~\cite{Hagg2022}.
 Besides the functional requirements, CBBE also satisfies the security requirements.
 The distinction between a shared log and a signed log introduced in \cref{sec:mutual-encryption} can be applied again.
-Thus, all receivers can validate that they are intended decryption endpoints (security requirement S2) and that the access log was created by the claimed monitor (security requirement S3).
+Thus, all receivers can validate that they are intended decryption endpoints and that the access log was created by the claimed monitor.
+This satisfies security requirements S2 and S3.
 The notion of E2EE is also fulfilled because the trusted server cannot decrypt the logs.
 
 Unfortunately, no reference implementations of CBBE exist.
 This fact is a major drawback in the context of this thesis.
 These cryptographic systems are currently the subject of research.
 There are no ongoing standardization processes to analyze their security.
-As a result, the non-functional requirement N2 (standardized cryptographic algorithms) cannot be met.
+As a result, the non-functional requirement N2 cannot be met.
 Using those schemes in a practical implementation is avoided in this thesis because the missing standards introduce an unpredictable risk.
 
 \subsection{Proxy re-encryption-based broadcast encryption}
@@ -327,10 +333,11 @@ Its fundamental concept relies on a trusted proxy that transforms encrypted data
 It is an important requirement of those schemes that the proxy does not learn anything about the plaintext during this re-encryption~\cite{Chen2018}.
 
 Similar to the example given in~\cite{Hagg2022}, consider a user Alice who stores a ciphertext $E_A$ in the cloud.
-Only Alice can decrypt $E_A$, however, she wants to make the plaintext available for Bob.
+Only Alice can decrypt $E_A$.
+Assume she wants to share the plaintext available with Bob.
 This requires Alice to share a re-encryption key $rk_{Alice,Bob}$ with the proxy.
 The knowledge of this key allows the proxy to transform $E_A$ to $E_B$.
-Bob can then download and decrypt $E_B$
+Bob can then download and decrypt $E_B$.
 Alice could revoke access to a log by instructing the server to delete the cipher for a dedicated user.
 
 The proxy needs to be semi-trusted because with the knowledge of $rk_{Alice,Bob}$ it can re-encrypt all ciphers from Alice to Bob~\cite{Chen2018}.
@@ -339,7 +346,7 @@ Once Alice defined Bob as a valid receiver for a single log, the server could re
 This, however, affects the confidentiality of encrypted logs.
 Not only authorized users might have access.
 Users might collude with the server, which re-encrypts logs on behalf of the user, to obtain decrypted logs.
-Overall, a proxy re-encryption-based scheme does not adhere to security requirement S1 (confidentiality of logs).
+Hence, a proxy re-encryption-based scheme does not adhere to security requirement S1 because the confidentiality of logs can not be ensured.
 Notice that no cryptographic standard exists for proxy re-encryption-based cryptography.
 It is not included in the Web Cryptographic API~\cite{WebCryptoApi2017}.
 This conflicts with the non-functional requirement N3.
@@ -347,9 +354,9 @@ This conflicts with the non-functional requirement N3.
 \section{E2EE in modern technology}
 \label{sec:modern-e2ee}
 
-Many modern communication applications rely on E2EE. 
+Many modern applications rely on E2EE. 
 This section exemplarily investigates the implemented protocols of Zoom, CloudSeal, and the messaging services Whatsapp and Signal.
-The goal of this section is to demonstrate what E2EE techniques are practically used in modern applications.
+The goal of this section is to demonstrate which E2EE techniques are practically used in modern applications.
 Moreover, those approaches are discussed in the context of the this thesis.
 All the following techniques have in common that they do not rely on a PKI.
 This restriction, however, does not hold in the context of this thesis because the \emph{transparency toolchain} is intended to be realized in enterprises~\cite{Zieglmeier2021}.
@@ -371,10 +378,10 @@ The protocol of Zoom is similar to the hybrid encryption described in \cref{sec:
 However, it cannot be applied in the context of this thesis because all participating users must be online.
 This assumption does not hold in the context of the \emph{transparency toolchain}.
 Specifically, a monitor needs to be able to encrypt a log for the data owner even if the data owner is offline.
-The approach of Zoom shows, however, that hybrid encryption is practically used to broadcast encrypted data to multiple receivers.
+The approach of Zoom shows, however, that hybrid encryption is practically used to send encrypted data to multiple receivers.
 
 \subsection{CloudSeal}
-CloudSeal~\cite{Xiong2012} is a scheme to securely share and distribute files over cloud-based storage.
+CloudSeal~\cite{Xiong2012} is a scheme to securely share and distribute files over cloud-based storages.
 Their E2EE relies on proxy re-encryption-based encryption (see \cref{sec:broadcast-proxy} for details).
 CloudSeal can currently not be provided as a web application because it relies on advanced cryptographic algorithms, which are not included in the Web Cryptographic API.
 Thus, their clients are required to run on native operating systems.~\cite{Xiong2012}
@@ -384,7 +391,7 @@ CloudSeal is exemplarily listed here because it shows that broadcast encryption 
 It is not an option for this thesis because of the limited algorithms provided in the Web Cryptographic API.
 
 \subsection{Instant messaging services}
-Whatsapp\footnote{\url{https://www.whatsapp.com/}} and Signal\footnote{\url{https://signal.org/}} are two popular instant messaging services.
+Whatsapp\footnote{\url{https://whatsapp.com/}} and Signal\footnote{\url{https://signal.org/}} are two popular instant messaging services.
 They claim to implement E2EE.
 Both services rely on the Signal protocol.
 The Signal protocol is a combination of the X3DH protocol~\cite{Marlinspike2016} and the Double Ratched protocol~\cite{Perrin2016}.
@@ -404,17 +411,17 @@ The \emph{Display} component allows users to login to a web application.
 Within this application, the encrypted data is downloaded and decrypted.
 The sessions used by the Signal protocol require, however, that the exchanged shared key is available for the user during decryption.
 Since the user can log in from arbitrary devices and browsers, the long-term session key needs to be transported among those devices.
-Either the user handles this manually (which conflicts with usability) or a trusted server stores the session key (which conflicts with the notion of E2EE).
-In both ways, the requirements of this thesis cannot be met.
-A possible solution to fix this is the implementation and distribution of the front-end as an app.
+Either the user handles this manually, which conflicts with usability, or a trusted server stores the session key, which conflicts with the notion of E2EE.
+In both cases, the requirements of this thesis cannot be met.
+This can be fixed by implementing the front-end as mobile application.
 This way, a secure session could be established among users and the shared secret could be securely stored in dedicated secure hardware storages.
 
-\section{Evaluation}
+\section{Summary and evaluation}
 \label{sec:justification}
 The protocol designed in this thesis relies on hybrid encryption.
-The purpose of this section is the justification of this encryption technique.
-Recall \cref{tab:overview-summary}, where different approaches were evaluated under the given requirements.
-The table visualizes the fulfillment of the requirements for each considered approach.
+This section summarizes the findings in this chapter and justifies the usage of hybrid encryption.
+Recall \cref{tab:overview-summary}, which summarizes the evaluation of all approaches.
+In particular, the table visualizes the fulfillment of the requirements for each considered approach.
 Hybrid encryption satisfies all functional and security requirements.
 Only the non-functional performance criterion N4 cannot be fully met because the symmetric key needs to be encrypted for all receivers.
 The following argumentation illustrates why hybrid encryption is nevertheless the most promising approach.
@@ -428,20 +435,19 @@ However, the usage of hybrid encryption ensures that the encryption is still per
 Notice that there is no difference in terms of security and functionality between the approaches.
 Thus, hybrid encryption outperforms mutual encryption.
 
-Another option to implement the intended protocol is based on broadcast encryption techniques that encrypt data for multiple receivers.
+Another option to implement the intended protocol is based on broadcast encryption techniques.
 As elaborated in \cref{sec:broadcast-encryption}, different approaches are proposed to implement broadcast encryption.
 In general, there is no need to encrypt data $n$ times when it needs to be decrypted by $n$ users in those schemes.
-Considering the non-functional criterion N4 (minimal resource utilization), broadcast encryption, therefore, outperforms hybrid encryption.
-The main disadvantage of broadcast encryption is the missing standardization.
+Hence, broadcast encryption schemes outperform hybrid encryption.
+The main disadvantage of broadcast encryption is the missing standardization of the algorithms.
 Specifically, the Web Cryptographic API does not include any of those schemes.
 Thus, they can only be used in the browser if the reference implementations are translated into Javascript.
 Since Javascript is an interpreted language, however, this comes with considerable performance limitations.
 Moreover, the cryptographic library implemented in this thesis needs to be delivered in three programming languages.
 Translating a dedicated scheme into multiple languages is complex, error-prone, and not realizable within the time constraint of this thesis.
-Please also notice that each approach introduced in \cref{sec:broadcast-encryption} additionally suffers from security limitations undermining the understanding of E2EE.
 Since hybrid encryption relies on standardized and well-researched algorithms, it is preferred over broadcast encryption techniques.
 
-A third option is an implementation based on a key server.
+A third option is the implementation based on a key server.
 The log is encrypted with a symmetric scheme and access to the decryption key is maintained by a key server.
 This approach only relies on well-researched symmetric encryption techniques.
 It can therefore be implemented in different programming languages and environments.

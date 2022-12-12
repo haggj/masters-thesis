@@ -4,7 +4,7 @@
 \begin{document}
 
 
-\chapter{Protocol requirements}
+\chapter{Requirements}
 \label{chap:requirements}
 
 This chapter identifies the requirements of the protocol implemented in the context of this thesis.
@@ -19,7 +19,7 @@ Overall, three major goals must be achieved:
 Traditional requirements engineering methods usually differentiate between functional and non-functional requirements based on the views of different stakeholders~\cite{Rehman2013}.
 Since this thesis operates within the security domain, the traditional requirements engineering process needs to be adapted: 
 Precise assumptions about what to protect and against whom to protect are mandatory for a successful implementation and evaluation.
-Thus, this chapter closely follows the terms and methodology proposed by~\citeauthor{Fabian2010}~\cite{Fabian2010}.
+Thus, this chapter closely follows the terms and methodologies proposed by~\citeauthor{Fabian2010}~\cite{Fabian2010}.
 The authors fundamentally differentiate between functional, non-functional, and security requirements, which are extracted from the respective security goals.
 Goals are rather abstract and vague formulations of what the system should achieve. 
 They are refined into more detailed requirements for two reasons~\cite{Fabian2010}.
@@ -41,8 +41,8 @@ For details and the rationales of each requirement please have a look at the cor
 \paragraph*{Functional requirements}
 \begin{itemize}
     \item [F1.] Data owners can always access logs concerning them.
-    \item [F2.] Data owners can share their logs with other users in the system.
-    \item [F3.] Data owners can revoke the access of other users to their logs.
+    \item [F2.] Data owners can share the access to their logs with other users.
+    \item [F3.] Data owners can revoke the access to their logs from other users.
 \end{itemize}
 
 \paragraph{Security requirements}
@@ -67,8 +67,8 @@ Having access to a log effectively means that a user can decrypt the encrypted l
 The following functional requirements were identified:
 \begin{itemize}
     \item Data owners can always access logs concerning them.
-    \item Data owners can share their logs with other users in the system.
-    \item Data owners can revoke the access of other users to their logs.
+    \item Data owners can share the access to their logs with other users.
+    \item Data owners can revoke the access to their logs from other users.
 \end{itemize}
 
 \section{Security requirements}\label{security-requriements}
@@ -116,14 +116,15 @@ The implemented protocol should defend against curious servers.
 
 \subsection{Logs cannot be forwarded to unintended receivers}
 
-The functional requirements require, that only the data owner of a log is allowed to share a log.
+The functional requirements demands that only the data owner of a log is allowed to share the log.
 No other user should be able to share the log in the name of the data owner.
 Whenever a user receives an encrypted log it needs to be sure that the originator of the cipher is the data owner of the encrypted log (sender authenticity).
 Moreover, the receiver also needs to be sure that the data owner intended to share the log with him or her.
 
-The following surreptitious forwarding attack motivates this requirement~\cite{Davis2001}.
+The following attack motivates this requirement.
+In literature it is referred to as surreptitious forwarding attack~\cite{Davis2001}.
 Assume Alice to be a data owner and Eve to be a malicious user.
-Furthermore, assume that Alice shares an access log with Eve.
+Furthermore, assume that Alice shares a log with Eve.
 Eve has valid access to the log and can decrypt the encrypted log.
 Eve could apply the encryption algorithm and could specify Bob as the receiver.
 If the exchanged message does not contain information about the sender and the intended recipients, there is no way for Bob to know who actually sent the message and if the log was intentionally shared with him.
@@ -137,8 +138,8 @@ The implemented protocol must defend against surreptitious forwarding attacks.
 
 \subsection{Logs cannot be forged}
 
-A data owner can share logs with others within the system.
-However, this introduces the risk that a malicious data owner shares forged logs with other users by manipulating existing logs or creating arbitrary new logs.
+A data owner can share logs with other users in the system.
+However, this introduces the risk that a malicious data owner shares forged logs with other users, e.g. by manipulating existing logs or creating arbitrary new logs.
 Only a log of a trusted and valid \emph{Monitor} component should be accepted.
 
 The following example motivates this requirement.
@@ -159,7 +160,7 @@ Thus, they are not strictly mandatory.
 At the same time, however, they add additional value to potential solutions.
 Consider two solutions $A$ and $B$, which both satisfy all functional and security requirements.
 Solution $A$ should be preferred over solution $B$ if $A$ resolves more non-functional requirements than $B$.
-During multiple iterations of elaborating potential solutions, the list of non-functional goals has grown to the following stable collection:
+During multiple iterations of elaborating potential solutions, the list of non-functional goals has grown to the following stable collection.
 
 \subsection{Minimal number of trusted entities}
 By definition, trusted entities are not part of the untrusted network. 
@@ -181,8 +182,8 @@ This is specifically necessary because the \emph{Display} component is realized 
 A trade-off between security and usability usually needs to be resolved during system design~\cite{Braz2007}.
 In the context of this thesis, however, the complex security is a key driver to improving usability.
 This is motivated by the principle of least effort, which states that humans will spend the least amount of work to get a task done~\cite{Levenson2018}.
-If the user is asked to perform certain security tasks, he therefore tends to neglect them.
-By integrating the error-prone cryptography tasks into the application, the usability can be improved because it simplifies the process for users.
+If the user is asked to perform complex security tasks, he therefore tends to neglect them.
+By integrating the error-prone cryptographic tasks into the application, the usability can be improved because it simplifies the process for users.
 This also strengthens the security because integrated mechanisms can be well tested.
 An optimal solution should integrate all cryptographic tasks into the toolchain.
 However, it comes with the cost of increased design and implementation efforts.

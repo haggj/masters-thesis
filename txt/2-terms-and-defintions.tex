@@ -70,14 +70,14 @@ Thus, combining public key encryption with digital signatures can also ensure th
 It was created because traditional channel-based encryption layers such as IPsec~\cite{IPSEC2011} or TLS~\cite{TLS2018} only protect data between intermediate servers.
 However, those layers of encryption do not protect the data from the intermediate servers itself.
 JOSE aims to provide security on the application layer, meaning that application data is embedded into secure objects.
-This protects the data from intermediate servers enabling the construction of end-to-end encrypted protocols.
+This protects the data from intermediate servers and enables the construction of end-to-end encrypted protocols.
 The JOSE specifications define three fundamental representations to serve this purpose~\cite{Barnes2014}:
 \begin{itemize}
-    \item The JSON Web Signature~(JWS) format represents an integrity-protected object~\cite{JWS2015}.
-    \item The JSON Web Encryption~(JWE) format represents an confidentiality-protected object~\cite{JWE2015}.
-    \item The JSON Web Key~(JWK) format represents cryptographic keys~\cite{JWK2015}.
+    \item The "JSON Web Signature"~(JWS) format represents an integrity-protected object~\cite{JWS2015}.
+    \item The "JSON Web Encryption"~(JWE) format represents an confidentiality-protected object~\cite{JWE2015}.
+    \item The "JSON Web Key"~(JWK) format represents cryptographic keys~\cite{JWK2015}.
 \end{itemize}
-Furthermore, a JSON Web Token~(JWT) is a compact representation of JSON data~\cite{JWT2015}.
+Furthermore, a "JSON Web Token"~(JWT) is a compact representation of JSON data~\cite{JWT2015}.
 It is passed as the payload to the construction of JWS and JWE tokens.
 A JWT token contains the JSON-encoded application data that must be protected.
 The protocol designed by this thesis relies on JWS and JWE tokens.
@@ -99,13 +99,13 @@ The header contains information about the algorithm used to secure the applicati
 \label{sec:jwe}
 JWE tokens represent encrypted data~\cite{JWE2015}.
 Multiple encryption algorithms can be used to encrypt the application data.
-They are defined in the JSON Web Algorithm~(JWA) specification~\cite{JWA2015}.
+They are defined in the "JSON Web Algorithm"~(JWA) specification~\cite{JWA2015}.
 JWE tokens enforce authenticated encryption and data can be encrypted for multiple recipients.
 Two algorithms are required to construct them:
 First, the application data is encrypted using an authenticated symmetric encryption algorithm.
 The key used for this algorithm is then encrypted with a dedicated key-wrapping algorithm.
 The receiver of the token must first apply the key-wrapping algorithm to restore the symmetric key, which then allows the decryption of the application data.
-Thus, a JWE token consist of the components listed in \cref{tab:jwe}~\cite{JWE2015}:
+A JWE token consist of the components listed in \cref{tab:jwe}~\cite{JWE2015}:
 
 \begin{table}[ht]
     \centering
@@ -113,9 +113,9 @@ Thus, a JWE token consist of the components listed in \cref{tab:jwe}~\cite{JWE20
         \hline
     \textbf{Field}                             & \textbf{Description}                                                                                                            \\ \hline
     Header                       & Contains information about the used algorithms.                                                                        \\ 
-    Encrypted Key                 & Stores the encrypted key that was used to encrypt the application data.                                                \\ 
-    Initialization Vector         & Contains initialization vectors of the used encryption algorithms.                                                     \\ 
-    Additional Authenticated Data & Contains data that must be authenticated and integrity protected but not encrypted.                                   \\ 
+    Encrypted Key                 & Stores the encrypted key that was used to encrypt the application data. Multiple encrypted keys can be attached to the token.                                               \\ 
+    Initialization Vector         & Contains the initialization vectors of the encryption algorithms.                                                     \\ 
+    Additional Authenticated Data & Contains data that must be authenticated and integrity protected, but not encrypted.                                   \\ 
     Ciphertext                    & Stores the encrypted application data.                                                                                 \\ 
     Authentication Tag            & Stores the authentication tag that allows the receiver to validate the authenticity and integrity of a received token. \\ \hline
     \end{tabular}
@@ -126,7 +126,7 @@ Thus, a JWE token consist of the components listed in \cref{tab:jwe}~\cite{JWE20
 
 \section{Key escrow}
 \label{sec:key-escrow}
-Key escrow refers to the scenario where cryptographic keys of users are known by a server in the system~\cite{Gentry2003}.
+Key escrow refers to the scenario in which cryptographic keys of users are known by a server in the system~\cite{Gentry2003}.
 Some cryptographic schemes rely on a trusted key generation center that computes and distributes keys for all participants~\cite{Sakai2007, Bethencourt2007}.
 This allows the center to access the private keys of all users meaning it can decrypt and sign arbitrary data.
 Key escrow can be beneficial in certain scenarios, e.g. to provide access to personal keys during vacation substitutions~\cite{Hagg2022}.
@@ -135,7 +135,7 @@ But it also conflicts with a strict interpretation of end-to-end encryption beca
 \section{End-to-end encryption} 
 \label{sec:end-to-end}
 
-The National Institute of Standards and Technology~(NIST) defines end-to-end encryption~(E2EE) as 
+The "National Institute of Standards and Technology"~(NIST) defines end-to-end encryption~(E2EE) as 
 "[c]ommunications encryption in which data is encrypted when being passed through a network, but routing information remains visible"~\cite[88]{Nieles2017}.
 Consider the scenario where Alice wants to send an end-to-end encrypted message to Bob.
 Once they established cryptographic keys, Alice encrypts the message and sends it to Bob.
@@ -146,14 +146,14 @@ If this holds, Alice and Bob are said to be the endpoints of the encryption and 
 \citeauthor{Hale2022} pointed out, however, that this classical understanding of E2EE has changed in recent years~\cite{Hale2022}. 
 With the rise of modern instant messaging services, E2EE should not only guarantee the confidentiality of the communication.
 Rather, an adversary should not have the possibility to influence communication in any way.
-This implies that modern E2EE-based systems should guarantee the authenticity and integrity of exchanged data~\cite{Hale2022}. 
+This implies that modern E2EE-based systems should guarantee the authenticity and integrity of the exchanged data~\cite{Hale2022}. 
 The difference between the classical and current understanding of E2EE can be described more precisely with the different adversary models they defend against.
 
 
 \subsection{Adversary models}
 This section details the security guarantees E2EE can provide by considering different adversaries.
 This differentiation shows that E2EE can be motivated by different attackers.
-It lays the foundation for the attacker models employed in this thesis because it clarifies against which attackers end-to-end encrypted systems defend.
+It lays the foundation for the attacker models employed in this thesis because it clarifies which attackers end-to-end encrypted systems can defend against.
 
 The above NIST definition states that E2EE protects data passing an untrusted network.
 Within the network, the communicating entities do not have any control over their data.
@@ -167,7 +167,7 @@ In general, passive attacks aim to break confidentiality through eavesdropping o
 In literature, this is often referred to as an honest-but-curious attacker~\cite{Nabeel2017}.
 The classical understanding of E2EE protects against passive adversaries. 
 The attacker is part of the untrusted network and observes the passed data.
-He wants to access the content of the exchanged messages.
+It wants to access the content of the exchanged messages.
 To defend against this passive attacker, cryptography can be applied to make passive attacks ineffective and to protect confidentiality~\cite[18]{Eckert2018}.
 
 
@@ -192,13 +192,13 @@ Only the employee is allowed to know its cryptographic keys.
 If an attacker could compromise these keys, the communication is not protected anymore because he could simply decrypt observed traffic.
 If users lose their keys and the company does not have any backups, however, all their communication is lost.
 This can be mitigated by introducing a trusted server that stores the cryptographic keys of all employees.
-On the one hand, this seems to be practical and might increase the availability of data. 
+On the one hand, this can be practical because it increases the availability of data. 
 On the other hand, such a trusted server introduces key escrow.
 The communication is not E2EE in a strict sense anymore because the administrator of the trusted server has access to all keys.
 Note that there is also the possibility to explicitly define this administrator as an additional encryption endpoint.
 In this case, there is no violation against E2EE because the administrator is assumed to be a valid communication partner.
 This example shows the fragility of E2EE:
-By defining arbitrary encryption endpoints almost every system could claim to rely on E2EE.
+By defining arbitrary encryption endpoints, almost every system could claim to rely on E2EE.
 While this is technically true, it does not meet the common understanding of end-to-end encrypted systems~\cite{Hale2022,Nabeel2017,Mallory2022}.
 
 \subsection{E2EE in this work}
@@ -218,15 +218,14 @@ Otherwise, each untrusted entity can access the exchanged data and E2EE is broke
     Thus, the set of encryption endpoints is equal to the group of users.
     When symmetric cryptography is used to construct E2EE-based protocols, messages between a single sender and a single receiver always require an exclusively exchanged symmetric key to ensure receiver authenticity.
     When operating with asymmetric cryptography, a key pair per receiver is required.
-    If a receiver keeps the private key confidential, it can be ensured that only the receiver can decrypt data enabling receiver authenticity.
+    If a receiver keeps the private key confidential, it can be ensured that only the receiver can decrypt data.
+    This enables receiver authenticity.
 \paragraph{Sender authenticity} 
     The receiver needs to be sure that the message was indeed sent by the assumed sender.
     Specifically, the receiver must ensure that the message was not created from a unknown entity.
     This requirement is crucial to defend against man-in-the-middle attackers.
     If a receiver cannot validate the origin of the message, an attacker could simply impersonate the sender and encrypt fake data under the public key of the receiver.
     Digitally signed messages ensure that a message was indeed sent by the claimed sender.
-    Due to the risk of surreptitious forwarding, this requires additional security mechanisms besides a plain digital signature~\cite{Davis2001}.
-
-
+    Due to the risk of surreptitious forwarding, sender authenticity requires additional security mechanisms besides a plain digital signature~\cite{Davis2001}.
 
 \end{document}

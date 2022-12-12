@@ -29,68 +29,65 @@ Its public key is called the encryption key while its private key is called the 
 The second key pair is intended to sign data.
 Its public key is called the verification key while its private key is called the signing key.
 Public keys are represented by PEM-encoded certificates signed by a trusted CA.
-Private keys are represented by a PEM-encoded private key.
+Private keys are represented by a PEM-encoded private keys.
 This separation of keys is considered to be the best practice in modern key management~\cite[33]{Barker2006}.
-Each user needs to have exclusive access to its private keys.
+Each user must have exclusive access to its private keys.
 The public keys of all users are expected to be publicly available in the system.
-The protocol further assumes that a user that participates in the system has access to its key material, e.g. via hardware token.
+The protocol further assumes that a participating user has access to its key material, e.g. via hardware token.
 
 The protocol relies on three fundamental cryptographic operations:
 Signing, encrypting, and decrypting logs.
 They are used to construct the full functionality of the demanded protocol.
-They allow the E2EE of logs and they can be used to share and revoke access to logs.
-The following description delivers a high-level overview of how the protocol functions.
+They enable the exchange of end-to-end encrypted logs.
+Moreover, they can be used to share and revoke access to logs.
+The following description delivers a high-level overview of the functionality of the protocol.
 This is additionally visualized in \cref{fig:protocol-overview}.
 
-Whenever a monitor component observes a data access it is required to create an access log.
+Whenever a monitor component observes a data access, it must create a log.
 A log must always be a signed data structure.
 Thus, the protocol requires the monitor to perform two tasks.
 First, the raw log data needs to be cryptographically signed by the monitor.
-Second, the log needs to be encrypted only for the data owner.
+Second, the log needs to be encrypted for the data owner.
 The encrypted log is finally sent to the \emph{Safekeeper}.
 This allows the data owner to request and decrypt the log.
 The decryption process also involves validity checks of the received data.
 This ensures that the protocol was applied correctly.
 
-The data owner can share or revoke access to a log for users.
-The data owner needs to download and decrypt the log from the server first.
-To share or revoke access the data owner then needs to apply the encryption algorithm with a set of desired users.
-Note that the decrypted log stores information about the users who are currently allowed to access the log.
-Access can be shared by adding additional users during encryption.
-Access can be revoked by omitting users during encryption.
+The data owner can share or revoke access to a log for other users.
+Therefore, the data owner needs to download and decrypt the log from the server.
+To share or revoke access to the log, the data owner applies the encryption algorithm with a set of desired users.
+The access can be shared by adding additional users during encryption.
+The access can be revoked by omitting users during encryption.
 It is crucial to the protocol that the data owner always specifies itself within the set of authorized users.
 Otherwise, the data owner cannot decrypt the log anymore.
 Finally, the user uploads the log to the server.
-
-Users who are specified during a sharing process can download and decrypt the corresponding log.
-They can request the server for those logs and apply their private decryption key to restore the plain log.
+Authorized users can download and decrypt the corresponding log.
 Again, validity checks of the received data ensure that the defined security requirements are respected.
-
 
 Note that the encryption algorithm can be applied by the monitor and the owner of the log.
 Although only data owners are allowed to share and revoke access to logs, the log must be initially made available for the data owner.
-This can be done by encrypting the log only for the data owner:
-Whenever a monitor created and signed a new log it applies the encryption algorithm.
-The only recipient for this new log must be the data owner.
+This can be done by encrypting the log for the data owner:
+Whenever a monitor created and signed a new log, it applies the encryption algorithm.
+The only recipient for a new log must be the data owner.
 To ensure that the monitor does not specify other unintended users, validation checks during decryption are mandatory.
 
 \begin{figure}[h!]
     \includegraphics[width=12.7cm]{../img/05/overview.png}
     \centering
     \caption[Protocol overview]{
-        The performed tasks and data flows when creating, encrypting, decrypting, and sharing logs in the toolchain.
+        The performed tasks and data flows when creating, and sharing logs in the toolchain.
         The monitor creates a log and encrypts it for Alice.
         Alice downloads and decrypts the log.
         Alice decides to share the log with Bob.
-        Therefore, Alice re-encrypts the log and updates it in the \emph{Safekeeper}.
-        Revoking Bob's access requires Alice to re-encrypt the log while not including Bob in the set of recipients.
+        Therefore, Alice re-encrypts the log and updates it in the \emph{Safekeeper} component.
+        Revoking Bob's access requires Alice to re-encrypt the log while omitting Bob in the set of recipients.
     }
     \label{fig:protocol-overview}
 \end{figure}
 
 \section{General considerations}
 \label{sec:protocol-considerations}
-In this section, general design considerations for the protocol are discussed.
+In this section, general design considerations of the protocol design are discussed.
 \cref{sec:sign-and-encrypt} evaluates the secure combination of encryption and authentication mechanisms.
 To design a practical and efficient protocol, intermediate servers are dependent on metadata.
 This is elaborated in \cref{sec:metadata}.
@@ -98,20 +95,20 @@ Finally, \cref{sec:jose-protocol} illustrates how the JOSE standard can be utili
 
 \subsection{Secure application of encryption and authentication}
 \label{sec:sign-and-encrypt}
-The protocol makes encrypted logs available to a set of recipients.
-The recipients must verify the authenticity of the encrypted data because only the owner or the monitor of a log is allowed to encrypt it.
-Thus, the creator of an encrypted log is required to cryptographically sign the sent data.
+The protocol allows data owners to share encrypted logs with a set of recipients.
+The recipients must verify the authenticity of the encrypted data because only the owner or the monitor of a log are allowed to encrypt it.
+Thus, the creator of an encrypted log is required to digitally sign the sent data.
 This arises the question of whether encrypted data should be signed (\emph{encrypt-then-sign}) or whether signed data should be encrypted (\emph{sign-then-encrypt}).
 In general, the \emph{encrypt-then-sign} approach is considered less secure because a malicious entity could simply stripe the signature and sign the ciphertext using its secret key~\cite{Davis2001}.
 This might lead to unintended flaws in the resulting protocol~\cite{JWT2015}.
 
 The naive \emph{sign-then-encrypt} approach, however, suffers from surreptitious forwarding in certain scenarios~\cite{Davis2001}.
 The use case of this protocol is affected by the flaw.
-Consider a log that is signed by the data owner indicating that he intentionally shared it.
-This signed log is then encrypted for a set of users.
-Assume that a malicious user can decrypt the cipher because the data owner encrypted the log for him.
-Nothing prevents him from re-encrypting the signed log for any other users.
-The problem arises because those other users cannot verify if the data owner has intended to share the log with them.
+Consider a log that is signed by the data owner.
+This signed log is then encrypted for a set of users including a malicious user.
+Nothing prevents the malicious user from re-encrypting the received log for any other user in the system.
+It could finally forward the re-encrypted data to its target.
+The problem arises because the target cannot verify if the data owner has intended to share the log with him or her.
 They only know that the log was signed by the data owner.
 This flaw can be mitigated by explicitly signing the intended recipients.
 This allows a recipient to ensure that the data was intentionally encrypted for him by the claimed creator.~\cite{Davis2001}
@@ -120,12 +117,14 @@ For the protocol designed in the context of this thesis, those considerations ha
 First, a log must be signed by the creator whenever it is shared.
 The creator must additionally sign the set of intended recipients.
 Note that the log itself is also a signed data structure.
-The log must always be signed by the monitor specified within the log to avoid the forgery of logs (security requirement~S3).
-The signature of the creator ensures that unauthorized sharing operations can be detected (security requirement~S2).
+The log must always be signed by the monitor specified within the log to avoid the forgery of logs.
+This ensures the security requirement~S3.
+The signature of the creator ensures that unauthorized sharing operations can be detected.
+This fulfills the security requirement~S2.
 This construction nests singed data structures into each other.
 Details can be found in \cref{sec:encrypting}.
-Second, the signed data is then encrypted for the specified recipients.
-This produces a ciphertext that can only be decrypted by those recipients (security requirement~S1).
+Second, the signed data must be encrypted for the specified recipients.
+This produces a ciphertext that can only be decrypted by those recipients, which ensures the security requirement~S1.
 
 \subsection{Metadata}
 \label{sec:metadata}
@@ -170,19 +169,19 @@ This motivates the usage of the JOSE standard~\cite{Barnes2014}.
 Details about it can be found in \cref{sec:jose}.
 The JOSE standard can be used to cryptographically sign~(JWS) and encrypt~(JWE) JSON data.
 It defines multiple algorithms that can be used.
-Specifically, JWE tokens can be computed using hybrid encryption algorithms.
+Specifically, JWE tokens can be computed using hybrid encryption.
 Since JWS and JWE tokens can also be nested into each other, JOSE can be used to realize the desired protocol by the following means:
-\begin{enumerate}
+\begin{itemize}
     \item 
     A log is a JWS token signed by the monitor.
     It is referred to as the inner JWS token because it is nested into another JWS token.
     \item 
     To encrypt a log, the creator computes a JWS token, which contains the log as a nested token.
     The token additionally contains the set of intended recipients and the identity of the owner.
-    This outer JWS token is called a shared log in the context of this protocol.
+    This outer JWS token is called a \emph{shared log} in the context of this protocol.
     See \cref{fig:nested-jws} for a visualization of the nested tokens.
     \item
-    The shared log is finally encrypted to obtain a JWE token.
+    The \emph{shared log} is finally encrypted to obtain a JWE token.
     This token also contains the unencrypted metadata within its protected header.
     The metadata, however, is still integrity protected.
 \end{enumerate}
@@ -196,8 +195,6 @@ Since JWS and JWE tokens can also be nested into each other, JOSE can be used to
 \end{figure}
 
 
-
-
 \section{Creating logs}
 \label{sec:signing}
 A log is represented by a JWS token.
@@ -205,10 +202,10 @@ It contains the identity of the owner, the identity of the monitor, and further 
 To avoid malicious data owners manipulating or creating new logs, each log needs to be signed by the monitor specified within the log.
 To create a JWS token, the monitor requires access to its private signing key.
 A log is signed with the algorithm ES256, which relies on ECDSA and SHA-256.
-It is defined by the JSON Web Algorithm specification~\cite{JWA2015}.
+It is defined by the "JSON Web Algorithm" specification~\cite{JWA2015}.
 The log is later used as input for the encryption algorithm.
 This construction is intended to resolve security requirement S3 because it allows decrypting users to verify if the provided log was indeed created by the claimed monitor.
-This resists attacks of malicious data owners trying to forge logs.
+This resists the attack of a malicious data owners trying to forge logs.
 
 \section{Encrypting logs}\label{sec:encrypting}
 
@@ -224,8 +221,8 @@ The encryption algorithm outputs a JWE token, which can be decrypted by the spec
 
 Internally, the encryption algorithm creates another JWS token.
 This token is signed with the private signing key of the user encrypting the log (i.e. the creator).
-It is called a shared log because it contains a nested log plus the set of recipients plus the identity of the creator (see \cref{fig:nested-jws}).
-The latter allows a decrypting user to download the public key of the creator, which is used to verify the shared log.
+It is called a \emph{shared log} because it contains a nested log plus the set of recipients plus the identity of the creator (see \cref{fig:nested-jws}).
+The latter allows a decrypting user to download the public key of the creator, which is used to verify the signature of the \emph{shared log}.
 The set of recipients is included to mitigate surreptitious forwarding.
 This construction is intended to resolve security requirement S2.
 It allows to verify whether the data owner has intended to share the log with a respective receiver.
@@ -235,7 +232,7 @@ Once the  shared log is created, it is used to compute the final JWE token.
 Details about JWE tokens can be found in \cref{sec:jwe}.
 This computation follows the \emph{sign-then-encrypt} approach elaborated in \cref{sec:sign-and-encrypt}.
 The final token is computed by passing the encoded shared log as plaintext into the JWE encryption algorithm.
-The identities of recipients and the identity of the owner are passed as metadata into the protected header of the JWE token.
+The identities of recipients and the identity of the owner are additionally passed as metadata into the protected header of the JWE token.
 The choice of used algorithms to encrypt the data implies hybrid encryption.
 The plaintext is encrypted with the authenticated encryption algorithm \verb|A256GCM|.
 This is an symmetric encryption algorithm based on 256-bit AES using the Galois/Counter-Mode~\cite{JWA2015}.
@@ -252,7 +249,7 @@ This is also illustrated in \cref{fig:key_wrapping}.
     \caption[Key-wrapping ECDH-ES+A256KW]{
         Key-wrapping of the symmetric key k using ECDH-ES+A256KW.
         Based on the exchanged public keys the sender and receiver can both compute the same shared secret.
-        The derived ephemeral key is finally used to decrypt the symmetric encryption key k.}
+        The derived ephemeral key is finally used to encrypt/decrypt the symmetric encryption key k under AES.}
     \label{fig:key_wrapping}
 \end{figure}
 
@@ -277,7 +274,7 @@ This is also illustrated in \cref{fig:key_wrapping}.
     If both are kept secret, it is assumed to be computationally infeasible to compute the shared secret~\cite[438]{Eckert2018}.
     \item 
     The shared secret, which is the result of the Diffie-Hellman key agreement protocol, is used as input for a key derivation function.
-    This function computes the ephemeral key between the sender and the receiver.
+    This function computes a ephemeral key between the sender and the receiver.
     \item 
     Finally, this ephemeral key is used as key to encrypt the symmetric key $k$ for the receiver.
     This encryption uses the symmetric scheme AES.
@@ -301,24 +298,24 @@ This decrypts the ciphertext using the passed private decryption key.
 First, it tries to decrypt any of the encrypted keys provided in the JWE token using \verb|ECDH-ES+A256KW|.
 If this succeeds, the symmetric encryption key is accessible.
 This allows the decryption of the symmetric ciphertext using \verb|A256GCM|.
-This effectively restores the shared log for the receiver.
+This effectively restores the \emph{shared log} for the receiver.
 No decryption is necessary to access the metadata because is stored in the protected header of the JWE.
-If the decryption is successful, the decrypting user has access to the shared log and the metadata.
+If the decryption is successful, the decrypting user has access to the \emph{shared log} and the metadata.
 Multiple validations are necessary to ensure that the protocol is used correctly.
-If any of them fails, the decryption must be aborted.
+If any of them fails, the decryption must be aborted with an error.
 \begin{enumerate}
     \item 
-    The signature of the obtained shared log (outer JWS token) must be validated.
-    To do so, the decrypting user needs to download the public key of the creator specified in the shared log.
-    If the verification of the signatures succeeds, the decrypting user can be sure that the claimed creator indeed signed the shared log.
+    The signature of the obtained \emph{shared log} (outer JWS token) must be validated.
+    To do so, the decrypting user needs to download the public key of the creator specified in the \emph{shared log}.
+    If the verification of the signature succeeds, the decrypting user can be sure that the claimed creator indeed signed the \emph{shared log}.
     \item
     The signature of the nested log (inner JWS token) must be validated.
     Again, the public key of the specified monitor needs to be downloaded.
     The PKI must ensure that this public key belongs to a valid and trusted monitor component.
-    If the verification of the signatures succeeds, the decrypting user can be sure that the claimed monitor indeed signed the log.
+    If the verification of the signature succeeds, the decrypting user can be sure that the claimed monitor indeed signed the log.
     \item
     The metadata includes the set of recipients.
-    The shared log also includes this information.
+    The \emph{shared log} also includes this information.
     Only if both sets are equal, the token was not modified during transit.
     \item
     The user applying the decryption must be part of the set of recipients.
@@ -328,7 +325,7 @@ If any of them fails, the decryption must be aborted.
     Only if both are equal, the token was not modified during transit.
     \item
     The log specifies the owner and the monitor of the log.
-    The shared log specifies the creator of the encrypted message.
+    The \emph{shared log} specifies the creator of the encrypted message.
     The creator must be either the owner or the monitor of the log.
     
     If the creator is equal to the monitor of the log, the monitor encrypted the message for the data owner.
