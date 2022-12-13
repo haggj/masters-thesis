@@ -201,31 +201,4 @@ This example shows the fragility of E2EE:
 By defining arbitrary encryption endpoints, almost every system could claim to rely on E2EE.
 While this is technically true, it does not meet the common understanding of end-to-end encrypted systems~\cite{Hale2022,Nabeel2017,Mallory2022}.
 
-\subsection{E2EE in this work}
-This section details the understanding of E2EE in the context of this thesis based on the above considerations.
-Following the argumentation of~\citeauthor{Hale2022}~\cite{Hale2022}, E2EE is understood as a defense against an active adversary.
-The attacker not only observes the data but also tries to modify existing data or inserts forged data.
-Any defense against this attacker requires both, confidentiality and mutual authenticity.
-\paragraph{Confidentiality}
-The exchanged data needs to be encrypted. 
-Otherwise, each untrusted entity can access the exchanged data and E2EE is broken.
-\paragraph{Receiver authenticity}
-    The sender needs to be sure that only the intended receivers can decrypt the data.
-    Specifically, no unauthorized entity must be able to decrypt the cipher.
-    This requires special attention in the context of symmetric cryptography.
-    Assume a group of users sharing a symmetric key.
-    Data that is encrypted under this shared key can be decrypted by all members of the group.
-    Thus, the set of encryption endpoints is equal to the group of users.
-    When symmetric cryptography is used to construct E2EE-based protocols, messages between a single sender and a single receiver always require an exclusively exchanged symmetric key to ensure receiver authenticity.
-    When operating with asymmetric cryptography, a key pair per receiver is required.
-    If a receiver keeps the private key confidential, it can be ensured that only the receiver can decrypt data.
-    This enables receiver authenticity.
-\paragraph{Sender authenticity} 
-    The receiver needs to be sure that the message was indeed sent by the assumed sender.
-    Specifically, the receiver must ensure that the message was not created by an unknown entity.
-    This requirement is crucial to defend against man-in-the-middle attackers.
-    If a receiver cannot validate the origin of the message, an attacker could simply impersonate the sender and encrypt fake data under the public key of the receiver.
-    Digitally signed messages ensure that a message was indeed sent by the claimed sender.
-    Due to the risk of surreptitious forwarding, sender authenticity requires additional security mechanisms besides a plain digital signature~\cite{Davis2001}.
-
 \end{document}

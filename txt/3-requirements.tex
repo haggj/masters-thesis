@@ -88,12 +88,48 @@ Following this approach, each security requirement is specified by providing the
 The counter-stakeholder is an adversary attacking the system.
 Satisfying a security requirement should effectively defend against this adversary.
 The specified circumstances elaborate additional conditions that affect the security goal.
-The following elaboration is intended to refine the security goals into concrete security requirements.
+
+The following \cref{sec:end-to-end-thesis} clarifies the understanding of E2EE in this work.
+This specifies the security mechanisms that are required by the designed protocol.
+The subsequent sections refine the security goals into concrete security requirements.
+Those requirements are motivated by three attack vectors:
+First, a curious server extracts data from the stored log data.
+Second, a surreptitious forwarding attack forwards received logs without permission.
+Third, a malicious data owner inserts faked logs into the system.
+Each attack vector is detailed in the respective section.
+
+\subsection{E2EE in this work}
+\label{sec:end-to-end-thesis}
+This section details the understanding of E2EE in the context of this thesis based on the considerations in \cref{sec:end-to-end}.
+Following the argumentation of~\citeauthor{Hale2022}~\cite{Hale2022}, E2EE is understood as a defense against an active adversary.
+The attacker does not only observe the data but also tries to modify existing data or inserts forged data.
+Any defense against this attacker requires both, confidentiality and mutual authenticity.
+\paragraph{Confidentiality}
+The exchanged data needs to be encrypted. 
+Otherwise, each untrusted entity can access the exchanged data and E2EE is broken.
+\paragraph{Receiver authenticity}
+The sender needs to be sure that only the intended receivers can decrypt the data.
+Specifically, no unauthorized entity must be able to decrypt the cipher.
+This requires special attention in the context of symmetric cryptography.
+Assume a group of users sharing a symmetric key.
+Data that is encrypted under this shared key can be decrypted by all members of the group.
+Thus, the set of encryption endpoints is equal to the group of users.
+When symmetric cryptography is used to construct E2EE-based protocols, messages between a single sender and a single receiver always require an exclusively exchanged symmetric key to ensure receiver authenticity.
+When operating with asymmetric cryptography, a key pair per receiver is required.
+If a receiver keeps the private key confidential, it can be ensured that only the receiver can decrypt data.
+This enables receiver authenticity.
+\paragraph{Sender authenticity} 
+The receiver needs to be sure that the message was indeed sent by the assumed sender.
+Specifically, the receiver must ensure that the message was not created by an unknown entity.
+This requirement is crucial to defend against man-in-the-middle attackers.
+If a receiver cannot validate the origin of the message, an attacker could simply impersonate the sender and encrypt fake data under the public key of the receiver.
+Digitally signed messages ensure that a message was indeed sent by the claimed sender.
+Due to the risk of surreptitious forwarding, sender authenticity requires additional security mechanisms besides a plain digital signature~\cite{Davis2001}.
 
 \subsection{Logs can only be decrypted by authorized users}
-In the context of the \emph{transparency toolchain}, the intended end-to-end encryption should ensure that only authorized users can access logs.
+In the context of the \emph{transparency toolchain}, the intended E2EE should ensure that only authorized users can access logs.
 The passed log must be encrypted and only authorized users can decrypt it.
-Thus, this requirement demands confidentiality and receiver authenticity (details in ~\cref{sec:end-to-end}).
+Thus, this requirement demands confidentiality and receiver authenticity (details in ~\cref{sec:end-to-end-thesis}).
 As specified by the functional requirements, the data owner can always decrypt the log.
 The data owner can also share the log with other users, which are then able to decrypt.
 Authorized users are the data owner of the log plus all users the data owner permitted access.
@@ -118,7 +154,8 @@ The implemented protocol should defend against curious servers.
 
 The functional requirements demand that only the data owner of a log is allowed to share the log.
 No other user should be able to share the log in the name of the data owner.
-Whenever a user receives an encrypted log it needs to be sure that the originator of the cipher is the data owner of the encrypted log (sender authenticity).
+Whenever a user receives an encrypted log, it needs to be sure that the originator of the cipher is the data owner of the encrypted log.
+This requires sender authenticity (details in ~\cref{sec:end-to-end-thesis}).
 Moreover, the receiver also needs to be sure that the data owner intended to share the log with him or her.
 
 The following attack motivates this requirement.
