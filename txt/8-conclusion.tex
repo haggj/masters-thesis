@@ -27,12 +27,12 @@ These libraries enable the intended functionality of a multi-party E2EE protocol
 Moreover, each library is tested, documented, and published to the respective package indexes.
 
 The existing toolchain was adapted to enable the functionality of sharing encrypted logs.
-This is realized by including the implemented protocol into the toolchain.
+This is realized by including the implemented library in the toolchain.
 A proof-of-concept environment demonstrates how an established PKI may be used to instantiate the protocol.
 This verifies that the protocol can be used in practice to share encrypted logs among users.
 From the perspective of a user, the encrypted logs can be visualized as before. 
 Access to those logs can additionally be shared and revoked.
-The implemented UI fully abstracts from any underlying cryptographic details such as digital signatures, encryption, and decryption algorithms.
+The implemented UI fully abstracts the underlying cryptographic details such as digital signatures, encryption, and decryption algorithms.
 
 The integration of the designed protocol into the toolchain verifies that the functional requirements can be fulfilled.
 The security evaluation shows that the protocol can be considered secure under two assumptions.
@@ -46,7 +46,7 @@ This indicates that the introduced overhead is kept within reasonable limits and
 
 In conclusion, the designed and implemented protocol maintains end-to-end encrypted logs which can be shared within the system.
 This protects the confidentiality of the stored logging data.
-It also supports data owners that aim to legacy prosecute illegal data accesses.
+It also supports data owners that aim to prosecute illegal data accesses.
 
 \section{Limitations and future work}
 \label{sec:limitations}

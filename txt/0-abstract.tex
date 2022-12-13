@@ -8,9 +8,9 @@ The concept of \emph{Inverse Transparency} aims to protect data sovereignty whil
 The \emph{transparency toolchain} supports this approach by providing a technical framework.
 It ensures that all data accesses are transparently logged.
 This thesis contributes to the toolchain by designing and implementing an end-to-end encrypted protocol that allows users to share and revoke access to their encrypted logs.
-A survey of potential encryption techniques turns out that the elaborated requirements are fulfilled best when relying on hybrid encryption.
-The designed protocol was implemented as a cryptographic library.
-It is available in Go, Python, and Typescript.
+A survey of potential encryption techniques shows that hybrid encryption can fulfill the identified requirements best.
+The designed protocol resists against surreptitious forwarding attacks, malicious data owners and curious servers.
+It is implemented as a cryptographic library available in Go, Python, and Typescript.
 It assumes that a secure PKI is available and relies on the "JSON Web Encryption and Signing" standard.
 
 The existing toolchain was adapted to maintain encrypted logs.
