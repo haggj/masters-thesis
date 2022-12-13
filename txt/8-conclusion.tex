@@ -5,7 +5,8 @@
 \chapter{Conclusion and Discussion}
 \label{chap:conclusion}
 
-This final chapter presents the major results of the thesis in \cref{sec:result}.
+This final chapter concludes the thesis.
+It summarizes the major results of the thesis in \cref{sec:result}.
 It also discusses the limitations and potential future work in \cref{sec:limitations}.
 
 \section{Results}
@@ -14,8 +15,7 @@ It also discusses the limitations and potential future work in \cref{sec:limitat
 This thesis designs, implements, and evaluates an end-to-end encrypted protocol that allows to share logs in the \emph{transparency toolchain}~\cite{Zieglmeier2021}.
 It identifies the requirements that must be fulfilled by such a protocol.
 The survey of encryption technologies shows that hybrid encryption meets those requirements best.
-Therefore, the designed protocol relies on hybrid encryption, which enables multi-party E2EE.
-It makes it possible for data owners to share and revoke access to their logs while the data stays encrypted.
+Therefore, the designed protocol relies on hybrid encryption.
 The protocol was created to resist three types of attackers: 
 A curious server cannot access the logs because all logs are encrypted.
 Surreptitious forwarding attacks are detected since the user sharing a log cryptographically signs the log along with the indented receivers.
@@ -27,27 +27,26 @@ These libraries enable the intended functionality of a multi-party E2EE protocol
 Moreover, each library is tested, documented, and published to the respective package indexes.
 
 The existing toolchain was adapted to enable the functionality of sharing encrypted logs.
-The implemented protocol was included in the toolchain.
+This is realized by including the implemented protocol into the toolchain.
 A proof-of-concept environment demonstrates how an established PKI may be used to instantiate the protocol.
 This verifies that the protocol can be used in practice to share encrypted logs among users.
-From the perspective of a user, access to a log can be shared and revoked.
-The implemented UI fully abstracts from any underlying protocol details such as digital signatures, encryption, and decryption algorithms.
+From the perspective of a user, the encrypted logs can be visualized as before. 
+Access to those logs can additionally be shared and revoked.
+The implemented UI fully abstracts from any underlying cryptographic details such as digital signatures, encryption, and decryption algorithms.
 
-The evaluation of the designed protocol verifies that the functional requirements can be fulfilled.
-Furthermore, the security evaluation shows that the protocol can be considered secure under two assumptions.
+The integration of the designed protocol into the toolchain verifies that the functional requirements can be fulfilled.
+The security evaluation shows that the protocol can be considered secure under two assumptions.
 First, a secure PKI must be available.
 Second, the JOSE standard must describe secure algorithms.
 The performance evaluation shows that the protocol introduces overhead due to the added encryption layer.
-The performed measurements verify that data can be encrypted for up to 170 users without any human-noticeable delay.
-If the front-end restricts the page size of the fetched logs to 100 logs, the introduced overhead for decrypting and processing the data is $55ms$.
-This refers to a relative difference of $20\%$.
+The encryption algorithm does not introduce a human-noticeable delay if the set of receivers does not contain more than $170$ users.
+The bottleneck of the encryption layer occurs when multiple logs are downloaded from the server because this requires the decryption of all loaded logs.
+If the front-end restricts the page size of the fetched logs to $100$, the processing time in the updated toolchain has increased by $55ms$ to $298ms$.
 This indicates that the introduced overhead is kept within reasonable limits and can be handled in practice.
 
-In conclusion, the designed and implemented protocol maintains end-to-end encrypted logs with acceptable performance overheads.
+In conclusion, the designed and implemented protocol maintains end-to-end encrypted logs which can be shared within the system.
 This protects the confidentiality of the stored logging data.
-The protocol also allows to share and revoke access to logs.
-This supports data owners aiming to legacy prosecute illegal data accesses.
-
+It also supports data owners that aim to legacy prosecute illegal data accesses.
 
 \section{Limitations and future work}
 \label{sec:limitations}

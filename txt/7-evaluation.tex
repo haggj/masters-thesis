@@ -197,10 +197,10 @@ This section contains performance evaluations of the provided implementations.
 \subsection{Encryption}
 \label{sec:evaluation-perf-enc}
 As elaborated in the previous chapters, the designed and implemented protocol is based on hybrid encryption.
-Hence, Logs can be encrypted for multiple recipients.
+Hence, logs can be encrypted for multiple recipients.
 The symmetric key $k$, which encrypts the log, must be encrypted for each receiver.
 This implies that if a log is shared with $n$ users, the key $k$ must be encrypted $n$ times.
-Hence, the encryption duration is assumed to increase linearly with the number of recipients.
+Thus, the encryption duration is assumed to increase linearly with the number of recipients.
 This section aims to provide resilient measurements of those costs.
 
 \subsubsection{Methodology}
@@ -247,7 +247,7 @@ In those cases no visual feedback is necessary.
 Experiments with the packages show that this threshold is reached in Typescript if encrypting the log for about $330$ users.
 The Python implementation reaches the boundary if data is encrypted for $170$ users.
 In Go, the encryption for $1500$ recipients takes on average slightly more than $100ms$.
-This shows that a data owner can share his logs with up to 170 users without noticing a computation delay.
+This shows that a data owner can share his logs with up to 170 users without noticing a computation delay during encryption.
 
 
 \begin{figure}[ht]
@@ -262,11 +262,11 @@ This shows that a data owner can share his logs with up to 170 users without not
 The \emph{transparency toolchain} was adopted to support encrypted logs.
 Once a user logs in to the \emph{Display} component, all encrypted logs of this particular user are fetched from the \emph{Safekeeper}, decrypted, and visualized.
 Compared to the legacy solution, this implementation introduces an additional encryption layer.
-It is assumed that this degrades the performance of fetching and visualizing logs.
+It is assumed that this degrades the performance of fetching and visualizing logs because all received logs must be decrypted in the front-end.
 This section provides measurements of 
 1) the legacy toolchain that does not rely on encryption and
 2) the updated toolchain that handles encrypted logs.
-Those measurements illustrate the performance differences of the toolchain when maintaining encrypted logs.
+Those measurements illustrate the performance differences of the toolchain when encrypted logs are fetched from the server and processed in the front-end.
 
 
 \subsubsection{Methodology}
@@ -326,6 +326,7 @@ This is expected since the database must resolve more data if more logs are requ
 Overall, the updated toolchain requires on average $77ms$ to fetch a single log, $106ms$ to fetch ten logs, and $298ms$ to fetch one hundred logs.
 Those results are not expected because for a single log and ten logs the encrypted toolchain is faster than the legacy toolchain.
 The reason for this lies in the pre-computation performed by the legacy toolchain, which depends on multiple database queries.
+Those pre-computation queries require more time than the decryption of the logs in the updated toolchain.
 Moreover, the updated toolchain employs a simplified database design consisting of a single table that stores the encrypted logs.
 As described in ~\cref{sec:implemenation-safekeeper}, this table contains two JSON fields.
 They could be further improved to support efficient indexed lookups~\cite{Shang2021}.
