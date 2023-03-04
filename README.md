@@ -2,8 +2,8 @@
 
 # Multi-Party End-to-End Encryption for the Inverse Transparency Toolchain
 This is the github repo containing the latex project of my master thesis.
-In the context of the thesis I designed and implemented an E2EE encryption module for the inverse transparency toolchain [[1]](#1).
-Along with this thesis three fully compatible crypto libraries were developed. A detailed documentation about the libs can be found within [the thesis](main.pdf).
+In the context of the thesis, I designed and implemented an E2EE encryption module for the inverse transparency toolchain [[1]](#1).
+Along with this thesis three fully compatible crypto libraries were developed. A detailed documentation about the libs can be found within [the thesis](thesis.pdf).
 
 The source code of the libraries can be found here:
 
